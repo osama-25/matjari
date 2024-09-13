@@ -3,10 +3,10 @@ import { FaArrowRight } from "react-icons/fa";
 import { HomeItem } from "../Item";
 
 const items = [
-    { id: 1, name: 'Electronics', image: '/favicon.ico', link: '/electronics' },
-    { id: 2, name: 'Fashion', image: '/favicon.ico', link: '/fashion' },
-    { id: 3, name: 'Home', image: '/favicon.ico', link: '/home' },
-    { id: 4, name: 'Books', image: '/favicon.ico', link: '/books' },
+    { id: 1, name: 'Electronics', image: '/favicon.ico' },
+    { id: 2, name: 'Fashion', image: '/favicon.ico' },
+    { id: 3, name: 'Home', image: '/favicon.ico' },
+    { id: 4, name: 'Books', image: '/favicon.ico' },
 ];
 
 const ItemsDisplay = () => (
@@ -20,7 +20,7 @@ const ItemsDisplay = () => (
         </span>
         <div className="grid grid-cols-2 md:flex md:space-x-10">
             {items.map(item => (
-                <HomeItem key={item.id} name={item.name} image={item.image} link={item.link} price={'$$$'} />
+                <HomeItem id={item.id} name={item.name} image={item.image} price={'$$$'} />
             ))}
         </div>
     </div>

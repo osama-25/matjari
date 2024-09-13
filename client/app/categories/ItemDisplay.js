@@ -3,10 +3,10 @@ import { Item } from "../Item";
 import { FaFilter } from "react-icons/fa";
 
 const items = [
-    { id: 1, name: 'Electronics', image: '/favicon.ico', link: '/electronics' },
-    { id: 2, name: 'Fashion', image: '/favicon.ico', link: '/fashion' },
-    { id: 3, name: 'Home', image: '/favicon.ico', link: '/home' },
-    { id: 4, name: 'Books', image: '/favicon.ico', link: '/books' },
+    { id: 1, name: 'Electronics', image: '/favicon.ico' },
+    { id: 2, name: 'Fashion', image: '/favicon.ico' },
+    { id: 3, name: 'Home', image: '/favicon.ico' },
+    { id: 4, name: 'Books', image: '/favicon.ico' },
 ];
 
 const ItemDisplay = ({ onPress, Visible }) => {
@@ -27,8 +27,8 @@ const ItemDisplay = ({ onPress, Visible }) => {
             <div className="flex flex-col gap-y-5">
                 {items.map(item => (
                     <Item
-                        key={item.id} name={item.name} image={item.image}
-                        link={item.link} price={'$$$'} chatlink={'/chats'}
+                        id={item.id} name={item.name} image={item.image}
+                        price={'$$$'} chatid={item.id}
                         desc={'oewnvonwovnoewnvownveyyubybuwejmmmmmmmm'} heart={false}
                     />
                 ))}

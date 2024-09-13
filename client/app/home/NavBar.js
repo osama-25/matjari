@@ -57,13 +57,13 @@ const NavBar = () => {
               </a>
             </div>
             <section className="hidden md:flex items-center space-x-4 md:w-auto justify-center md:justify-start">
-              <Link href="/chats" className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
+              <Link href="/chats" className="text-gray-700 p-2 rounded-md hover:bg-gray-200" title='chats'>
                 <FaComments />
               </Link>
-              <Link href="/favourites" className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
+              <Link href="/favourites" className="text-gray-700 p-2 rounded-md hover:bg-gray-200" title='favourites'>
                 <FaHeart />
               </Link>
-              <Link href="/profile" className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
+              <Link href="/profile" className="text-gray-700 p-2 rounded-md hover:bg-gray-200" title='profile'>
                 <FaUser />
               </Link>
               <button onClick={HandleFlagPress} className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
