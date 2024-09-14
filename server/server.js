@@ -7,6 +7,7 @@ import authRoutes from "./routes/auth.js";
 import pg from 'pg';
 import env from 'dotenv';
 
+// import User from "./routes/userModel.js";
 const app = express();
 const corsOption = {
     origin: 'http://localhost:3000',
