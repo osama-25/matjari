@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useRouter } from "next/navigation";
+
 
 export default async function checkLogin(path, router) {
 
@@ -11,7 +11,7 @@ export default async function checkLogin(path, router) {
         if (token) {
             // Check login status by sending the JWT token in the Authorization header
             console.log("HIT THIS");
-            const res = await axios.get('http://localhost:8080/auth' + path, { ///home 
+            const res = await axios.get('http://localhost:8080' + path, { 
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

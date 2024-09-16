@@ -12,15 +12,15 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 export default function Home() {
 
-  const router = useRouter();
+  // const router = useRouter();
 
-    useEffect(() => {
-        const checkAuthStatus = async () => {
-            await checkLogin('/home', router);
-        };
+  //   useEffect(() => {
+  //       const checkAuthStatus = async () => {
+  //           await checkLogin('/auth/home', router);
+  //       };
 
-        checkAuthStatus();
-    }, [router]);
+  //       checkAuthStatus();
+  //   }, [router]);
 
   return (
     <>

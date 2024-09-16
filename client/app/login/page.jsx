@@ -6,7 +6,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ToastMessage from '../bootstrap-component/toast';
 
-// import checkLogin from './checklogin';
 export default function LoginPage() {
 
 
@@ -20,43 +19,6 @@ export default function LoginPage() {
 
 
 
-    // const checkLogin = async () => {
-    //     try {
-    //         const token = localStorage.getItem("token");
-
-    //         if (token) {
-    //             // Check login status by sending the JWT token in the Authorization header
-    //             const res = await axios.post('http://localhost:8080/auth/login', {
-    //                 headers: {
-    //                     Authorization: `Bearer ${token}`
-    //                 }
-    //             });
-
-    //             console.log(res);
-
-    //             if (res.status === 200) {
-    //                 // User is authenticated, redirect to home or another protected page
-    //                 router.push('/home');
-    //             }
-    //             else
-    //                 router.push('/login');
-    //         }
-    //         else {
-    //             router.push('/');
-    //         }
-
-
-    //     } catch (err) {
-    //         console.log("Error checking login status:", err);
-    //     }
-    // };
-
-    // useEffect( () => {
-    //     if ( checkLogin('/home')) {
-    //         router.push('home');
-    //         return;
-    //     }
-    // }, []);
 
     useEffect(() => {
         if (showToast) {
@@ -69,12 +31,18 @@ export default function LoginPage() {
         event.preventDefault();
 
         try {
+            console.log("BLBLBLBLBLLLBLLBLLBLBLBL");
             const res = await axios.post("http://localhost:8080/auth/login", {
                 email,
                 password
             });
 
-            if (res.data.success) {
+            
+
+            console.log(res.data);
+            console.log("BLBLBLBLBLLLBLLBLLBLBLBL");
+            if (true) {
+
                 localStorage.setItem("token", res.data.token);
 
                 router.push('/home');

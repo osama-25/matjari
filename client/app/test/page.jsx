@@ -7,13 +7,13 @@ import { useEffect } from "react";
 export default function TestPage() {
 
     useEffect(() => {
-        checkLogin('/test');
+        checkLogin('/auth/test');
     }, [])
     return <>
         <h1>HI</h1>
         <Button onClick={async () => {
 
-            checkLogin('/test');
+            checkLogin('/auth/test');
             // const data = res.data;
             // console.log("Data: ------------ : " + data.success + "   " + data.message);
 
