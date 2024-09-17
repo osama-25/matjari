@@ -1,17 +1,8 @@
+"use client";
+import { MenuItem } from "./AdminComponent";
 export default function AdminLayout({ children }) {
 
-    const MenuItem = ({ text, ref }) => {
-        return (
-            <li>
-                <a
-                    href="/admin/dashboard"
-                    className="block p-4 text-gray-200 hover:bg-gray-700"
-                >
-                    Dashboard
-                </a>
-            </li>
-        )
-    }
+
     return (
         <div className="flex h-screen bg-gray-100">
             {/* Sidebar */}
@@ -21,30 +12,23 @@ export default function AdminLayout({ children }) {
                 </div>
                 <nav>
                     <ul>
-                        <li>
-                            <a
-                                href="/admin/dashboard"
-                                className="block p-4 text-gray-200 hover:bg-gray-700"
-                            >
-                                Dashboard
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="/admin/users"
-                                className="block p-4 text-gray-200 hover:bg-gray-700"
-                            >
-                                Users
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="/admin/settings"
-                                className="block p-4 text-gray-200 hover:bg-gray-700"
-                            >
-                                Settings
-                            </a>
-                        </li>
+
+                        <MenuItem
+                            text="Dashboard"
+                            href="/admin/dashboard"
+                        />
+
+                        <MenuItem
+                            text="Users"
+                            href="/admin/users"
+                        />
+
+                        <MenuItem
+                            text="Settings"
+                            href="/admin/settings"
+                        />
+
+
                     </ul>
                 </nav>
             </aside>
