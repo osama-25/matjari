@@ -1,9 +1,10 @@
 "use client";
-import { useRouter } from 'next/navigation'; // Adjust import based on your Next.js version
+import { redirect, useRouter } from 'next/navigation'; // Adjust import based on your Next.js version
 import { Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 
 export default function Welcome() {
+  redirect('/home');
   const router = useRouter();
 
   const handleLoginClick = () => {
@@ -14,7 +15,7 @@ export default function Welcome() {
     router.push('/register'); // Redirect to the register page
   };
 
-  return (
+  {/*return (
     <div className="d-flex justify-content-center align-items-center vh-100">
       <div className="text-center">
         <Button onClick={handleLoginClick} className="mb-3">
@@ -26,5 +27,5 @@ export default function Welcome() {
         </Button>
       </div>
     </div>
-  );
+  );*/}
 }

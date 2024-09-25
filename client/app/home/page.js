@@ -4,7 +4,6 @@ import Categories from "./Categories";
 import ItemsDisplay from "./ItemsDisplay";
 import AdDisplay from "./AdDisplay";
 
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button } from "react-bootstrap";
 import axios from "axios";
 import checkLogin from "../login/checklogin";

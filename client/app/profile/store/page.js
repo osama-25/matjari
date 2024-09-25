@@ -1,4 +1,4 @@
-import { Item } from "@/app/Item";
+import { HomeItem, Item } from "@/app/Item";
 import React from "react";
 
 const items = [
@@ -15,7 +15,7 @@ const Store = () => {
             <h1 className="m-2 font-bold">Store</h1>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                 {items.map(item => (
-                    <Item key={item.id} name={item.name} image={item.image} link={item.link} price={'$$$'} />
+                    <HomeItem key={item.id} name={item.name} image={item.image} link={item.link} price={'$$$'} />
                 ))}
             </div>
         </section>
