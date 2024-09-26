@@ -9,12 +9,20 @@ passport.use(new LocalStrategy({
     passwordField: 'password'
 }, async (email, password, done) => {
     try {
+
+
         const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+
         if (result.rowCount === 0) {
+
+
             return done(null, false, { message: 'Incorrect email.' });
         }
 
         const user = result.rows[0];
+
+
+
         const match = await bcrypt.compare(password, user.password);
         if (!match) {
             return done(null, false, { message: 'Incorrect password.' });
