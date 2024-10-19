@@ -3,6 +3,10 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ToastMessage from '../toast';
+import { login } from '../../lib';
+
+
+
 
 export default function LoginPage() {
     const router = useRouter();
@@ -10,6 +14,8 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
+
+
 
     const handleShowToast = (message) => {
         setToastMessage(message);
@@ -23,17 +29,70 @@ export default function LoginPage() {
         }
         else {
             try {
-                const res = await axios.post("http://localhost:8080/auth/login", {
-                    email,
-                    password
+
+                // const res = await fetch("http://localhost:8080/auth/login", { 
+                //     method: "POST",
+                //     headers: {
+                //         "Content-Type": "application/json",
+                //     },
+                //     body: JSON.stringify({
+                //         email,
+                //         password
+                //     }),
+                // });
+
+                // if (!res.ok) {
+                //     throw new Error('Failed to log in');
+                // }
+
+                // const data = await res.json();
+
+                // const res = await axios.post("http://localhost:8080/auth/login", {
+                //     email,
+                //     password
+                // });
+                const ress = await fetch("http://localhost:8080/auth/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+
+                    },
+                    body: JSON.stringify({
+                        email,
+                        password
+                    })
                 });
 
-                if (res.data.token) {
-                    localStorage.setItem("token", res.data.token);
+
+
+
+                const data = await ress.json();
+
+
+
+
+                console.log(data);
+
+                if (data.success) {
+
+                    login(data.user);
+                    console.log("res.token: " + data.token);
+                    // 
+                    localStorage.setItem('token', data.token);
                     router.push('/home');
-                } else {
-                    handleShowToast('User not found');
                 }
+                else
+                    handleShowToast('User not found');
+
+                // if (res.data.token) {
+                //     // localStorage.setItem("token", res.data.token);
+                //     login(res.data.user);
+                //     // console.log(res.data.user);
+
+                //     router.push('/home');
+                // } else {
+                //     handleShowToast('User not found');
+                // }
             } catch (err) {
                 handleShowToast('Error occured try again');
                 console.log("Error with /auth/login:", err);
@@ -47,7 +106,11 @@ export default function LoginPage() {
                 <div className="w-96 flex flex-col justify-center items-center bg-white p-6 rounded-lg gap-y-4 shadow-lg">
                     <img className="h-16 md:h-20" src="/Resources/logo.jpg" alt="Logo" />
                     <ToastMessage text={toastMessage} show={showToast} onClose={() => setShowToast(false)} />
-                    <form className="container justify-center flex flex-col gap-y-2" onSubmit={handleLoginPage}>
+                    <form action={async (formData) => {
+                        // "use server";
+                        await login(formData);
+                        redirect("/");
+                    }} className="container justify-center flex flex-col gap-y-2" onSubmit={handleLoginPage} >
                         <div className="py-2">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
                                 Email Address

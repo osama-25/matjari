@@ -23,13 +23,18 @@ env.config(); // Load environment variables from .env file
 
 const { Pool } = pg;
 
+
+
+
 // Create a new pool using the connection string
+console.log("FLSKDJFLDKS");
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres.jkdfxmtesleasbpagpyp:@Ff12345_12345@aws-0-eu-central-1.pooler.supabase.com:6543/postgres',
+  connectionString: 'postgresql://postgres.jkdfxmtesleasbpagpyp:@Ff12345_12345@aws-0-eu-central-1.pooler.supabase.com:6543/postgres',
   ssl: {
     rejectUnauthorized: false, // Supabase often requires this setting for SSL
   }
 });
+
 
 // Export query function for database interactions
 const query = (text, params) => pool.query(text, params);

@@ -1,5 +1,6 @@
 import express from 'express';
-import { login, register, verifyToken } from '../controllers/authController.js';
+import { login, register } from '../controllers/authController.js';
+import  verifyToken  from '../middleware/middleware.js';
 const router = express.Router();
 
 router.get('/home', verifyToken, (req, res) => {
@@ -15,6 +16,7 @@ router.get('/test', verifyToken, (req, res) => {
 
 router.post('/register', register);
 router.post('/login', login);
+// router.delete('/logout', logout);
 
 
 export default router;

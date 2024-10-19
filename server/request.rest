@@ -1,0 +1,15 @@
+GET http://localhost:8080/ 
+
+###
+
+POST http://localhost:8080/auth/login 
+Content-Type: application/json
+
+{
+    "email" : "faislabdu277@gmail.com",
+    "password" : "123"
+}
+
+###
+GET http://localhost:8080/profile/data 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJmbmFtZSI6IkZBSVNBTCIsImxuYW1lIjoiQUJETyIsImVtYWlsIjoiZmFpc2xhYmR1Mjc3QGdtYWlsLmNvbSIsInBhc3N3b3JkIjoiJDJiJDEwJHRzZ0R3UWlDQ256UjBaOC9JYjIwY2VJaXJhTUMvYVNTbkhjRFcwLlVWUjM2MVRidkIxODR1IiwidXNlcl9uYW1lIjoiMTIzIn0sImlhdCI6MTcyOTM1MTcyNiwiZXhwIjoxNzI5MzU1MzI2fQ.RvDYOMl6_bveGKTZz8GlNa8MQ-4DfzW3ShVwuO4OQFM

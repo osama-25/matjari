@@ -5,11 +5,16 @@ export default function LogoutButton() {
     const router = useRouter();
 
     const handleLogout = () => {
-        localStorage.removeItem("token");
+
+        // localStorage.removeItem("token");
         router.push('/login'); // Redirect to the login page
     };
 
     return (
-        <button onClick={handleLogout}>Logout</button>
+        <button action={async () => {
+            "use server";
+            await logout();
+            redirect("/");
+        }} onClick={handleLogout}>Logout</button>
     );
 }
