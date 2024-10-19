@@ -1,18 +1,22 @@
 'use client';
 import Link from 'next/link';
 import React, { useState } from 'react';
-import { FaComments, FaHeart, FaSearch, FaUser } from 'react-icons/fa';
+import { FaComments, FaHeart, FaPlus, FaSearch, FaUser } from 'react-icons/fa';
 
 const flags = [
   'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Flag_of_the_United_Kingdom_%281-2%29.svg/1200px-Flag_of_the_United_Kingdom_%281-2%29.svg.png',
   'https://cdn.britannica.com/79/5779-050-46C999AF/Flag-Saudi-Arabia.jpg'
 ];
 
-const NavBar = () => {
+const NavBar = ({ togglePopup }) => {
   const [flagIndex, setFlagIndex] = useState(0);
 
   const HandleFlagPress = () => {
     setFlagIndex((prevIndex) => (prevIndex === 0 ? 1 : 0));
+  }
+
+  const HandleProfilePress = () => {
+    togglePopup(1);
   }
 
   return (
@@ -33,9 +37,12 @@ const NavBar = () => {
                 <Link href="/favourites" className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
                   <FaHeart />
                 </Link>
-                <Link href="/profile" className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
+                <button onClick={HandleProfilePress} className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
                   <FaUser />
-                </Link>
+                </button>
+                <button className="text-white p-3 rounded-md bg-yellow-400 hover:bg-yellow-500" title='place item for sale'>
+                  <FaPlus size={20} />
+                </button>
               </div>
               <div className="flex md:hidden items-center">
                 <button onClick={HandleFlagPress} className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
@@ -63,9 +70,12 @@ const NavBar = () => {
               <Link href="/favourites" className="text-gray-700 p-2 rounded-md hover:bg-gray-200" title='favourites'>
                 <FaHeart />
               </Link>
-              <Link href="/profile" className="text-gray-700 p-2 rounded-md hover:bg-gray-200" title='profile'>
+              <button onClick={HandleProfilePress} className="text-gray-700 p-2 rounded-md hover:bg-gray-200" title='profile'>
                 <FaUser />
-              </Link>
+              </button>
+              <button className="text-white p-3 rounded-md bg-yellow-400 hover:bg-yellow-500" title='place item for sale'>
+                <FaPlus size={20} />
+              </button>
               <button onClick={HandleFlagPress} className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
                 <img src={flags[flagIndex]} className="w-12 h-8" />
               </button>

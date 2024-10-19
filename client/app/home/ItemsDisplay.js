@@ -20,7 +20,7 @@ const ItemsDisplay = () => (
         </span>
         <div className="grid grid-cols-2 md:flex md:space-x-10">
             {items.map(item => (
-                <HomeItem id={item.id} name={item.name} image={item.image} price={'$$$'} />
+                <HomeItem key={item.id} id={item.id} name={item.name} image={item.image} price={'$$$'} />
             ))}
         </div>
     </div>
