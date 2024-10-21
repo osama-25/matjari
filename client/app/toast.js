@@ -4,7 +4,7 @@ import { FaXmark } from "react-icons/fa6"
 const ToastMessage = ({ show, onClose, text }) => {
     useEffect(() => {
         if (show) {
-            const timer = setTimeout(onClose, 2000);
+            const timer = setTimeout(onClose, 5000);
             return () => clearTimeout(timer); // Cleanup timer on unmount
         }
     }, [show, onClose]);
