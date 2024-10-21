@@ -23,7 +23,7 @@ export default function AddPhoto(props) {
   };
 
   return (
-    <div className="flex items-center justify-center w-32 h-32 border-2 border-gray-200 rounded-md relative group">
+    <div className="flex items-center justify-center w-24 h-24 md:w-26 md:h-26 lg:w-32 lg:h-32 border-2 border-gray-200 rounded-md relative group">
       {image ? (
         <div className="w-full h-full relative">
           <img

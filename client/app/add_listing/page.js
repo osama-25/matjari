@@ -6,7 +6,7 @@ import AddPhoto from "./AddPhoto";
 import CustomDetails from "./CustomDetail";
 
 const Listing = () => {
-    const [photos, setPhotos] = useState([]); // Initially Three Images
+    const [photos, setPhotos] = useState([1, 2, 3]); // Initially Three Images
     const [customDetails, setCustomDetails] = useState([]);
     const [photosURL,setURL]=useState([]);
     const [formData, setFormData] = useState({
@@ -34,10 +34,11 @@ const Listing = () => {
         console.log("Custom Details:", customDetails);
         // You can now use `formData` and `customDetails` to send the data to an API or process it as needed
     };
-
+    
+    //  add a new Image
     const addPhoto = () => {
-        setPhotos([...photos, photos.length + 1]);
-    };//  add a new Image
+        if(photos.length < 12) setPhotos([...photos, photos.length + 1]);
+    };
 
     const addPhotoURL=(url)=>{
         setURL([...photosURL,url]);
@@ -49,8 +50,8 @@ const Listing = () => {
     };
     return (
         <div className="flex justify-center items-center p-10 bg-gray-100 min-h-screen">
-            <form className="w-full flex flex-col md:items-start items-center gap-4 ml-16" onSubmit={handleSubmit}>
-                <div className="w-2/4 bg-white p-4 rounded-lg shadow-lg">
+            <form className="w-full flex flex-col md:items-start items-center gap-4 md:ml-16" onSubmit={handleSubmit}>
+                <div className="w-full md:w-2/4 bg-white p-4 rounded-lg shadow-lg">
                     <label htmlFor='categories' className="text-gray-700 text-xl font-bold">Category</label>
                     <div className="p-4">
                         <select
@@ -84,23 +85,23 @@ const Listing = () => {
                     </div>
                 </div>
 
-                <div className="w-3/4 bg-white p-4 rounded-lg shadow-lg">
+                <div className="w-full md:w-3/4 bg-white p-4 rounded-lg shadow-lg">
                     <label className="text-gray-700 text-xl font-bold">Add photos</label>
-                    <div id="photo" className="grid grid-cols-6 gap-2 w-11/12 p-4">
+                    <div id="photo" className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 justify-items-center gap-2 lg:w-11/12 p-4">
                         {photos.map((photo, index) => (
                             <AddPhoto key={index} />
                         ))}
-                        <button
+                        {photos.length < 12 && <button
                             onClick={addPhoto}
-                            className=" bg-gray-200 flex items-center justify-center rounded-lg shadow hover:bg-gray-300"
+                            className=" bg-gray-200 flex items-center justify-center rounded-lg text-3xl shadow hover:bg-gray-300"
                             style={{ width: '124px', height: '128px' }}
                         >
                             +
-                        </button>
+                        </button>}
                     </div>
                 </div>
 
-                <div className="w-2/4 bg-white p-4 rounded-lg gap-y-4 shadow-lg">
+                <div className="w-full md:w-2/4 bg-white p-4 rounded-lg gap-y-4 shadow-lg">
                     <label className="text-gray-700 text-xl font-bold mb-2">Description</label>
                     <div className="p-4">
                         <label htmlFor='title' className="block text-gray-700 text-md font-bold">Title</label>
@@ -127,7 +128,7 @@ const Listing = () => {
                     </div>
                 </div>
 
-                <div className="w-2/4 bg-white p-4 rounded-lg shadow-lg">
+                <div className="w-full md:w-2/4 bg-white p-4 rounded-lg shadow-lg">
                     <label className="text-gray-700 text-xl font-bold">Listing Details</label>
                     <div className="p-4">
                         <label className="text-gray-700 text-md font-bold">Condition</label>
@@ -190,7 +191,7 @@ const Listing = () => {
                     <CustomDetails customDetails={customDetails} setCustomDetails={setCustomDetails} />
                 </div>
 
-                <div className="w-2/4 bg-white p-4 rounded-lg shadow-lg">
+                <div className="w-full md:w-2/4 bg-white p-4 rounded-lg shadow-lg">
                     <label htmlFor='price' className="text-gray-700 text-xl font-bold">Price (JD)</label>
                     <div className="p-4">
                         <input
@@ -206,7 +207,7 @@ const Listing = () => {
                     </div>
                 </div>
 
-                <div className="w-2/4 bg-white p-4 rounded-lg shadow-lg">
+                <div className="w-full md:w-2/4 bg-white p-4 rounded-lg shadow-lg">
                     <label htmlFor='location' className="text-gray-700 text-xl font-bold">Location</label>
                     <div className="p-4">
                         <select
@@ -230,7 +231,7 @@ const Listing = () => {
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                         type="submit"
                     >
-                        Submit
+                        List
                     </button>
                 </div>
             </form>
