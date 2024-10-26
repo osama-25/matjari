@@ -6,7 +6,7 @@ import AddPhoto from "./AddPhoto";
 import CustomDetails from "./CustomDetail";
 
 const Listing = () => {
-    const [photos, setPhotos] = useState([]); // Initially Three Images
+    const [photos, setPhotos] = useState([1,2,3]); // Initially Three Images
     const [customDetails, setCustomDetails] = useState([]);
     const [photosURL,setURL]=useState([]);
     const [formData, setFormData] = useState({
@@ -88,7 +88,7 @@ const Listing = () => {
                     <label className="text-gray-700 text-xl font-bold">Add photos</label>
                     <div id="photo" className="grid grid-cols-6 gap-2 w-11/12 p-4">
                         {photos.map((photo, index) => (
-                            <AddPhoto key={index} />
+                            <AddPhoto key={index} id={index} onDelete={deletePhotoURL} onUpload={addPhotoURL}/>
                         ))}
                         <button
                             onClick={addPhoto}
