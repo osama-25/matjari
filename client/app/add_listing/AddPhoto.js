@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { IoCameraOutline, IoCloseCircle } from 'react-icons/io5';
 
-export default function AddPhoto() {
+export default function AddPhoto(props) {
   const [image, setImage] = useState(null);
 
   const handleImageUpload = (e) => {
@@ -11,6 +11,7 @@ export default function AddPhoto() {
       const reader = new FileReader();
       reader.onload = () => {
         setImage(reader.result);
+        props.onUpload(reader.result);
       };
       reader.readAsDataURL(file);
     }
@@ -18,10 +19,11 @@ export default function AddPhoto() {
 
   const handleImageRemove = () => {
     setImage(null);
+    props.onDelete(props.id);
   };
 
   return (
-    <div className="flex items-center justify-center w-32 h-32 border-2 border-gray-200 rounded-md relative group">
+    <div className="flex items-center justify-center w-24 h-24 md:w-26 md:h-26 lg:w-32 lg:h-32 border-2 border-gray-200 rounded-md relative group">
       {image ? (
         <div className="w-full h-full relative">
           <img
