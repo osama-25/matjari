@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-
+import {SignJWT} from 'jose';
 export default async function verifyToken(req, res, next) {
 
     const authHeader = req.header('Authorization');
@@ -11,10 +11,6 @@ export default async function verifyToken(req, res, next) {
 
     if (!token) return res.status(401).json({ error: 'Access denied' });
     try {
-
-
-
-
         const res = await jwt.verify(token, process.env.JWT_SECRET, {
             "algorithms": ["HS256"],
         })

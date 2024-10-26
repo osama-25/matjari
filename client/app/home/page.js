@@ -20,6 +20,7 @@ export default function Home() {
       <AdDisplay imageUrl={'https://opensooqui2.os-cdn.com/prod/public/images/homePage/spotlight/desktop/en/11-v2.webp'} altText={'AD'} />
       <Categories />
       <ItemsDisplay />
+
       {
         isLoggedIn &&
         <Popup title={'Login or Register'} togglePopup={togglePopup}>
@@ -32,6 +33,7 @@ export default function Home() {
                 id='email'
                 className="shadow-inner border-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"
               />
+
             </div>
             <div className="self-center py-2">
               <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">

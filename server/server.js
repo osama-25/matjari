@@ -5,7 +5,7 @@ import session from 'express-session';
 
 import passport from 'passport';
 import authRoutes from "./routes/auth.js";
-import profileRoutes from "./routes/profile.js"
+import dataRoutes from "./routes/data.js"
 import env from 'dotenv';
 import verifyToken from './middleware/middleware.js';
 
@@ -43,7 +43,7 @@ app.use(express.json());
 
 
 app.use('/auth', authRoutes);
-app.use('/profile', verifyToken, profileRoutes);
+app.use('/data', verifyToken, dataRoutes);
 app.use('/', (req, res) => {
     res.send(
         "<h1>This is the backend server</h1>"

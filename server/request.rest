@@ -11,5 +11,18 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:8080/profile/data 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJmbmFtZSI6IkZBSVNBTCIsImxuYW1lIjoiQUJETyIsImVtYWlsIjoiZmFpc2xhYmR1Mjc3QGdtYWlsLmNvbSIsInBhc3N3b3JkIjoiJDJiJDEwJHRzZ0R3UWlDQ256UjBaOC9JYjIwY2VJaXJhTUMvYVNTbkhjRFcwLlVWUjM2MVRidkIxODR1IiwidXNlcl9uYW1lIjoiMTIzIn0sImlhdCI6MTcyOTM1MTcyNiwiZXhwIjoxNzI5MzU1MzI2fQ.RvDYOMl6_bveGKTZz8GlNa8MQ-4DfzW3ShVwuO4OQFM
+GET http://localhost:8080/data/get
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJlbWFpbCI6ImZhaXNsYWJkdTI3N0BnbWFpbC5jb20ifSwiaWF0IjoxNzI5OTE4NjU4LCJleHAiOjE3Mjk5MjIyNTh9.UtiI94ho3tING-L0kGN9TNsgr6g4-mNhSTuITBVK0F8
+
+
+###   
+PUT http://localhost:8080/data/modify
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJlbWFpbCI6ImZhaXNsYWJkdTI3N0BnbWFpbC5jb20ifSwiaWF0IjoxNzI5OTE5MDA5LCJleHAiOjE3Mjk5MjI2MDl9.Wtx_W3dabSfOh5EN85WLY0EjORm3ptRp-ggDFejRQ4Y
+Content-Type: application/json
+
+{
+    "email": "faislabdu277@gmail.com",
+    "user_name": "Faisal999123",
+    "fname": "Faisal H ",
+    "lname": "Abdo"
+}

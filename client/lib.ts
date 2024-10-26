@@ -22,9 +22,13 @@ export async function decrypt(input: string): Promise<any> {
   return payload;
 }
 
-export async function login(data: { id: string; fname: string;  lname: string; email: string ; password: string; user_name: string}) {
+export async function login(
+  data: { id: string; fname: string;  lname: string; email: string ; password: string; user_name: string},
+  token: string
+) {
     // Verify credentials && get the user
- 
+
+    
     const user = { 
         id : data.id , 
         fname : data.fname , 
@@ -38,9 +42,14 @@ export async function login(data: { id: string; fname: string;  lname: string; e
     const expires = new Date(Date.now() + 1800 * 1000);
     const session = await encrypt({ user, expires });
   
+    
+    // console.log("session: " + session);
+    // console.log(typeof(session));
     // Save the session in a cookie
     
-    cookies().set("Front-end session", session, { expires, httpOnly: true });
+    // cookies().set()
+    // cookies().set("Front-end session", session, { expires, httpOnly: true });
+    cookies().set("Front-end session", token, { expires, httpOnly: true });
 
     return session;
 
@@ -58,20 +67,53 @@ export async function getSession() {
   if (!session) return null;
   return await decrypt(session);
 }
-
+var number = 0;
 export async function updateSession(request: NextRequest) {
   const session = request.cookies.get("Front-end session")?.value;
-  if (!session) return;
+  console.log(session + " N: " + number++);
+  
+  if (!session) {
+    // const loginUrl = new URL('/login', request.url); // Construct absolute URL
+    // return NextResponse.redirect(loginUrl.toString());
+    return;
+  } ;
+  
+
 
   // Refresh the session so it doesn't expire
   const parsed = await decrypt(session);
-  parsed.expires = new Date(Date.now() + 1800 * 1000);
-  const res = NextResponse.next();
-  res.cookies.set({
-    name: "Front-end session",
-    value: await encrypt(parsed),
-    httpOnly: true,
-    expires: parsed.expires,
-  });
-  return res;
+  // console.log(parsed.exp);
+  // console.log(Date.now());
+  const currentTime =  Date.now() / 1000;
+
+  // Check if the session token has expired
+  console.log("currentTime: " + currentTime );
+  console.log("parsed.exp: " + parsed.exp );
+  
+  if (parsed.exp && parsed.exp <= currentTime) {
+    console.log("Session expired. Forcing login.");
+
+    // const res = NextResponse.redirect('/');
+    const res = NextResponse.redirect(new URL('/login', request.url).toString());
+
+    res.cookies.set({
+      name: "Front-end session",
+      value: "",
+      httpOnly: true,
+      expires: new Date(0), // Immediately expire the cookie
+    });
+    return res;
+
+  }
+  
+  // parsed.expires = new Date(Date.now() + 1800 * 1000);
+  // const res = NextResponse.next();
+  // res.cookies.set({
+  //   name: `Front-end session`,
+  //   value: await encrypt(parsed),
+  //   httpOnly: true,
+  //   expires: parsed.expires,
+  // });
+  // return res;
+  return NextResponse.next();
 }

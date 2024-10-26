@@ -4,6 +4,7 @@ import axios from "axios";
 export default async function checkLogin(path, router) {
 
     try {
+        
         const token = localStorage.getItem("token");
 
         console.log(token);
