@@ -6,7 +6,7 @@ import { FaComment, FaHeart, FaRegHeart } from "react-icons/fa";
 
 export const HomeItem = ({ name, image, id, price }) => {
     return (
-        <Link href={'/item/' + id} className="flex flex-col items-center hover:bg-gray-200 rounded-md p-5">
+        <Link href={`/item/${id}`} className="flex flex-col items-center hover:bg-gray-200 rounded-md p-5">
             <div className="relative w-28 h-24 sm:w-36 sm:h-32 lg:w-44 lg:h-40 items-center flex justify-center mb-2 border-stone-500 border-4 rounded-lg">
                 <img src={image} alt={name} className="w-9/12" />
                 <span className="absolute bottom-0 right-0 m-2 bg-white rounded p-1 shadow-lg">{price}</span>

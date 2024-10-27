@@ -84,7 +84,7 @@ const Listing = () => {
                         </select>
                     </div>
                 </div>
-
+                
                 <div className="w-full md:w-3/4 bg-white p-4 rounded-lg shadow-lg">
                     <label className="text-gray-700 text-xl font-bold">Add photos</label>
                     <div id="photo" className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 justify-items-center gap-2 lg:w-11/12 p-4">

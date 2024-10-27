@@ -6,8 +6,7 @@ import { useState } from "react";
 import { FaX } from "react-icons/fa6";
 import Popup from "../popup";
 
-const ProfilePicture = ({ pic, togglePopup }) => {
-
+export default function ProfilePicture({ pic, togglePopup }){
     return (
         <button onClick={togglePopup} className="relative bg-gray-200 w-full h-32 flex items-end justify-center overflow-visible rounded-lg">
             <img

@@ -15,7 +15,7 @@ const Store = () => {
             <h1 className="m-2 font-bold">Store</h1>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                 {items.map(item => (
-                    <HomeItem key={item.id} name={item.name} image={item.image} link={item.link} price={'$$$'} />
+                    <HomeItem id={item.id} key={item.id} name={item.name} image={item.image} link={item.link} price={'$$$'} />
                 ))}
             </div>
         </section>
