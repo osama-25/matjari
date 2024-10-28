@@ -27,10 +27,13 @@ const FavTopNav = () => {
                 </Link>
               </div>
               <div className="flex md:hidden items-center space-x-4">
-                <Link href="/chats" className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
+                <Link href="/chats" className="text-gray-700 p-2 rounded-md hover:bg-gray-300 hover:shadow-inner" title='chat'>
                   <FaComments />
                 </Link>
-                <Link href="/profile" className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
+                <button className="text-gray-500 p-2 rounded-md bg-gray-300 shadow-inner" title='favourites'>
+                  <FaHeart />
+                </button>
+                <Link href="/profile" className="text-gray-700 p-2 rounded-md hover:bg-gray-300 hover:shadow-inner" title='profile'>
                   <FaUser />
                 </Link>
               </div>
@@ -41,10 +44,13 @@ const FavTopNav = () => {
               </div>
             </section>
             <section className="hidden md:flex items-center space-x-4 md:w-auto justify-center md:justify-start">
-              <Link href="/chats" className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
+              <Link href="/chats" className="text-gray-700 p-2 rounded-md hover:bg-gray-300 hover:shadow-inner" title='chats'>
                 <FaComments />
               </Link>
-              <Link href="/profile" className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
+              <button className="text-gray-500 p-2 rounded-md bg-gray-300 shadow-inner" title='favourites'>
+                <FaHeart />
+              </button>
+              <Link href="/profile" className="text-gray-700 p-2 rounded-md hover:bg-gray-300 hover:shadow-inner" title='profile'>
                 <FaUser />
               </Link>
               <button onClick={HandleFlagPress} className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
