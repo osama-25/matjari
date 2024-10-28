@@ -26,3 +26,12 @@ Content-Type: application/json
     "fname": "Faisal H ",
     "lname": "Abdo"
 }
+
+###
+
+POST http://localhost:8080/auth/request-password-reset 
+Content-Type: application/json
+
+{
+  "email": "faislabdu277@gmail.com"
+}

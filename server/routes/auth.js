@@ -1,6 +1,8 @@
 import express from 'express';
 import { login, register } from '../controllers/authController.js';
 import  verifyToken  from '../middleware/middleware.js';
+import { requestPasswordReset, resetPassword } from '../controllers/authController.js';
+
 const router = express.Router();
 
 router.get('/home', verifyToken, (req, res) => {
@@ -16,6 +18,11 @@ router.get('/test', verifyToken, (req, res) => {
 
 router.post('/register', register);
 router.post('/login', login);
+
+router.post('/request-password-reset', requestPasswordReset);
+router.post('/reset-password', resetPassword);
+
+// Password reset confirmation route
 // router.delete('/logout', logout);
 
 

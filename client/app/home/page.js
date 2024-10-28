@@ -6,12 +6,19 @@ import AdDisplay from "./AdDisplay";
 import React, { useState } from "react";
 import Popup from "../popup";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const togglePopup = () => {
-    setIsLoggedIn(!isLoggedIn);
+    if(false){
+      setIsLoggedIn(false);
+    }
+    else{
+      router.push('/profile');
+    }
   }
 
   return (

@@ -34,10 +34,10 @@ export default function SubCateg({ params }){
 
     useEffect(() => {
         if(false){ // check the subcategory in the database
-            SubCategories = SubCategories; // assign the right subcategory array
+            //SubCategories = SubCategories; // assign the right subcategory array
         }
 
-        items = items; // assign the items array with the correct items according to the search or category
+        //items = items; // assign the items array with the correct items according to the search or category
     })
 
     useEffect(() => {

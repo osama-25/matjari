@@ -1,11 +1,8 @@
 import jwt from 'jsonwebtoken';
-import {SignJWT} from 'jose';
 export default async function verifyToken(req, res, next) {
 
     const authHeader = req.header('Authorization');
     const token = authHeader && authHeader.split(' ')[1]; // becase the authHeader is 'Bearer token' so we cut the [0] index
-
-
 
     console.log("token: : " + token);
 
@@ -15,14 +12,9 @@ export default async function verifyToken(req, res, next) {
             "algorithms": ["HS256"],
         })
 
-        // console.log(res);
-
-
         req.user = res.user;
         next();
-        // const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        // req.user = decoded.user;
-        // next();
+    
     } catch (error) {
         res.status(403).json({ error: 'Invalid token' });
     }

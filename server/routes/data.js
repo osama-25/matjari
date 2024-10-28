@@ -1,5 +1,4 @@
 import express from 'express';
-import passport from '../config/passport.js';
 import verifyToken from '../middleware/middleware.js';
 import db from '../config/db.js';
 const router = express.Router();

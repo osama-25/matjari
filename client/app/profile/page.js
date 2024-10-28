@@ -1,4 +1,5 @@
 // 'use client'
+import { redirect } from 'next/navigation';
 import Info from './info/page';
 import axios from 'axios';
 
@@ -6,11 +7,7 @@ import axios from 'axios';
 const Profile = () => {
 
     // await new Promise(resolve => setTimeout(3000));
-    return (
-        <>
-            <Info />
-        </>
-    );
+    redirect('/profile/info');
 };
 
 export default Profile;

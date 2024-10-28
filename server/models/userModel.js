@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import db from '../config/db.js';
-const saltRounds = 10;
+// const saltRounds = 10;
 
 
 class User {
@@ -39,7 +39,7 @@ class User {
     }
 
     async hashPassword(password) {
-        return await bcrypt.hash(password, saltRounds);
+        return await bcrypt.hash(password, process.env.SALTROUNDS);
     }
 }
 

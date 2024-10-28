@@ -16,7 +16,7 @@ const NavBar = ({ togglePopup }) => {
   }
 
   const HandleProfilePress = () => {
-    togglePopup(1);
+    togglePopup();
   }
 
   return (
@@ -31,13 +31,13 @@ const NavBar = ({ togglePopup }) => {
                 </Link>
               </div>
               <div className="flex md:hidden items-center space-x-4">
-                <Link href="/chats" className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
+                <Link href="/chats" className="text-gray-700 p-2 rounded-md hover:bg-gray-300 hover:shadow-inner">
                   <FaComments />
                 </Link>
-                <Link href="/favourites" className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
+                <Link href="/favourites" className="text-gray-700 p-2 rounded-md hover:bg-gray-300 hover:shadow-inner">
                   <FaHeart />
                 </Link>
-                <button onClick={HandleProfilePress} className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
+                <button onClick={HandleProfilePress} className="text-gray-700 p-2 rounded-md hover:bg-gray-300 hover:shadow-inner">
                   <FaUser />
                 </button>
                 <button className="text-white p-3 rounded-md bg-yellow-400 hover:bg-yellow-500" title='place item for sale'>
@@ -64,16 +64,16 @@ const NavBar = ({ togglePopup }) => {
               </a>
             </div>
             <section className="hidden md:flex items-center space-x-4 md:w-auto justify-center md:justify-start">
-              <Link href="/chats" className="text-gray-700 p-2 rounded-md hover:bg-gray-200" title='chats'>
+              <Link href="/chats" className="text-gray-700 p-2 rounded-md hover:bg-gray-300 hover:shadow-inner" title='chats'>
                 <FaComments />
               </Link>
-              <Link href="/favourites" className="text-gray-700 p-2 rounded-md hover:bg-gray-200" title='favourites'>
+              <Link href="/favourites" className="text-gray-700 p-2 rounded-md hover:bg-gray-300 hover:shadow-inner" title='favourites'>
                 <FaHeart />
               </Link>
-              <button onClick={HandleProfilePress} className="text-gray-700 p-2 rounded-md hover:bg-gray-200" title='profile'>
+              <button onClick={HandleProfilePress} className="text-gray-700 p-2 rounded-md hover:bg-gray-300 hover:shadow-inner" title='profile'>
                 <FaUser />
               </button>
-              <button className="text-white p-3 rounded-md bg-yellow-400 hover:bg-yellow-500" title='place item for sale'>
+              <button className="text-white p-3 rounded-md bg-yellow-400 hover:bg-yellow-500 hover:shadow-inner" title='place item for sale'>
                 <FaPlus size={20} />
               </button>
               <button onClick={HandleFlagPress} className="text-gray-700 p-2 rounded-md hover:bg-gray-200">

@@ -1,6 +1,11 @@
 import React from "react";
 
 const DeleteAcc = () => {
+    const [popup, setPopup] = useState(false);
+    const Handledelete = () => {
+        setPopup(!popup);
+    }
+
     return (
         <section className="flex flex-col items-center border rounded border-gray-300 mt-10 p-2">
             <p className="mb-6 text-gray-600 text-sm font-bold">
@@ -11,5 +16,6 @@ const DeleteAcc = () => {
             </button>
         </section>
     );
-}
-export default DeleteAcc
+};
+
+export default DeleteAcc;

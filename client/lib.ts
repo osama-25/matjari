@@ -70,7 +70,7 @@ export async function getSession() {
 var number = 0;
 export async function updateSession(request: NextRequest) {
   const session = request.cookies.get("Front-end session")?.value;
-  console.log(session + " N: " + number++);
+  // console.log(session + " N: " + number++);
   
   if (!session) {
     // const loginUrl = new URL('/login', request.url); // Construct absolute URL

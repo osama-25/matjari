@@ -1,3 +1,4 @@
+'use client';
 import React, { useEffect } from "react";
 import FavTopNav from "./TopNav";
 import { Item } from "../Item";
@@ -12,7 +13,7 @@ const items = [
 const Profile = () => {
 
     useEffect(() => {
-        items = items;// retrieve all favourited items by the user from the database
+        //items = items;// retrieve all favourited items by the user from the database
     })
 
     return (
