@@ -16,6 +16,12 @@ const ECategories = [
     { id: 4, name: 'Chargers', image: '/favicon.ico', link: '/books' },
 ];
 
+const items = [
+    { id: 1, name: 'Electronics', image: '/favicon.ico' },
+    { id: 2, name: 'Fashion', image: '/favicon.ico' },
+    { id: 3, name: 'Home', image: '/favicon.ico' },
+    { id: 4, name: 'Books', image: '/favicon.ico' },
+];
 
 export default function SubCateg({ params }){
     const SubCategories = params.slug == 'electronics'? ECategories: FCategories;
@@ -25,6 +31,14 @@ export default function SubCateg({ params }){
     const toggleOverlay = () => {
         setIsPressed(!isPressed);
     }
+
+    useEffect(() => {
+        if(false){ // check the subcategory in the database
+            SubCategories = SubCategories; // assign the right subcategory array
+        }
+
+        items = items; // assign the items array with the correct items according to the search or category
+    })
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -49,7 +63,7 @@ export default function SubCateg({ params }){
             <div ref={searchFilterRef} className={`${isPressed? 'block': 'hidden'} w-2/4 absolute md:relative md:block md:w-1/4 block p-4 border-r border-gray-200 bg-white z-10`}>
                 <SearchFilter Categories={SubCategories} Visible={isPressed} />
             </div>
-            <ItemDisplay Visible={isPressed} onPress={toggleOverlay} />
+            <ItemDisplay Visible={isPressed} onPress={toggleOverlay} Items={items} />
         </>
     );
 }

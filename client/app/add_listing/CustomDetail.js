@@ -21,13 +21,13 @@ const CustomDetails = ({ customDetails, setCustomDetails }) => {
     return (
         <div className="w-full p-4">
             {customDetails.map((detail, index) => (
-                <div key={index} className="relative flex mb-2">
+                <div key={index} className="relative flex flex-col md:flex-row mb-2 gap-1">
                     <input
                         type="text"
                         placeholder="Detail Title"
                         value={detail.title}
                         onChange={(e) => handleDetailChange(index, "title", e.target.value)}
-                        className="shadow-inner border-2 rounded w-1/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400 mr-2"
+                        className="shadow-inner border-2 rounded w-1/2 md:w-1/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400 mr-2"
                     />
                     <input
                         type="text"
@@ -36,7 +36,7 @@ const CustomDetails = ({ customDetails, setCustomDetails }) => {
                         onChange={(e) => handleDetailChange(index, "description", e.target.value)}
                         className="shadow-inner border-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"
                     />
-                    <button onClick={() => removeDetail(index)}>
+                    <button onClick={() => removeDetail(index)} className="absolute md:relative right-0">
                         <IoCloseCircle size={24} color="red" />
                     </button>
                 </div>

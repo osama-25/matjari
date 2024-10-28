@@ -2,7 +2,7 @@ import User from '../models/userModel.js';
 import jwt from 'jsonwebtoken';
 import db from '../config/db.js';
 import passport from '../config/passport.js';
-import {generateToken} from '../middleware/middleware.js';
+import { generateToken } from '../middleware/middleware.js';
 
 // export const verifyToken = (req, res, next) => {
 //     // const token = req.header('Authorization');
@@ -49,7 +49,10 @@ export const register = async (req, res) => {
         const userId = await user.save();
 
         const registeredUser = (await db.query('SELECT * FROM users WHERE id = $1', [userId])).rows[0];
-        const token = generateToken(registeredUser);
+        const token = generateToken({
+            id: registeredUser.id,
+            email: registeredUser.email
+        });
 
 
         // res.cookie('token', token, {
@@ -82,8 +85,12 @@ export const login = (req, res, next) => {
         console.log("authController");
 
         console.log(req.user);
+        
 
-        const token = generateToken(user);
+        const token = generateToken({
+            id: req.user.id,
+            email: req.user.email
+        });
         // res.cookie('token', token, {
         //     httpOnly: true, // Makes the cookie inaccessible to JavaScript
         //     secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
