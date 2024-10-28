@@ -14,6 +14,7 @@ const images = [
     '/Resources/5.jpg',
 ];
 
+
 const details = [
     { title: 'Location', desc: 'Your Location Here' },
     { title: 'Delivery', desc: 'Your Delivery Here' },
@@ -47,7 +48,7 @@ const ProductPage = ({ params }) => {
     const [itemTitle, setItemTitle] = useState('Item Title');
     const [itemPrice, setItemPrice] = useState('$$$');
     const [sellerPhoneNumber, setSellerPhoneNumber] = useState('0789919165');
-    const [edit, setEdit] = useState(false);
+    const [edit, setEdit] = useState(true);
     const { id } = params;
 
     useEffect(() => {
@@ -155,19 +156,9 @@ const ProductPage = ({ params }) => {
                 <h1 className="font-bold text-xl mb-4">Description</h1>
                 {/* Text content */}
                 <p className={`transition-all duration-300 ${showMoreDesc ? '' : 'line-clamp-4'}`}>
-                    wveiftdrsawsedrftgyuhjikojihugyfdsasaedrftgyhujikoij huygftdresawsdftghjn
-                    bvcxtrfyguhijknj bcfftyguiujnj nbvcfyguhiujn cffyguhjn nbcfgyj bcyuhn cvb
-                    ch bcv cvb cfb bcb vc vb vcb j nbvcfyguhiujn cffyguhjn nbcfgyj bcyuhn
-                    cvb ch bcv cvb cfb bcb vc vb vcb j asaedrftgyhujikoij huygftdresawsdftghjn
-                    bvcxtrfyguhijknj bcfftyguiujnj nbvcfyguhiujn cffyguhjn nbcfgyj bcyuhn cvb
-                    ch bcv cvb cfb bcb vc vb vcb j nbvcfyguhiujn cffyguhjn nbcfgyj bcyuhn
-                    cvb ch bcv cvb cfb bcb vc vb vcb j asaedrftgyhujikoij huygftdresawsdftghjn
-                    bvcxtrfyguhijknj bcfftyguiujnj nbvcfyguhiujn cffyguhjn nbcfgyj bcyuhn cvb
-                    ch bcv cvb cfb bcb vc vb vcb j nbvcfyguhiujn cffyguhjn nbcfgyj bcyuhn
-                    cvb ch bcv cvb cfb bcb vc vb vcb j asaedrftgyhujikoij huygftdresawsdftghjn
-                    bvcxtrfyguhijknj bcfftyguiujnj nbvcfyguhiujn cffyguhjn nbcfgyj bcyuhn cvb
-                    ch bcv cvb cfb bcb vc vb vcb j nbvcfyguhiujn cffyguhjn nbcfgyj bcyuhn
-                    cvb ch bcv cvb cfb bcb vc vb vcb j
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+
+
                 </p>
 
                 {/* Toggle button */}
