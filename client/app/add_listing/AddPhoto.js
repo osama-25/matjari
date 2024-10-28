@@ -21,6 +21,7 @@ export default function AddPhoto(props) {
   const handleImageRemove = () => {
     setImage(null);
     props.onDelete(props.id);
+    
   };
 
   return (

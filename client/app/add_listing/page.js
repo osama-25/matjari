@@ -78,8 +78,10 @@ const Listing = () => {
     };
 
     const deletePhotoURL = (id) => {
+        console.log(photosURL.at(id));
         const updatedPhotos = photosURL.filter((url, index) => index !== id);
-        //setURL(updatedPhotos);
+        console.log(updatedPhotos.at(0));
+        setURL(updatedPhotos);
     };
     return (
         <div className="flex justify-center items-center p-10 bg-gray-100 min-h-screen">

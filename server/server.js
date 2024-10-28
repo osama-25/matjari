@@ -6,7 +6,7 @@ import db from './config/db.js';
 import passport from 'passport';
 import authRoutes from "./routes/auth.js";
 import dataRoutes from "./routes/data.js"
-import profileRoutes from "./routes/profile.js"
+//import profileRoutes from "./routes/profile.js"
 import itemRoutes from "./routes/item.js";
 import env from 'dotenv';
 import verifyToken from './middleware/middleware.js';
@@ -55,7 +55,7 @@ app.use(express.json());
 
 app.use('/auth', authRoutes);
 app.use('/data', verifyToken, dataRoutes);
-app.use('/profile', verifyToken, profileRoutes);
+//app.use('/profile', verifyToken, profileRoutes);
 app.use('/api/listing',itemRoutes);
 
 
