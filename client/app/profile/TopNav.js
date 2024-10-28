@@ -27,12 +27,15 @@ const ProfileTopNav = () => {
                 </Link>
               </div>
               <div className="flex md:hidden items-center space-x-4">
-                <Link href="/chats" className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
+                <Link href="/chats" className="text-gray-700 p-2 rounded-md hover:bg-gray-300 hover:shadow-inner" title='chats'>
                   <FaComments />
                 </Link>
-                <Link href="/favourites" className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
+                <Link href="/favourites" className="text-gray-700 p-2 rounded-md hover:bg-gray-300 hover:shadow-inner" title='favourites'>
                   <FaHeart />
                 </Link>
+                <button className="text-gray-500 p-2 rounded-md bg-gray-300 shadow-inner" title='profile'>
+                  <FaUser />
+                </button>
               </div>
               <div className="flex md:hidden items-center">
                 <button onClick={HandleFlagPress} className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
@@ -41,12 +44,15 @@ const ProfileTopNav = () => {
               </div>
             </section>
             <section className="hidden md:flex items-center space-x-4 md:w-auto justify-center md:justify-start">
-              <Link href="/chats" className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
+              <Link href="/chats" className="text-gray-700 p-2 rounded-md hover:bg-gray-300 hover:shadow-inner" title='chats'>
                 <FaComments />
               </Link>
-              <Link href="/favourites" className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
+              <Link href="/favourites" className="text-gray-700 p-2 rounded-md hover:bg-gray-300 hover:shadow-inner" title='favourites'>
                 <FaHeart />
               </Link>
+              <button className="text-gray-500 p-2 rounded-md bg-gray-300 shadow-inner" title='profile'>
+                <FaUser />
+              </button>
               <button onClick={HandleFlagPress} className="text-gray-700 p-2 rounded-md hover:bg-gray-200">
                 <img src={flags[flagIndex]} className="w-12 h-8" />
               </button>

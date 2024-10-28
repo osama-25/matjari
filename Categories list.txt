@@ -1,0 +1,101 @@
+Electronics:
+	Mobile Phones
+	Laptops
+	Tablets
+	Smart Watches
+	Headphones
+	Speakers
+	Cameras
+	Accessories
+	Tvs & Screens
+	Other
+Men's Fashion:
+	Shirts
+	Pants
+	Jackets
+	Underwear
+	Hoodies
+	Shoes
+	Hats
+	Glasses
+	Watches
+	Socks
+	Other
+Women's Fashion:
+	Shirts
+	Pants
+	Jackets
+	Underwear
+	Hoodies
+	Shoes
+	Hats
+	Glasses
+	Watches
+	Jewelry
+	Handbags
+	Accessories
+	Dresses
+	Other
+Kids:
+	Clothing
+	Toys
+	Car Seats
+	Diapers
+	Strollers
+	Other
+Home & Kitchen:
+	Kitchen appliances
+	Cleaning supplies
+	Furniture
+	Home decor
+	Storage & Organization
+	Irons & Steamers
+	Vacuums
+	Outdoor & Garden
+	Other
+Health & Beauty:
+	Skincare
+	Haircare
+	Makeup
+	Supplements
+	Eyecare
+	Oralcare
+	Perfume
+	Tools & Accessories
+	Other
+Video Games:
+	Playstation
+	Xbox
+	Nintendo
+	Wii
+	PC
+	Accessories
+	Other
+Pets:
+	Pets
+	Pet food
+	Pet grooming
+	Training & Taming
+	Accessories
+	Other
+Sports & Fitness:
+	Exercise equipment
+	Sportswear
+	Outdoor gear
+	Weight lifting
+	Bicycles
+	Ball sports
+	Sport accessories
+	Other
+Cars:
+	Cars for sale
+	Car parts
+	Car accessories
+	Plate numbers
+	Rentals
+	Trucks & Trailers
+	Wheels & Rims
+	Other
+Properties:
+	Properties for sale
+	Properties for rent
