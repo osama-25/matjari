@@ -2,10 +2,11 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import session from 'express-session';
-
+import db from './config/db.js';
 import passport from 'passport';
 import authRoutes from "./routes/auth.js";
 import profileRoutes from "./routes/profile.js"
+import itemRoutes from "./routes/item.js";
 import env from 'dotenv';
 import verifyToken from './middleware/middleware.js';
 
@@ -18,9 +19,18 @@ const corsOption = {
     credentials: true,
     optionsSuccessStatus: 200
 };
+// //database
+// const pool = new Pool({
+//     user: process.env.PGUSER,
+//     host: process.env.PGHOST,
+//     database: process.env.PGDATABASE,
+//     password: process.env.PGPASSWORD,
+//     port: process.env.PGPORT,
+// });
 
 app.use(cors(corsOption));
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 // app.use(bodyParser.json());
 app.use(express.json());
 
@@ -44,13 +54,14 @@ app.use(express.json());
 
 app.use('/auth', authRoutes);
 app.use('/profile', verifyToken, profileRoutes);
+app.use('/api/listing',itemRoutes);
+
+
 app.use('/', (req, res) => {
     res.send(
         "<h1>This is the backend server</h1>"
     )
 });
-
-
 app.listen(8080, () => {
     console.log("Server started on port 8080");
 });

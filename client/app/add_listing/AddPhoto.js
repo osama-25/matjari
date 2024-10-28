@@ -12,6 +12,7 @@ export default function AddPhoto(props) {
       reader.onload = () => {
         setImage(reader.result);
         props.onUpload(reader.result);
+        //console.log(reader.result);
       };
       reader.readAsDataURL(file);
     }

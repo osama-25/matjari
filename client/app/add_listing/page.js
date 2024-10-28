@@ -19,6 +19,7 @@ const Listing = () => {
         price: "",
         location: ""
     });
+    
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -28,12 +29,45 @@ const Listing = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    // Modify handleSubmit to include photosURL and customDetails in the submission
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form Data:", formData);
-        console.log("Custom Details:", customDetails);
-        // You can now use `formData` and `customDetails` to send the data to an API or process it as needed
+    
+        const payload = {
+            ...formData,
+            photos: photosURL,
+            customDetails: customDetails.reduce((acc, detail) => ({ ...acc, [detail.title]: detail.description }), {})
+        };
+    
+        console.log(payload);
+        try {
+            const response = await fetch('http://localhost:8080/api/listing', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+            console.log('Payload being sent:', JSON.stringify(payload, null, 2));
+            const contentType = response.headers.get("content-type");
+            if (!response.ok) {
+                const text = await response.text();
+                console.error("Error submitting form:", text);
+                throw new Error("Network response was not ok");
+            }
+    
+            if (contentType && contentType.includes("application/json")) {
+                const data = await response.json();
+                console.log('Form submitted successfully:', data);
+            } else {
+                const text = await response.text();
+                console.error("Received non-JSON response:", text);
+            }
+        } catch (error) {
+            console.error('Error submitting form:', error);
+        }
     };
+
 
     const addPhoto = () => {
         setPhotos([...photos, photos.length + 1]);

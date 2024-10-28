@@ -1,6 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState ,useEffect} from 'react';
 import { FaArrowLeft, FaArrowRight, FaComment, FaHeart, FaPen, FaRegHeart } from 'react-icons/fa';
 
 const images = [
@@ -14,13 +14,33 @@ const ProductPage = ({ params }) => {
     const router = useRouter();
     const [Heart, setHeart] = useState(0);
     const [currentIndex, setCurrentIndex] = useState(0);
+    
+    const [item, setItem] = useState(null);
+    const itemID=params.id;
+
+    useEffect(() => {
+        const fetchItem = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/api/listing/${itemID}`);
+                const data = await response.json();
+                setItem(data);
+            } catch (error) {
+                console.error('Error fetching item:', error);
+            }
+        };
+        fetchItem();
+    }, [itemID]);
+
+    if (!item) return <p>Loading...</p>;
+
+    const { title, price, description, photos = [] } = item;
 
     const prevImage = () => {
-        setCurrentIndex((prevIndex) => (prevIndex === 0 ? images.length - 1 : prevIndex - 1));
+        setCurrentIndex((prevIndex) => (prevIndex === 0 ? photos.length - 1 : prevIndex - 1));
     }
 
     const nextImage = () => {
-        setCurrentIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1));
+        setCurrentIndex((prevIndex) => (prevIndex === photos.length - 1 ? 0 : prevIndex + 1));
     }
 
     const handleButtonClick = () => {
@@ -33,10 +53,10 @@ const ProductPage = ({ params }) => {
                 {/* Product Image */}
                 <div className="w-full md:w-2/3 relative flex-col items-center self-center px-6">
                     <div className="w-full sm:h-80 flex justify-center">
-                        <img src={images[currentIndex]} alt="Product" className="w-fit rounded-lg" />
+                        <img src={photos[currentIndex]} alt="Product" className="w-fit rounded-lg" />
                     </div>
                     <div className="lg:flex justify-between mt-4 hidden">
-                        {images.map((image, index) => (
+                        {photos.map((image, index) => (
                             <div className="w-20 h-20 cursor-pointer" onClick={() => setCurrentIndex(index)}>
                                 <img src={image} className="w-full h-full object-cover rounded-md" />
                             </div>
@@ -55,12 +75,10 @@ const ProductPage = ({ params }) => {
 
                 {/* Product Details */}
                 <div className="w-full md:w-1/3 md:ml-8 flex flex-col">
-                    <h1 className="text-3xl font-bold">Trendy Armchair</h1>
-                    <p className="text-2xl font-semibold mt-4">$580</p>
+                    <h1 className="text-3xl font-bold">{title}</h1>
+                    <p className="text-2xl font-semibold mt-4">{price}JD</p>
                     <p className="mt-4 text-gray-600">
-                        Check out the Corlett velvet sofa, which adds a fresh, modern twist
-                        to the classic style. Rich velvet upholstery, a unique tufted design
-                        of roll arms.
+                        {description}
                     </p>
 
                     {/* Buttons */}
