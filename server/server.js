@@ -9,7 +9,6 @@ import authRoutes from "./routes/auth.js";
 import dataRoutes from "./routes/data.js"
 //import profileRoutes from "./routes/profile.js"
 import itemRoutes from "./routes/item.js";
-import dataRoutes from "./routes/data.js";
 import socketRoutes, { initializeSocket } from "./routes/socket.js";
 import chatRoutes from './routes/chat.js'
 import env from 'dotenv';
