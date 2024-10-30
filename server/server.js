@@ -9,7 +9,6 @@ import authRoutes from "./routes/auth.js";
 import dataRoutes from "./routes/data.js"
 //import profileRoutes from "./routes/profile.js"
 import itemRoutes from "./routes/item.js";
-import dataRoutes from "./routes/data.js";
 import socketRoutes, { initializeSocket } from "./routes/socket.js";
 import chatRoutes from './routes/chat.js'
 import env from 'dotenv';
@@ -44,11 +43,11 @@ app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/data', verifyToken, dataRoutes);
 //app.use('/profile', verifyToken, profileRoutes);
-app.use('/api/listing',itemRoutes);
+app.use('/api/listing', itemRoutes);
 
 
 app.use('/socket', socketRoutes);
-app.use('/chat' , chatRoutes);
+app.use('/chat', chatRoutes);
 app.use('/', (req, res) => {
     res.send("<h1>This is the backend server</h1>");
 });

@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import db from '../config/db.js';
 const router = express.Router();
 
+
 //add Items
 router.post('/', async (req, res) => {
     const { category, subCategory, title, description, condition, delivery, price, location, photos, customDetails } = req.body;
@@ -31,7 +32,7 @@ router.post('/', async (req, res) => {
         );
         await Promise.all(detailPromises);
 
-       
+
         res.status(201).json({ message: 'Listing created successfully' });
     } catch (error) {
         console.error('Error saving listing:', error);
@@ -43,7 +44,7 @@ router.post('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        
+
         const itemResult = await db.query(
             `SELECT * FROM listings WHERE id = $1`,
             [id]
@@ -55,14 +56,14 @@ router.get('/:id', async (req, res) => {
 
         const item = itemResult.rows[0];
 
-        
+
         const photosResult = await db.query(
             `SELECT photo_url FROM listing_photos WHERE listing_id = $1`,
             [id]
         );
         item.photos = photosResult.rows.map(row => row.photo_url);
 
-        
+
         const detailsResult = await db.query(
             `SELECT detail_key, detail_value FROM listing_details WHERE listing_id = $1`,
             [id]

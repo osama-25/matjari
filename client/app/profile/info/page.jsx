@@ -1,7 +1,7 @@
 "use client"; // Ensure this component runs on the client side
 
 import React, { useState, useEffect } from "react";
-import Loading from "../loading";
+import Loading from "../../global/loading";
 import Link from "next/link";
 import { getInfo , modifyData } from "@/app/global/dataInfo";
 

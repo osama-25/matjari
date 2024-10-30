@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useState ,useEffect} from 'react';
 import { FaArrowLeft, FaArrowRight, FaComment, FaHeart, FaPen, FaRegHeart } from 'react-icons/fa';
-
+import Loading from '@/app/global/loading';
 const images = [
     '/Resources/8.jpg',
     '/Resources/5.jpg',
@@ -75,7 +75,8 @@ const ProductPage = ({ params }) => {
         fetchItem();
     }, [itemID]);
 
-    if (!item) return <p>Loading...</p>;
+    // if (!item) return <p>Loading...</p>;
+    if (!item) return <Loading>Loading...</Loading>;
 
     const { title, price, description, photos = [] } = item;
 
