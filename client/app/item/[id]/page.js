@@ -1,6 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { FaArrowLeft, FaArrowRight, FaComment, FaHeart, FaPen, FaRegHeart } from 'react-icons/fa';
 import Loading from '@/app/global/loading';
 
@@ -50,11 +50,12 @@ const ProductPage = ({ params }) => {
     // })
 
     const [item, setItem] = useState(null);
-    const itemID=params.id;
+    const itemID=use(params).id;
 
     useEffect(() => {
         const fetchItem = async () => {
             try {
+                console.log('item id'+itemID);
                 const response = await fetch(`http://localhost:8080/api/listing/${itemID}`);
                 
                 if (!response.ok) throw new Error('Network response was not ok');
