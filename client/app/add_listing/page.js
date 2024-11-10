@@ -1,14 +1,16 @@
 // Listing.js
 'use client';
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AddPhoto from "./AddPhoto";
 import CustomDetails from "./CustomDetail";
+import { getInfo } from "../global/dataInfo";
 
 const Listing = () => {
     const [photos, setPhotos] = useState([1,2,3]); // Initially Three Images
     const [customDetails, setCustomDetails] = useState([]);
     const [photosURL,setURL]=useState([]);
+    const [userId, setUserID] = useState("");
     const [formData, setFormData] = useState({
         category: "",
         subCategory: "",
@@ -17,15 +19,26 @@ const Listing = () => {
         condition: "",
         delivery: "",
         price: "",
-        location: ""
+        location: "",
+        userID:""
     });
     
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            const info = await getInfo();
+            if (info) {
+                setUserID(info.id); 
+                setFormData(prev => ({ ...prev, userID: userId })); 
+            }
+        };
+        fetchUserInfo();
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
-            [name]: value
+            [name]: value,
         });
     };
 
@@ -78,9 +91,9 @@ const Listing = () => {
     };
 
     const deletePhotoURL = (id) => {
-        console.log(photosURL.at(id));
+        //console.log(photosURL.at(id));
         const updatedPhotos = photosURL.filter((url, index) => index !== id);
-        console.log(updatedPhotos.at(0));
+       // console.log(updatedPhotos.at(0));
         setURL(updatedPhotos);
     };
     return (

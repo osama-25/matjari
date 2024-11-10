@@ -49,7 +49,13 @@ export async function login(
     
     // cookies().set()
     // cookies().set("Front-end session", session, { expires, httpOnly: true });
-    cookies().set("Front-end session", token, { expires, httpOnly: true });
+    (await
+    // console.log("session: " + session);
+    // console.log(typeof(session));
+    // Save the session in a cookie
+    // cookies().set()
+    // cookies().set("Front-end session", session, { expires, httpOnly: true });
+    cookies()).set("Front-end session", token, { expires, httpOnly: true });
 
     return session;
 
@@ -59,11 +65,13 @@ export async function login(
 export async function logout() {
   // Destroy the session
 
-  cookies().set("Front-end session", "", { expires: new Date(0) });
+  (await
+    // Destroy the session
+    cookies()).set("Front-end session", "", { expires: new Date(0) });
 }
 
 export async function getSession() {
-  const session = cookies().get("Front-end session")?.value;
+  const session = (await cookies()).get("Front-end session")?.value;
   if (!session) return null;
   return await decrypt(session);
 }

@@ -6,16 +6,16 @@ const router = express.Router();
 
 //add Items
 router.post('/', async (req, res) => {
-    const { category, subCategory, title, description, condition, delivery, price, location, photos, customDetails } = req.body;
+    const { category, subCategory, title, description, condition, delivery, price, location, photos, customDetails, userID } = req.body;
 
     try {
         //const db = await pool.connect();
 
         // Save the listing to the database
         const listingResult = await db.query(
-            `INSERT INTO listings (category, sub_category, title, description, condition, delivery, price, location) 
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
-            [category, subCategory, title, description, condition, delivery, price, location]
+            `INSERT INTO listings (category, sub_category, title, description, condition, delivery, price, location, user_id) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+            [category, subCategory, title, description, condition, delivery, price, location, userID]
         );
 
         const listingId = listingResult.rows[0].id;
