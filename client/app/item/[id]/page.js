@@ -2,7 +2,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, use } from 'react';
 import { FaArrowLeft, FaArrowRight, FaComment, FaHeart, FaPen, FaRegHeart } from 'react-icons/fa';
-import Loading from '@/app/global/loading';
+import Loading from '@/app/global_components/loading';
 
 
 const details = [
@@ -50,14 +50,14 @@ const ProductPage = ({ params }) => {
     // })
 
     const [item, setItem] = useState(null);
-    const itemID=use(params).id;
+    const itemID = use(params).id;
 
     useEffect(() => {
         const fetchItem = async () => {
             try {
-                console.log('item id'+itemID);
+                console.log('item id' + itemID);
                 const response = await fetch(`http://localhost:8080/api/listing/${itemID}`);
-                
+
                 if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 setItem(data);
@@ -71,17 +71,17 @@ const ProductPage = ({ params }) => {
     // if (!item) return <p>Loading...</p>;
     if (!item) return <Loading>Loading...</Loading>;
 
-    const { 
-        title, 
-        price, 
-        description, 
-        category, 
-        sub_category, 
-        condition, 
-        delivery, 
-        location, 
-        photos = [], 
-        customDetails = {} 
+    const {
+        title,
+        price,
+        description,
+        category,
+        sub_category,
+        condition,
+        delivery,
+        location,
+        photos = [],
+        customDetails = {}
     } = item;
 
     const prevImage = () => {
@@ -165,7 +165,7 @@ const ProductPage = ({ params }) => {
                 <h1 className="font-bold text-xl mb-4">Details</h1>
                 <ul className="grid md:grid-cols-2 gap-y-2 list-disc list-inside">
                     <li><strong>Location:</strong> {location}</li>
-                    <li><strong>Delivery:</strong> {delivery?"Yes":"No"}</li>
+                    <li><strong>Delivery:</strong> {delivery ? "Yes" : "No"}</li>
                     <li><strong>Condition:</strong> {condition}</li>
                     {Object.entries(customDetails).map(([key, value], index) => (
                         <li key={index}><strong>{key}:</strong> {value}</li>

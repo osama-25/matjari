@@ -1,10 +1,5 @@
 "use client";
 
-import { emit } from "process";
-
-const { useState } = require("react");
-
-
 
 const getInfo = async () => {
     try {
@@ -37,12 +32,7 @@ const getInfo = async () => {
         const info = data.user;
 
         return info;
-        // setInfo({
-        //     firstName: user.fname,
-        //     lastName: user.lname,
-        //     email: user.email,
-        //     username: user.user_name
-        // });
+
     } catch (error) {
         console.error("Error fetching token info:", error);
         // setError(error.message); // Set error state

@@ -49,6 +49,9 @@ export async function login(
     
     // cookies().set()
     // cookies().set("Front-end session", session, { expires, httpOnly: true });
+
+
+    
     (await
     // console.log("session: " + session);
     // console.log(typeof(session));
@@ -95,8 +98,8 @@ export async function updateSession(request: NextRequest) {
   const currentTime =  Date.now() / 1000;
 
   // Check if the session token has expired
-  console.log("currentTime: " + currentTime );
-  console.log("parsed.exp: " + parsed.exp );
+  // console.log("currentTime: " + currentTime );
+  // console.log("parsed.exp: " + parsed.exp );
   
   if (parsed.exp && parsed.exp <= currentTime) {
     console.log("Session expired. Forcing login.");
@@ -113,15 +116,5 @@ export async function updateSession(request: NextRequest) {
     return res;
 
   }
-  
-  // parsed.expires = new Date(Date.now() + 1800 * 1000);
-  // const res = NextResponse.next();
-  // res.cookies.set({
-  //   name: `Front-end session`,
-  //   value: await encrypt(parsed),
-  //   httpOnly: true,
-  //   expires: parsed.expires,
-  // });
-  // return res;
   return NextResponse.next();
 }

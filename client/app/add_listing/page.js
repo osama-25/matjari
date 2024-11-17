@@ -4,12 +4,12 @@
 import React, { useState, useEffect } from "react";
 import AddPhoto from "./AddPhoto";
 import CustomDetails from "./CustomDetail";
-import { getInfo } from "../global/dataInfo";
+import { getInfo } from "../global_components/dataInfo";
 
 const Listing = () => {
-    const [photos, setPhotos] = useState([1,2,3]); // Initially Three Images
+    const [photos, setPhotos] = useState([1, 2, 3]); // Initially Three Images
     const [customDetails, setCustomDetails] = useState([]);
-    const [photosURL,setURL]=useState([]);
+    const [photosURL, setURL] = useState([]);
     const [userId, setUserID] = useState("");
     const [formData, setFormData] = useState({
         category: "",
@@ -20,15 +20,15 @@ const Listing = () => {
         delivery: "",
         price: "",
         location: "",
-        userID:""
+        userID: ""
     });
-    
+
     useEffect(() => {
         const fetchUserInfo = async () => {
             const info = await getInfo();
             if (info) {
-                setUserID(info.id); 
-                setFormData(prev => ({ ...prev, userID: userId })); 
+                setUserID(info.id);
+                setFormData(prev => ({ ...prev, userID: userId }));
             }
         };
         fetchUserInfo();
@@ -45,13 +45,13 @@ const Listing = () => {
     // Modify handleSubmit to include photosURL and customDetails in the submission
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         const payload = {
             ...formData,
             photos: photosURL,
             customDetails: customDetails.reduce((acc, detail) => ({ ...acc, [detail.title]: detail.description }), {})
         };
-    
+
         console.log(payload);
         try {
             const response = await fetch('http://localhost:8080/api/listing', {
@@ -68,7 +68,7 @@ const Listing = () => {
                 console.error("Error submitting form:", text);
                 throw new Error("Network response was not ok");
             }
-    
+
             if (contentType && contentType.includes("application/json")) {
                 const data = await response.json();
                 console.log('Form submitted successfully:', data);
@@ -83,17 +83,17 @@ const Listing = () => {
 
 
     const addPhoto = () => {
-        if(photos.length < 12) setPhotos([...photos, photos.length + 1]);
+        if (photos.length < 12) setPhotos([...photos, photos.length + 1]);
     };
 
-    const addPhotoURL=(url)=>{
-        setURL([...photosURL,url]);
+    const addPhotoURL = (url) => {
+        setURL([...photosURL, url]);
     };
 
     const deletePhotoURL = (id) => {
         //console.log(photosURL.at(id));
         const updatedPhotos = photosURL.filter((url, index) => index !== id);
-       // console.log(updatedPhotos.at(0));
+        // console.log(updatedPhotos.at(0));
         setURL(updatedPhotos);
     };
     return (
@@ -132,12 +132,12 @@ const Listing = () => {
                         </select>
                     </div>
                 </div>
-                
+
                 <div className="w-full md:w-3/4 bg-white p-4 rounded-lg shadow-lg">
                     <label className="text-gray-700 text-xl font-bold">Add photos</label>
                     <div id="photo" className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 justify-items-center gap-2 lg:w-11/12 p-4">
                         {photos.map((photo, index) => (
-                            <AddPhoto key={index} id={index} onDelete={deletePhotoURL} onUpload={addPhotoURL}/>
+                            <AddPhoto key={index} id={index} onDelete={deletePhotoURL} onUpload={addPhotoURL} />
                         ))}
                         {photos.length < 12 && <button
                             onClick={addPhoto}

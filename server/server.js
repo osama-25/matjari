@@ -1,19 +1,16 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import session from 'express-session';
-import db from './config/db.js';
-import passport from 'passport';
 import http from 'http';
 import authRoutes from "./routes/auth.js";
 import dataRoutes from "./routes/data.js"
-//import profileRoutes from "./routes/profile.js"
 import itemRoutes from "./routes/item.js";
 import socketRoutes, { initializeSocket } from "./routes/socket.js";
 import chatRoutes from './routes/chat.js'
 import env from 'dotenv';
 import verifyToken from './middleware/middleware.js';
-
+import azure from './routes/azure.js';
+import images from './routes/images.js';
 env.config();
 
 const app = express();
@@ -48,6 +45,11 @@ app.use('/api/listing', itemRoutes);
 
 app.use('/socket', socketRoutes);
 app.use('/chat', chatRoutes);
+app.use('/azure', azure);
+app.use('/img', images)
+
+
+
 app.use('/', (req, res) => {
     res.send("<h1>This is the backend server</h1>");
 });
