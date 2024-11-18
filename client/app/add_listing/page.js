@@ -10,7 +10,6 @@ const Listing = () => {
     const [photos, setPhotos] = useState([1,2,3]); // Initially Three Images
     const [customDetails, setCustomDetails] = useState([]);
     const [photosURL,setURL]=useState([]);
-    const [userId, setUserID] = useState("");
     const [formData, setFormData] = useState({
         category: "",
         subCategory: "",
@@ -27,8 +26,7 @@ const Listing = () => {
         const fetchUserInfo = async () => {
             const info = await getInfo();
             if (info) {
-                setUserID(info.id); 
-                setFormData(prev => ({ ...prev, userID: userId })); 
+                setFormData(prev => ({ ...prev, userID: info.id })); 
             }
         };
         fetchUserInfo();

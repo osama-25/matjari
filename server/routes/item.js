@@ -74,6 +74,13 @@ router.get('/:id', async (req, res) => {
             return acc;
         }, {});
 
+        const userInfo= await db.query(
+            'Select user_name from users where id= $1',
+            [item.user_id]
+        );
+        item.username = userInfo.rows[0]?.user_name || null;
+
+
         res.status(200).json(item);
     } catch (error) {
         console.error('Error fetching item:', error);
