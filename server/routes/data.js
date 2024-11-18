@@ -7,7 +7,6 @@ router.get("/get", verifyToken, async (req, res) => {
 
 
     const id = req.user.id;
-
     const dbRes = await db.query("select * from users where id = $1", [id]);
     // console.log(dbRes.rows[0]);
     const data = dbRes.rows[0];
@@ -43,6 +42,5 @@ router.put("/modify", verifyToken, async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
-
 
 export default router;

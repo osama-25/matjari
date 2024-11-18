@@ -6,7 +6,8 @@ import { useState } from "react";
 import { FaX } from "react-icons/fa6";
 import Popup from "../popup";
 
-const ProfilePicture=({ pic, togglePopup })=>{
+
+function ProfilePicture({ pic, togglePopup }) {
     return (
         <button onClick={togglePopup} className="relative bg-gray-200 w-full h-32 flex items-end justify-center overflow-visible rounded-lg">
             <img
@@ -53,7 +54,7 @@ export default function ProfileLayout({ children }) {
                     {children}
                 </div>
                 {isOpen && (
-                    <Popup title={'Change profile photo'} togglePopup={togglePopup}> 
+                    <Popup title={'Change profile photo'} togglePopup={togglePopup}>
                         <input type="file" accept="image/png, image/jpeg, image/jpg" onChange={changeProfilePic} className="mt-4" />
                     </Popup>
                 )}
