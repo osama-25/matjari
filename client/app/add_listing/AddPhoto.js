@@ -2,16 +2,38 @@
 import { useState } from 'react';
 import { IoCameraOutline, IoCloseCircle } from 'react-icons/io5';
 
-export default function AddPhoto(props) {
+export default function AddPhoto({ onUpload, onDelete, id }) {
   const [image, setImage] = useState(null);
+  // const [filename, setFilename] = useState("");
+  // const [fileType, setFileType] = useState("");
+  // const [imageBase64, setImageBase64] = useState("");
+
+
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => {
-        setImage(reader.result);
-        props.onUpload(reader.result);
+      reader.onload = async () => {
+
+
+        let imageBase64 = reader.result;//.split(",")[1];
+        const filename = file.name;
+        const fileType = file.type;
+
+        // console.log(filename);
+        // console.log(fileType);
+        // console.log(imageBase64);
+
+
+
+        setImage(imageBase64);
+        imageBase64 = imageBase64.split(",")[1];
+        onUpload(filename,fileType,imageBase64);
+        //onUpload(imgURL);
+
+
+
         //console.log(reader.result);
       };
       reader.readAsDataURL(file);
@@ -20,12 +42,13 @@ export default function AddPhoto(props) {
 
   const handleImageRemove = () => {
     setImage(null);
-    props.onDelete(props.id);
-    
+    onDelete(id);
+
   };
 
   return (
     <div className="flex items-center justify-center w-24 h-24 md:w-26 md:h-26 lg:w-32 lg:h-32 border-2 border-gray-200 rounded-md relative group">
+
       {image ? (
         <div className="w-full h-full relative">
           <img

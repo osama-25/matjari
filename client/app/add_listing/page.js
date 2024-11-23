@@ -7,9 +7,10 @@ import CustomDetails from "./CustomDetail";
 import { getInfo } from "../global_components/dataInfo";
 
 const Listing = () => {
-    const [photos, setPhotos] = useState([1, 2, 3]); // Initially Three Images
+    const [photos, setPhotos] = useState([1, 2, 3]);
     const [customDetails, setCustomDetails] = useState([]);
-    const [photosURL,setURL]=useState([]);
+    const [photoDataArray, setPhotoDataArray] = useState([]); // Track photo data as state
+    const [photosURL, setPhotosURL] = useState([]); // Track URLs as state
     const [formData, setFormData] = useState({
         category: "",
         subCategory: "",
@@ -21,12 +22,12 @@ const Listing = () => {
         location: "",
         userID: ""
     });
-
+    
     useEffect(() => {
         const fetchUserInfo = async () => {
             const info = await getInfo();
             if (info) {
-                setFormData(prev => ({ ...prev, userID: info.id })); 
+                setFormData(prev => ({ ...prev, userID: info.id }));
             }
         };
         fetchUserInfo();
@@ -40,18 +41,64 @@ const Listing = () => {
         });
     };
 
-    // Modify handleSubmit to include photosURL and customDetails in the submission
+    const uploadPhotos = async () => {
+        const uploadedUrls = [];
+        
+        for (const photo of photoDataArray) {
+            try {
+                const response = await fetch("http://localhost:8080/azure/upload", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        filename: photo.filename,
+                        fileType: photo.fileType,
+                        imageBase64: photo.imageBase64,
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error uploading photo: ${photo.filename}`);
+                }
+
+                const result = await response.json();
+                if (result.imgURL) {
+                    uploadedUrls.push(result.imgURL);
+                } else {
+                    throw new Error('No image URL received from server');
+                }
+            } catch (error) {
+                console.error("Error uploading photo:", error);
+                throw error; // Propagate error to handle it in the main submission
+            }
+        }
+        
+        return uploadedUrls;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const payload = {
-            ...formData,
-            photos: photosURL,
-            customDetails: customDetails.reduce((acc, detail) => ({ ...acc, [detail.title]: detail.description }), {})
-        };
-
-        console.log(payload);
         try {
+            // First upload all photos and get their URLs
+            const uploadedPhotoUrls = await uploadPhotos();
+            
+            if (uploadedPhotoUrls.length === 0) {
+                throw new Error('No photos were successfully uploaded');
+            }
+
+            // Prepare the payload with the uploaded photo URLs
+            const payload = {
+                ...formData,
+                photos: uploadedPhotoUrls,
+                customDetails: customDetails.reduce((acc, detail) => ({ 
+                    ...acc, 
+                    [detail.title]: detail.description 
+                }), {})
+            };
+
+            // Send the listing data to the backend
             const response = await fetch('http://localhost:8080/api/listing', {
                 method: 'POST',
                 headers: {
@@ -59,41 +106,51 @@ const Listing = () => {
                 },
                 body: JSON.stringify(payload)
             });
-            console.log('Payload being sent:', JSON.stringify(payload, null, 2));
-            const contentType = response.headers.get("content-type");
+
             if (!response.ok) {
-                const text = await response.text();
-                console.error("Error submitting form:", text);
-                throw new Error("Network response was not ok");
+                const errorText = await response.text();
+                throw new Error(`Failed to create listing: ${errorText}`);
             }
 
-            if (contentType && contentType.includes("application/json")) {
-                const data = await response.json();
-                console.log('Form submitted successfully:', data);
-            } else {
-                const text = await response.text();
-                console.error("Received non-JSON response:", text);
-            }
+            const data = await response.json();
+            console.log('Listing created successfully:', data);
+            alert('Listing created successfully!');
+
+            // Clear the form and photo data
+            setPhotoDataArray([]);
+            setPhotosURL([]);
+            setPhotos([1, 2, 3]); // Reset to initial state
+            setCustomDetails([]);
+            setFormData({
+                category: "",
+                subCategory: "",
+                title: "",
+                description: "",
+                condition: "",
+                delivery: "",
+                price: "",
+                location: "",
+                userID: formData.userID // Preserve the user ID
+            });
+
         } catch (error) {
-            console.error('Error submitting form:', error);
+            console.error('Error during submission:', error);
+            alert(`Failed to create listing: ${error.message}`);
         }
     };
-
 
     const addPhoto = () => {
         if (photos.length < 12) setPhotos([...photos, photos.length + 1]);
     };
 
-    const addPhotoURL = (url) => {
-        setURL([...photosURL, url]);
+    const addPhotoURL = (filename, fileType, imageBase64) => {
+        setPhotoDataArray(prev => [...prev, { filename, fileType, imageBase64 }]);
     };
 
     const deletePhotoURL = (id) => {
-        //console.log(photosURL.at(id));
-        const updatedPhotos = photosURL.filter((url, index) => index !== id);
-        // console.log(updatedPhotos.at(0));
-        setURL(updatedPhotos);
+        setPhotoDataArray(prev => prev.filter((_, index) => index !== id));
     };
+
     return (
         <div className="flex justify-center items-center p-10 bg-gray-100 min-h-screen">
             <form className="w-full flex flex-col md:items-start items-center gap-4 md:ml-16" onSubmit={handleSubmit}>
@@ -138,6 +195,7 @@ const Listing = () => {
                             <AddPhoto key={index} id={index} onDelete={deletePhotoURL} onUpload={addPhotoURL} />
                         ))}
                         {photos.length < 12 && <button
+                            type="button"
                             onClick={addPhoto}
                             className=" bg-gray-200 flex items-center justify-center rounded-lg text-3xl shadow hover:bg-gray-300"
                             style={{ width: '124px', height: '128px' }}
