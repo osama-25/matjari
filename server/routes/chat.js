@@ -21,22 +21,71 @@ const upload = multer({ storage: storage })
 
 // POST route to save a message to the database
 // POST route to save a message to the database
-router.post('/messages', upload.array('files'), async (req, res) => {
-    const { content, room, sentByUser } = req.body;
+// router.post('/messages', async (req, res) => {
+//     const { content, room, sentByUser, blobURL, files } = req.body;
+//     const { type, url } = files;
+//     console.log("HOHOHO");
 
-    // Gather file details if any files were uploaded
-    const files = req.files ? req.files.map(file => ({
-        name: file.originalname,
-        url: `/uploads/${file.filename}`, // File URL relative to the server
-        type: file.mimetype
-    })) : [];
+
+//     // console.log(files);
+//     console.log(files);;
+
+//     console.log(type);
+//     console.log(url);
+
+
+
+//     // Gather file details if any files were uploaded
+//     // const files = req.files ? req.files.map(file => ({
+//     //     name: file.originalname,
+//     //     url: `/uploads/${file.filename}`, // File URL relative to the server
+//     //     type: file.mimetype
+//     // })) : [];
+
+
+
+//     try {
+//         // Insert the message and file details into the database
+//         await db.query(
+//             'INSERT INTO messages (content, room, sent_by_user, blob_data , blob_type) VALUES ($1, $2, $3, $4, $5)',
+//             [content, room, sentByUser, url, type] // Store files as a JSON string
+//         );
+//         res.status(201).json({ message: 'Message saved successfully' });
+//     } catch (error) {
+//         console.error('Error saving message:', error);
+//         res.status(500).json({ error: 'Failed to save message' });
+//     }
+// });
+router.post('/messages', async (req, res) => {
+    const { content, room, sentByUser, files } = req.body;
 
     try {
-        // Insert the message and file details into the database
-        await db.query(
-            'INSERT INTO messages (content, room, sent_by_user, files) VALUES ($1, $2, $3, $4)',
-            [content, room, sentByUser, JSON.stringify(files)] // Store files as a JSON string
-        );
+        if (Array.isArray(files) && files.length > 0) {
+            // Multiple files
+            for (const file of files) {
+                const { url, type } = file;
+
+                await db.query(
+                    'INSERT INTO messages (content, room, sent_by_user, blob_data, blob_type) VALUES ($1, $2, $3, $4, $5)',
+                    [content, room, sentByUser, url, type]
+                );
+            }
+        } else if (files && typeof files === 'object') {
+            // Single file
+            const { url, type } = files;
+
+            await db.query(
+                'INSERT INTO messages (content, room, sent_by_user, blob_data, blob_type) VALUES ($1, $2, $3, $4, $5)',
+                [content, room, sentByUser, url, type]
+            );
+        } else {
+            // No files
+            await db.query(
+                'INSERT INTO messages (content, room, sent_by_user, blob_data, blob_type) VALUES ($1, $2, $3, $4, $5)',
+                [content, room, sentByUser, null, null]
+            );
+        }
+
         res.status(201).json({ message: 'Message saved successfully' });
     } catch (error) {
         console.error('Error saving message:', error);
@@ -79,9 +128,9 @@ router.get('/messages/:room', async (req, res) => {
     }
 });
 
-router.post('/file', upload.single('file'), (req, res) => {
-    return res.send(req.file);
-})
+// router.post('/file', upload.single('file'), (req, res) => {
+//     return res.send(req.file);
+// })
 
 export default router;
 

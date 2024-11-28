@@ -102,7 +102,7 @@ export async function updateSession(request: NextRequest) {
   // console.log("parsed.exp: " + parsed.exp );
   
   if (parsed.exp && parsed.exp <= currentTime) {
-    console.log("Session expired. Forcing login.");
+    // console.log("Session expired. Forcing login.");
 
     // const res = NextResponse.redirect('/');
     const res = NextResponse.redirect(new URL('/login', request.url).toString());

@@ -39,7 +39,8 @@ class User {
     }
 
     async hashPassword(password) {
-        return await bcrypt.hash(password, process.env.SALTROUNDS);
+        const saltRounds = parseInt(process.env.SALTROUNDS);
+        return await bcrypt.hash(password, saltRounds);
     }
 }
 

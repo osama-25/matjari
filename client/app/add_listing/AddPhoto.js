@@ -9,6 +9,11 @@ export default function AddPhoto({ onUpload, onDelete, id }) {
   // const [imageBase64, setImageBase64] = useState("");
 
 
+  // const [filename, setFilename] = useState("");
+  // const [fileType, setFileType] = useState("");
+  // const [imageBase64, setImageBase64] = useState("");
+
+
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -48,6 +53,7 @@ export default function AddPhoto({ onUpload, onDelete, id }) {
 
   return (
     <div className="flex items-center justify-center w-24 h-24 md:w-26 md:h-26 lg:w-32 lg:h-32 border-2 border-gray-200 rounded-md relative group">
+
 
       {image ? (
         <div className="w-full h-full relative">

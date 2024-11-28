@@ -29,18 +29,44 @@ const ImageUploader = ({ onUploadSuccess }) => {
             return;
         }
 
+        // try {
+        //     const response = await axios.post("http://localhost:8080/azure/upload", {
+        //         filename,
+        //         fileType,
+        //         imageBase64,
+        //     });
+        //     alert("Image uploaded successfully: " + response.data.imgURL);
+        //     if (onUploadSuccess) onUploadSuccess(response.data);
+        // } catch (error) {
+        //     console.error("Error uploading image:", error);
+        //     alert("Error uploading image");
+        // }
         try {
-            const response = await axios.post("http://localhost:8080/azure/upload", {
-                filename,
-                fileType,
-                imageBase64,
+            const response = await fetch("http://localhost:8080/azure/upload", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    filename,
+                    fileType,
+                    imageBase64,
+                }),
             });
-            alert("Image uploaded successfully: " + response.data.imgURL);
-            if (onUploadSuccess) onUploadSuccess(response.data);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            alert("Image uploaded successfully: " + data.imgURL);
+
+            if (onUploadSuccess) onUploadSuccess(data);
         } catch (error) {
             console.error("Error uploading image:", error);
             alert("Error uploading image");
         }
+
     };
 
     return (
