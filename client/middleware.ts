@@ -57,10 +57,30 @@
 //   console.log("Session already updated, proceeding...");
 //   return NextResponse.next();
 // }
-
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import createMiddleware from "next-intl/middleware";
 import { updateSession } from "./lib";
 
+// Create the next-intl middleware
+const intlMiddleware = createMiddleware({
+  locales: ["en", "ar"], // Define supported locales
+  defaultLocale: "en",   // Define the default locale
+});
+
+export const config = {
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|Resources).*)"], // Ensure images and static assets are excluded
+};
+
 export async function middleware(request: NextRequest) {
+  // Run the next-intl middleware first
+  const intlResponse = intlMiddleware(request);
+
+  // If the intl middleware modifies the response, return it directly
+  if (intlResponse) {
+    return intlResponse;
+  }
+
+  // Otherwise, execute your custom logic
   return await updateSession(request);
 }
+
