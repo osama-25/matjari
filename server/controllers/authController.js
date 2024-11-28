@@ -6,7 +6,7 @@ import { generateToken } from '../middleware/middleware.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { sendResetEmail } from './emailService.js';
-import nodemailer from 'nodemailer';
+// import nodemailer from 'nodemailer';
 
 // Password Reset Request Handler
 export const requestPasswordReset = async (req, res) => {
@@ -52,7 +52,7 @@ export const resetPassword = async (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         console.log(decoded);
-        
+
         // Hash the new password
         // console.log(typeof (process.parseInt(env.SALTROUNDS)));
         // console.log(typeof (process.env.SALTROUNDS));
@@ -66,7 +66,7 @@ export const resetPassword = async (req, res) => {
 
         res.status(200).json({ success: true, message: "Password has been reset successfully" });
         console.log("fine");
-        
+
     } catch (error) {
         console.error("Error resetting password:", error);
         res.status(400).json({ success: false, message: "Invalid or expired token" });
@@ -77,6 +77,8 @@ export const resetPassword = async (req, res) => {
 export const register = async (req, res) => {
     try {
 
+
+        console.log("1");
 
         const { firstName, lastName, email, password, confirmPassword, userName } = req.body.info;
 
@@ -89,6 +91,7 @@ export const register = async (req, res) => {
             return res.status(400).json({ success: false, message: "Passwords don't match!" });
         }
 
+        console.log("2");
         const user = new User(firstName, lastName, email, password, userName);
         const userId = await user.save();
 

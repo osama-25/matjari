@@ -38,18 +38,23 @@ async function uploadImageStream(blobName, dataStream) {
     return blobClient.url;
 }
 
-async function storeMetaData(filename, fileType, imgURL) {
-    await db.query(
-        'INSERT INTO images (filename, file_type, img_url, upload_date) VALUES ($1, $2, $3, NOW())',
-        [filename, fileType, imgURL]
-    );
+async function storeMetaData(filename, fileType, imgURL, databaseName) {
+    if (databaseName == 'chatting') {
+        await db.query(
+            'INSERT INTO images (filename, file_type, img_url, upload_date) VALUES ($1, $2, $3, NOW())',
+            [filename, fileType, imgURL]
+        );
+    }
+    else {
+        // other : profile pictures, items .... 
+    }
 }
 
 router.post('/upload', async (req, res) => {
     console.log("Hit");
 
     try {
-        const { filename, fileType, imageBase64 } = req.body;
+        const { filename, fileType, imageBase64, storeInDataBase } = req.body;
 
         console.log(filename);
         console.log(fileType);
@@ -58,18 +63,23 @@ router.post('/upload', async (req, res) => {
         if (!filename || !fileType || !imageBase64) {
             return res.status(400).send({ error: "Missing 'filename', 'fileType', or 'imageBase64' in JSON body" });
         }
+        console.log("pass");
+
 
         // Decode base64 image data
         const imageBuffer = Buffer.from(imageBase64, 'base64');
         const imageStream = bufferToStream(imageBuffer);
 
         // Upload the image to Azure Blob Storage
-        console.log('erro');
+        console.log('error');
 
         const imgURL = await uploadImageStream(filename, imageStream);
         console.log('erro1');
         // Store metadata in the database
-        //await storeMetaData(filename, fileType, imgURL);
+        if (storeInDataBase)
+            await storeMetaData(filename, fileType, imgURL, storeInDataBase);
+
+        console.log('DONE');
 
         res.status(201).send({ message: "Image Uploaded", imgURL });
     } catch (error) {
