@@ -69,7 +69,7 @@ router.post('/upload', async (req, res) => {
         const imgURL = await uploadImageStream(filename, imageStream);
         console.log('erro1');
         // Store metadata in the database
-        await storeMetaData(filename, fileType, imgURL);
+        //await storeMetaData(filename, fileType, imgURL);
 
         res.status(201).send({ message: "Image Uploaded", imgURL });
     } catch (error) {
