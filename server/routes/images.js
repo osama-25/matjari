@@ -38,7 +38,7 @@ router.get('/images', async (req, res) => {
         const query = "Select * from images;"; //"Select count(id) from images";
         const result = await db.query(query);
         const data = result.rows
-        console.log(data);
+        //console.log(data);
 
         res.status(200).send(data);
     } catch (error) {

@@ -13,7 +13,7 @@ const ImageDisplay = () => {
                 const response = await axios.get("http://localhost:8080/img/images");
                 const data = response.data;
                 setImageData(data);
-                
+                console.log(data);
             } catch (err) {
                 setError("Error loading image");
                 console.error(err);

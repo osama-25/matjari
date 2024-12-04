@@ -47,6 +47,11 @@ async function storeMetaData(filename, fileType, imgURL, databaseName) {
     }
     else {
         // other : profile pictures, items .... 
+        await db.query(
+            'INSERT INTO images (filename, file_type, img_url, upload_date) VALUES ($1, $2, $3, NOW())',
+            [filename, fileType, imgURL]
+        );
+        console.log('here');
     }
 }
 
@@ -78,6 +83,7 @@ router.post('/upload', async (req, res) => {
         // Store metadata in the database
         if (storeInDataBase)
             await storeMetaData(filename, fileType, imgURL, storeInDataBase);
+        else await storeMetaData(filename, fileType, imgURL, storeInDataBase);
 
         console.log('DONE');
 

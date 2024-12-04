@@ -1,13 +1,27 @@
-import React from "react";
-import Chats from "@/app/[locale]/chat-test/page";
+'use client';
+import React, { useState } from "react";
+import Chats from "../../chat-test/page";
+import { usePathname } from "next/navigation";
+import SideNav from "../SideNav";
+
 const ChatRoom = ({ params }) => {
+  const [isPressed, setIsPressed] = useState(false);
+  const pathname = usePathname();
+  const locale = pathname.split("/")[1];
+
+  const toggleOverlay = () => {
+    setIsPressed(!isPressed);
+  }
+
   return (
-    <div className="flex justify-center items-center">
-      <h2>Chat Room {params.id}</h2>
-      <Chats></Chats>
-
+    <div dir={locale == 'ar' ? 'rtl' : 'ltr'} className="flex h-[90%]">
+      <div className={`flex-initial w-full sm:w-1/5 h-full absolute sm:relative sm:block ${isPressed ? 'hidden' : 'block'}`}>
+        <SideNav onPress={toggleOverlay} />
+      </div>
+      <div className={`flex-1 p-2 sm:block ${isPressed ? 'block' : 'hidden'}`}>
+        <Chats CloseChat={toggleOverlay} />
+      </div>
     </div>
-
   );
 }
 export default ChatRoom

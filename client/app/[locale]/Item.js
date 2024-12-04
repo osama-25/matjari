@@ -9,18 +9,25 @@ export const HomeItem = ({ name, image, id, price, heart }) => {
     const handleHeartClick = (event) => {
         event.stopPropagation();
         setHeart(!Heart);
-    }
+    };
+
     return (
         <div className="flex flex-row gap-2">
             <Link
                 href={`/item/${id}`}
-                className="rounded-lg bg-gray-100 p-2 cursor-pointer"
+                className="rounded-lg bg-gray-100 p-2 cursor-pointer relative"
             >
-                <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-52 md:h-52 lg:w-60 lg:h-60 relative overflow-hidden rounded-md">
+                <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-52 md:h-52 relative overflow-hidden rounded-md">
                     <img
                         src={image}
                         className="object-contain w-full h-full"
                     />
+                    <button
+                        onClick={handleHeartClick}
+                        className="absolute top-1 right-1 w-7 h-7 hover:bg-gray-100 bg-white rounded-full flex items-center justify-center shadow"
+                    >
+                        {Heart ? <FaHeart size={16} color="crimson" /> : <FaRegHeart size={16} />}
+                    </button>
                 </div>
             </Link>
             <div className="flex flex-col justify-between w-full py-1 px-3">
@@ -33,17 +40,10 @@ export const HomeItem = ({ name, image, id, price, heart }) => {
                     </Link>
                     <span className="text-sm md:text-xl font-bold">{price} JD</span>
                 </div>
-                <button
-                    onClick={handleHeartClick}
-                    className="w-7 h-7 hover:bg-gray-100 rounded-full flex flex-row items-center justify-center shadow place-self-end self-end"
-                >
-                    {Heart ? <FaHeart size={16} color={'crimson'} /> : <FaRegHeart size={16} />}
-                </button>
             </div>
         </div>
-
     );
-}
+};
 
 export const Item = ({ id, name, image, price, heart }) => {
     const [Heart, setHeart] = useState(heart);
