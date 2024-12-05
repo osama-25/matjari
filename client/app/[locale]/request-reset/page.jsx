@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import axios from 'axios';
+
 
 const RequestReset = () => {
     const [email, setEmail] = useState('');
@@ -11,10 +11,25 @@ const RequestReset = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('http://localhost:8080/auth/request-password-reset', { email });
-            setMessage(response.data.message || 'Check your email for the reset link.');
+            const response = await fetch('http://localhost:8080/auth/request-password-reset', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            // Check if the response status is OK (status code 200-299)
+            if (response.ok) {
+                const data = await response.json();
+                setMessage(data.message || 'Check your email for the reset link.');
+            } else {
+                // Handle errors from the server (e.g., 4xx, 5xx)
+                const errorData = await response.json();
+                setMessage(errorData.error || 'An error occurred. Please try again.');
+            }
         } catch (error) {
-            setMessage(error.response?.data?.error || 'An error occurred. Please try again.');
+            setMessage('An error occurred. Please try again.');
         }
     };
 

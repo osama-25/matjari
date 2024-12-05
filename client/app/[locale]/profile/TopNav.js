@@ -59,7 +59,7 @@ const ProfileTopNav = () => {
                 <FaUser />
               </button>
               <button onClick={HandleFlagPress} className="p-2 rounded-md hover:bg-gray-200">
-                <img src={flags[flagIndex]} className="w-8 h-5" />
+                <img src={flags[flagIndex]} className="w-8 h-5 rounded-sm" />
               </button>
             </section>
           </div>

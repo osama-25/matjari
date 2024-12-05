@@ -74,7 +74,7 @@ router.get('/:id', async (req, res) => {
             return acc;
         }, {});
 
-        const userInfo= await db.query(
+        const userInfo = await db.query(
             'Select user_name from users where id= $1',
             [item.user_id]
         );

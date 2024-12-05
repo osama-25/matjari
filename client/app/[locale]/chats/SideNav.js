@@ -21,7 +21,7 @@ const Button = ({ text, link, onClick }) => {
 
 const SideNav = ({ onPress }) => {
     return (
-        <nav className="h-[calc(100vh-2.5rem)] w-full text-white flex flex-col px-2 py-4 shadow-lg">
+        <nav className="h-full w-full text-white flex flex-col px-2 py-8 rounded-md shadow-md">
             {chatRooms.map(room => (
                 <Button key={room.id} text={room.name} link={`/chats/${room.id}`} onClick={onPress} />
             ))}

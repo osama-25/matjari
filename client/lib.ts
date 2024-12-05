@@ -67,7 +67,6 @@ export async function login(
 
 export async function logout() {
   // Destroy the session
-
   (await
     // Destroy the session
     cookies()).set("Front-end session", "", { expires: new Date(0) });
@@ -82,7 +81,6 @@ var number = 0;
 export async function updateSession(request: NextRequest) {
   const session = request.cookies.get("Front-end session")?.value;
   // console.log(session + " N: " + number++);
-  
   if (!session) {
     // const loginUrl = new URL('/login', request.url); // Construct absolute URL
     // return NextResponse.redirect(loginUrl.toString());
@@ -95,6 +93,10 @@ export async function updateSession(request: NextRequest) {
   const parsed = await decrypt(session);
   // console.log(parsed.exp);
   // console.log(Date.now());
+  console.log(`parsed : {}`);
+  console.log(parsed);
+  
+  
   const currentTime =  Date.now() / 1000;
 
   // Check if the session token has expired
@@ -116,5 +118,15 @@ export async function updateSession(request: NextRequest) {
     return res;
 
   }
+
+  
+  
+  // return {
+
+  //     user: parsed.user || null, // Extract user information from the parsed session if available
+  //     exp: parsed.exp,
+  //   }
+  // ;
+
   return NextResponse.next();
 }

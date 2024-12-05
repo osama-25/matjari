@@ -32,7 +32,8 @@
                 "adbutton": "start shopping",
                 "chat": "Chat",
                 "fav": "Favourites",
-                "profile": "Profile"
+                "profile": "Profile",
+                "addlisting": "Add listing"
         },
         "Chat": {
                 "default": "Chat",
@@ -74,7 +75,7 @@
                 "user": "UserName",
                 "userph": "enter username",
                 "pass": "Password",
-                "passph":"enter password",
+                "passph": "enter password",
                 "confirmpass": "Confirm Password",
                 "confirmpassph": "confirm your password",
                 "agree": "Agree to terms & conditions",
@@ -115,5 +116,18 @@
                 "details": "Details",
                 "desc": "Description",
                 "chat": "Chat"
+        },
+        "ads": {
+                "electronics-ad": "Explore the latest in electronics.",
+                "mensfashion-ad": "Elevate your style with the latest men's fashion.",
+                "womensfashion-ad": "Discover the latest trends in women's fashion.",
+                "kids-ad": "Fun and amazing products for kids of all ages.",
+                "home-ad": "Transform your home with stylish and functional products.",
+                "beauty-ad": "Discover top health and beauty essentials.",
+                "videogames-ad": "Find your next favorite video game.",
+                "pets-ad": "Pamper your pets with top products.",
+                "sports-ad": "Boost your game with premium sports gear.",
+                "cars-ad": "Drive your dream car today.",
+                "properties-ad": "Find the perfect property for your next move."
         }
 }

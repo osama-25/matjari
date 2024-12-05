@@ -121,7 +121,6 @@ const Info = () => {
                 });
 
             } catch (error) {
-                console.error("Error fetching profile info:", error);
                 setError(error.message); // Set error state
             }
             finally {
@@ -154,10 +153,7 @@ const Info = () => {
                     </Link>
                 </p>
             </section>
-
-
         )
-
     }
 
 

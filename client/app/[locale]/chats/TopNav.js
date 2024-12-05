@@ -32,8 +32,8 @@ const ChatTopNav = () => {
   })
 
   return (
-    <header className="sticky top-0 z-50 h-14">
-      <nav className="bg-white shadow-lg">
+    <header className="sticky top-0 z-50 h-12 md:h-16">
+      <nav className="bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between h-auto">
             <section className="flex items-center justify-between w-full md:w-auto p-2">
@@ -59,7 +59,7 @@ const ChatTopNav = () => {
                 <FaUser />
               </Link>
               <button onClick={HandleFlagPress} className="p-2 rounded-md hover:bg-gray-200">
-                <img src={flags[flagIndex]} className="w-8 h-5" />
+                <img src={flags[flagIndex]} className="w-8 h-5 rounded-sm" />
               </button>
             </section>
           </div>
