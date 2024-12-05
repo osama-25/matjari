@@ -1,65 +1,80 @@
 // import { NextRequest, NextResponse } from "next/server";
-// import { updateSession, getSession } from "./lib";
+// import createMiddleware from "next-intl/middleware";
+// import { updateSession } from "./lib";
 
-// // Define a list of protected routes
-// const protectedRoutes = ["/admin", "/profile"];
+// // Create the next-intl middleware
+// const intlMiddleware = createMiddleware({
+//   locales: ["en", "ar"], // Define supported locales
+//   defaultLocale: "en",   // Define the default locale
+// });
+
+// export const config = {
+//   matcher: ["/((?!_next/static|_next/image|favicon.ico|Resources).*)"], // Ensure images and static assets are excluded
+// };
 
 // export async function middleware(request: NextRequest) {
-//   // Get the session and authentication token cookies
-//   const sessionCookie = request.cookies.get("sessionUpdated");
-//   const authToken = request.cookies.get("Front-end session"); // Ensure you're using the correct cookie name from your lib
+//   // Run the next-intl middleware first
+//   const intlResponse = intlMiddleware(request);
 
-//   // Check if the route is protected
-//   const isProtectedRoute = protectedRoutes.some((route) =>
-//     request.nextUrl.pathname.startsWith(route)
-//   );
+//   // If the intl middleware modifies the response, return it directly
+//   console.log("OUT1");
+  
+//   if (intlResponse) {
+//     return intlResponse;
+//   }
+//   console.log("OUT2");
 
-//   // If it's a protected route and no authToken is found, redirect to login
-//   if (isProtectedRoute && !authToken) {
-//     console.log("User is not authenticated, redirecting to login...");
-//     return NextResponse.redirect(new URL("/login", request.url));
+//   // Otherwise, execute your custom logic
+//   return await updateSession(request);
+// }
+
+
+
+// import { NextRequest, NextResponse } from "next/server";
+// import createMiddleware from "next-intl/middleware";
+// import { updateSession } from "./lib";
+
+// // Create the next-intl middleware
+// const intlMiddleware = createMiddleware({
+//   locales: ["en", "ar"], // Define supported locales
+//   defaultLocale: "en",   // Define the default locale
+// });
+
+// export const config = {
+//   matcher: ["/((?!_next/static|_next/image|favicon.ico|Resources).*)"], // Ensure images and static assets are excluded
+// };
+// export async function middleware(request: NextRequest) {
+//   const { pathname } = request.nextUrl;
+
+//   // Run the next-intl middleware
+//   const intlResponse = intlMiddleware(request);
+//   if (intlResponse) {
+//     return intlResponse;
 //   }
 
-//   // Validate the session for protected routes
-//   if (isProtectedRoute && authToken) {
-//     // Attempt to retrieve the session from the cookie
-//     try {
-//       const session = await getSession(); // Decrypt and verify session from lib
-//       if (!session) {
-//         console.log("Session is invalid, redirecting to login...");
-//         return NextResponse.redirect(new URL("/login", request.url));
-//       }
-//     } catch (error) {
-//       console.error("Error verifying session:", error);
-//       return NextResponse.redirect(new URL("/login", request.url));
+//   // Protected routes logic
+//   const protectedRoutes = ["/admin", "/dashboard", "/profile"];
+//   const isProtected = protectedRoutes.some((route) => pathname.startsWith(route));
+
+//   if (isProtected) {
+//     const session = await updateSession(request);
+
+//     // const {user} = session;
+//     if (!session?.user) {
+//       const loginUrl = new URL("/login", request.url);
+//       return NextResponse.redirect(loginUrl);
 //     }
 //   }
 
-//   // If session update hasn't been called, update it
-//   if (!sessionCookie) {
-//   console.log("Updating session for the first time...");
-
-
-  
-//     const response = await updateSession(request); // Use your updateSession function from lib
-    
-//     // Mark the session as updated to avoid redundant updates
-//     response.cookies.set("sessionUpdated", "true", {
-//       path: "/",
-//       httpOnly: true,
-//       maxAge: 1800, // 30 minutes to align with the session expiry time
-//     });
-
-//     return response;
-//   }
-
-//   // If the session is already updated, proceed
-//   console.log("Session already updated, proceeding...");
+//   // Continue with the request
 //   return NextResponse.next();
 // }
+
 import { NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { updateSession } from "./lib";
+import { cookies } from "next/headers";
+import { SignJWT, jwtVerify } from "jose";
 
 // Create the next-intl middleware
 const intlMiddleware = createMiddleware({
@@ -72,15 +87,64 @@ export const config = {
 };
 
 export async function middleware(request: NextRequest) {
-  // Run the next-intl middleware first
+  const { pathname } = request.nextUrl;
+
+  // Run intlMiddleware but do not return immediately
   const intlResponse = intlMiddleware(request);
 
-  // If the intl middleware modifies the response, return it directly
-  if (intlResponse) {
-    return intlResponse;
+  // Check for protected routes
+  const baseProtectedRoutes = ["/admin", "/profile", "/add_listing" , "/chat-test"];
+  const locales = ["en", "ar"]; // Add other locales if needed
+  const protectedRoutes = baseProtectedRoutes.flatMap((route) =>
+    locales.map((locale) => `/${locale}${route}`)
+  );
+
+  const isProtected = protectedRoutes.some((route) => pathname.startsWith(route));
+
+
+  console.log(`pathname ${pathname}`);
+  console.log(`isProtected ${isProtected}`);
+  
+  
+  
+  if (isProtected) {
+    
+    
+    // const session = await updateSession(request);
+
+    const sessionCookie = ((await cookies()).get("Front-end session"));
+    
+    console.log("session#");
+    // console.log(session.value);
+    
+    if (!sessionCookie || !sessionCookie.value) {
+      console.log("No session found or session is invalid.");
+      const loginUrl = new URL("/login", request.url);
+      return NextResponse.redirect(loginUrl);
+    }
+
+const secretKey = new TextEncoder().encode("TopSecretKey"); // Replace with your actual secret key
+
+    try {
+      // Decode and verify the JWT
+      const sessionData = await jwtVerify(sessionCookie.value, secretKey );;
+      // const sessionData = jwtVerify(sessionCookie.value, SECRET_KEY);
+  
+      // Optional: Check for expiration (JWT will throw an error if expired)
+      if ((await sessionData).payload.exp * 1000 < Date.now()) {
+        throw new Error("Session expired");
+      }
+  
+      console.log("Session is valid:", sessionData);
+    } catch (error) {
+      console.log("Session is invalid or expired:", error.message);
+      const loginUrl = new URL("/login", request.url);
+      return NextResponse.redirect(loginUrl);
+    }
+  
+  
   }
 
-  // Otherwise, execute your custom logic
-  return await updateSession(request);
+  // If intlMiddleware generated a response, return it; otherwise, proceed
+  return intlResponse || NextResponse.next();
 }
-

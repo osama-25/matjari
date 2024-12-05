@@ -5,7 +5,8 @@ import http from 'http';
 import authRoutes from "./routes/auth.js";
 import dataRoutes from "./routes/data.js"
 import itemRoutes from "./routes/item.js";
-import socketRoutes, { initializeSocket } from "./routes/socket.js";
+// import socketRoutes, { initializeSocket } from "./routes/socket.js";
+import { initializeSocket } from './controllers/SocketController.js';
 import chatRoutes from './routes/chat.js'
 import env from 'dotenv';
 import verifyToken from './middleware/middleware.js';
@@ -44,7 +45,7 @@ app.use('/data', verifyToken, dataRoutes);
 app.use('/api/listing', itemRoutes);
 app.use('/categories', categoriesRoutes);
 
-app.use('/socket', socketRoutes);
+// app.use('/socket', socketRoutes);
 app.use('/chat', chatRoutes);
 app.use('/azure', azure);
 app.use('/img', images)

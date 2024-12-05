@@ -1,5 +1,7 @@
 import express from 'express';
 import { login, register } from '../controllers/authController.js';
+
+
 import  verifyToken  from '../middleware/middleware.js';
 import { requestPasswordReset, resetPassword } from '../controllers/authController.js';
 

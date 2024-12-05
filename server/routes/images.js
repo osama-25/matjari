@@ -3,6 +3,7 @@ import db from '../config/db.js';
 
 const router = express.Router();
 
+// JUST FOR TESTING
 router.get('/images/:id', async (req, res) => {
     const { id } = req.params;
 
