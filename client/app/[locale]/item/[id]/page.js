@@ -5,7 +5,7 @@ import { FaArrowLeft, FaArrowRight, FaComment, FaHeart, FaPen, FaRegHeart } from
 import Loading from '@/app/[locale]/global_components/loading';
 import { useTranslations } from 'next-intl';
 import ErrorPage from '../../ErrorPage';
-
+import { getInfo } from '../../global_components/dataInfo';
 
 const details = [
     { title: 'Location', desc: 'Your Location Here' },
@@ -92,8 +92,42 @@ const ProductPage = ({ params }) => {
         setCurrentIndex((prevIndex) => (prevIndex === photos.length - 1 ? 0 : prevIndex + 1));
     }
 
-    const handleButtonClick = () => {
-        router.push('/chats/1');
+    const handleButtonClick = async () => {
+        try {
+            const info = await getInfo();
+            const current_user_id = info.id;
+            const item_user_id = item.user_id;
+
+            console.log("#current_user_id", current_user_id);
+            console.log("#item_user_id", item_user_id);
+
+            const response = await fetch('http://localhost:8080/chat/find-or-create-room', {
+                method: 'POST',  // Corrected: use 'POST' as a string, not an array
+                headers: {
+                    'Content-Type': 'application/json', // Inform server that you are sending JSON data
+                },
+                body: JSON.stringify({
+                    userId1: current_user_id,
+                    userId2: item_user_id,
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to create or find room');
+            }
+
+            const data = await response.json();
+            console.log("+_+");
+            console.log(data);
+
+
+
+            // Assuming you want to navigate after the data is returned
+            router.push(`/chats/${data.room.room_id}`); // You can use the room_id from the response data
+            // router.push(`/chats/2`); // You can use the room_id from the response data
+        } catch (error) {
+            console.error('Error:', error);
+        }
     }
 
     const HandleFavouriteClick = () => {

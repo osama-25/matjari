@@ -1,7 +1,7 @@
 'use client';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Chats from "../../chat-test/page";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import SideNav from "../SideNav";
 
 const ChatRoom = ({ params }) => {
@@ -13,13 +13,16 @@ const ChatRoom = ({ params }) => {
     setIsPressed(!isPressed);
   }
 
+  // const id = use(params).id
+
   return (
     <div dir={locale == 'ar' ? 'rtl' : 'ltr'} className="flex h-[90%]">
       <div className={`flex-initial w-full sm:w-1/5 h-full absolute sm:relative sm:block ${isPressed ? 'hidden' : 'block'}`}>
         <SideNav onPress={toggleOverlay} />
       </div>
       <div className={`flex-1 p-2 sm:block ${isPressed ? 'block' : 'hidden'}`}>
-        <Chats CloseChat={toggleOverlay} />
+        <Chats room={getRoomId}
+          CloseChat={toggleOverlay} />
       </div>
     </div>
   );

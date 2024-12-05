@@ -19,4 +19,23 @@ export const getMessagesByRoom = async (room) => {
     return db.query(query, [room]);
 };
 
+// export const findOrCreateRoom = async (userId1, userId2) => {
+
+
+export const findRoom = async (roomId) => {
+    
+
+    const roomQuery = await db.query(`SELECT * FROM rooms WHERE room_id = $1`, [roomId]);
+    // console.log("THIS??");
+    return roomQuery;
+}
+
+export const createRoom = async (userId1, userId2, roomId) => {
+    const newRoomQuery = await db.query(
+        `INSERT INTO rooms (room_id, user1_id, user2_id) VALUES ($1, $2, $3) RETURNING *`,
+        [roomId, userId1, userId2]
+    );
+    return newRoomQuery;
+}
+
 
