@@ -1,12 +1,12 @@
 import React from "react";
-import { Item } from "../Item";
+import { HomeItem, Item } from "../Item";
 import { FaFilter } from "react-icons/fa";
 
-const ItemDisplay = ({ onPress, Visible, Items }) => {
+const ItemDisplay = ({ Items }) => {
     return (
-        <div className={`flex flex-col overflow-x-auto px-6 py-2 w-full gap-y-3 ${Visible ? 'blur-sm pointer-events-none' : ''} z-0`}>
+        <div className={`flex flex-col overflow-x-auto px-6 py-2 w-full gap-y-3 z-0`}>
             <span className="flex justify-between items-center">
-                <div onClick={onPress} className="w-10 h-8 md:hidden rounded flex items-center justify-center shadow-lg hover:bg-gray-200">
+                <div className="w-10 h-8 md:hidden rounded flex items-center justify-center shadow-lg hover:bg-gray-200">
                     <FaFilter size={24} />
                 </div>
                 <h1 className="text-3xl font-bold p-2 md:inline hidden">Results</h1>
@@ -17,9 +17,9 @@ const ItemDisplay = ({ onPress, Visible, Items }) => {
                     <option value="">Most Recent</option>
                 </select>
             </span>
-            <div className="grid grid-cols-4 gap-y-5">
+            <div className="flex flex-col gap-y-5">
                 {Items.map((item, index) => (
-                    <Item
+                    <HomeItem
                         key={index}
                         id={item.id} name={item.name} image={item.image}
                         price={'$$$'} heart={false}

@@ -208,7 +208,7 @@ const Info = () => {
                     <div className="m-2">
                         <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">{t('email')}</label>
                         <input
-                            disabled={isDisabled}
+                            disabled={true}
                             type="email"
                             name="email"
                             id="email"

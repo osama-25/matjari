@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useRef, useState } from "react";
-import SearchFilter from "./SearchFilter";
-import ItemDisplay from "./ItemDisplay";
+import SearchFilter from "../search/SearchFilter";
+import ItemDisplay from "../search/ItemDisplay";
 
 const Categories = [
     { id: 1, name: 'Electronics', image: '/favicon.ico', link: '/categories/electronics' },

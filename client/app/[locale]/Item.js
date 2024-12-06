@@ -1,20 +1,27 @@
 'use client';
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { FaComment, FaHeart, FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 export const HomeItem = ({ name, image, id, price, heart }) => {
     const [Heart, setHeart] = useState(heart);
+    const router = useRouter();
 
     const handleHeartClick = (event) => {
         event.stopPropagation();
         setHeart(!Heart);
-    };
+    }
+
+    const HandleItemClick = (event) => {
+        event.stopPropagation();
+        router.push(`/item/${id}`);
+    }
 
     return (
         <div className="flex flex-row gap-2">
-            <Link
-                href={`/item/${id}`}
+            <div
+                onClick={HandleItemClick}
                 className="rounded-lg bg-gray-100 p-2 cursor-pointer relative"
             >
                 <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-52 md:h-52 relative overflow-hidden rounded-md">
@@ -26,19 +33,19 @@ export const HomeItem = ({ name, image, id, price, heart }) => {
                         onClick={handleHeartClick}
                         className="absolute top-1 right-1 w-7 h-7 hover:bg-gray-100 bg-white rounded-full flex items-center justify-center shadow"
                     >
-                        {Heart ? <FaHeart size={16} color="crimson" /> : <FaRegHeart size={16} />}
+                        {Heart ? <FaHeart size={16} color="crimson" className="w-full" /> : <FaRegHeart size={16} className="w-full" />}
                     </button>
                 </div>
-            </Link>
+            </div>
             <div className="flex flex-col justify-between w-full py-1 px-3">
                 <div className="flex flex-col gap-3">
                     <Link
                         href={`/item/${id}`}
                         className="break-words sm:w-3/4 overflow-hidden w-full"
                     >
-                        <p className="text-sm md:text-2xl hover:underline cursor-pointer">{name}</p>
+                        <p className="text-sm md:text-xl hover:underline cursor-pointer">{name}</p>
                     </Link>
-                    <span className="text-sm md:text-xl font-bold">{price} JD</span>
+                    <span className="text-sm md:text-2xl font-bold">{price} JD</span>
                 </div>
             </div>
         </div>

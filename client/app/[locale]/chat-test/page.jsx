@@ -171,7 +171,7 @@ export default function Chats({ CloseChat }) {
                 files: uploadedFiles,
                 type: uploadedFiles.filetype
             }]);
-
+            
             setRefresh(!refresh);
 
 
@@ -213,14 +213,33 @@ export default function Chats({ CloseChat }) {
 
     const handleFileUpload = async (event) => {
         const uploadedFiles = Array.from(event.target.files);
-
-        const filePreviews = uploadedFiles.map((file) => ({
+    
+        // File size validation
+        const validFiles = uploadedFiles.filter((file) => {
+            if (file.type.startsWith("image/")) {
+                return file.size <= 5 * 1024 * 1024; // Image file size <= 5MB
+            } else if (file.type.startsWith("video/")) {
+                return file.size <= 100 * 1024 * 1024; // Video file size <= 100MB
+            } else {
+                return false; // Ignore unsupported file types
+            }
+        });
+    
+        const invalidFiles = uploadedFiles.filter((file) => !validFiles.includes(file));
+        if (invalidFiles.length > 0) {
+            console.warn("Some files were skipped due to size limits:", invalidFiles);
+            alert("Some files exceed the size limits and were not uploaded.");
+        }
+    
+        // Generate file previews
+        const filePreviews = validFiles.map((file) => ({
             file,
             url: URL.createObjectURL(file),
         }));
         setPreviewFiles((prevFiles) => [...prevFiles, ...filePreviews]);
-
-        const filePromises = uploadedFiles.map((file) => {
+    
+        // Convert valid files to base64
+        const filePromises = validFiles.map((file) => {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = () => resolve({ file, base64: reader.result.split(",")[1] });
@@ -228,14 +247,14 @@ export default function Chats({ CloseChat }) {
                 reader.readAsDataURL(file);
             });
         });
-
+    
         try {
             const base64Files = await Promise.all(filePromises);
             setFiles((prevFiles) => [...prevFiles, ...base64Files]);
         } catch (error) {
             console.error("Error converting files to base64:", error);
         }
-    };
+    };    
 
     return (
         <div className="flex flex-col h-full p-1 md:p-4">
@@ -384,6 +403,7 @@ export default function Chats({ CloseChat }) {
                 </label>
                 <input
                     type="file"
+                    accept="video/*,image/*"
                     multiple
                     onChange={handleFileUpload}
                     className="hidden"

@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { FaComments, FaHeart, FaPlus, FaSearch, FaUser } from "react-icons/fa";
-import { FaBars, FaX, FaXmark } from "react-icons/fa6";
+import { FaBars, FaCamera, FaX, FaXmark } from "react-icons/fa6";
+import { IoCamera, IoCameraOutline } from "react-icons/io5";
 
 const flags = [
   "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Flag_of_the_United_Kingdom_%281-2%29.svg/1200px-Flag_of_the_United_Kingdom_%281-2%29.svg.png",
@@ -59,11 +60,14 @@ const NavBar = () => {
                 </Link>
               </section>
               <div className="flex-1 flex items-center justify-center p-4 w-full md:w-auto">
-                <a className="w-full flex focus-within:outline rounded-md outline-2">
+                <button className="px-4 py-2 bg-gray-800 text-white rounded-l-md focus:outline-none">
+                  <IoCamera size={24} />
+                </button>
+                <a className="w-full flex focus-within:outline rounded-md">
                   <input
                     dir={pathname.split("/")[1] === 'ar' ? 'rtl' : 'ltr'}
                     type="text"
-                    className="w-full py-2 px-4 border rounded-l-md text-black focus:outline-none"
+                    className="w-full py-2 px-4 border text-black focus:outline-none"
                     placeholder={t('searchph')}
                   />
                   <button className="px-4 py-2 bg-blue-500 text-white rounded-r-md focus:outline-none">
