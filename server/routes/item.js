@@ -1,13 +1,15 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import db from '../config/db.js';
+import axios from 'axios';
 const router = express.Router();
 
 
 //add Items
 router.post('/', async (req, res) => {
     const { category, subCategory, title, description, condition, delivery, price, location, photos, customDetails, userID } = req.body;
-
+    const excludedTags = ['text', 'indoor', 'person'];
+    const IMAGE_DESCRIPTION_API = 'http://localhost:8080/imageDesc/describe';
     try {
         //const db = await pool.connect();
 
@@ -21,9 +23,20 @@ router.post('/', async (req, res) => {
         const listingId = listingResult.rows[0].id;
 
         // Save photos to the database
-        const photoPromises = photos.map((photoUrl) =>
-            db.query(`INSERT INTO listing_photos (listing_id, photo_url) VALUES ($1, $2)`, [listingId, photoUrl])
-        );
+        const photoPromises = photos.map(async (photoUrl) => {
+            // Call the image description API
+            const response = await axios.post(IMAGE_DESCRIPTION_API, { image: photoUrl });
+            let tags = response.data.data?.tags.slice(0, 10).map(tag => tag.name) || [];
+
+            // Filter out unwanted tags
+            tags = tags.filter(tag => !excludedTags.includes(tag));
+
+            // Save photo URL and tags to the database
+            return db.query(
+                `INSERT INTO listing_photos (listing_id, photo_url, tags) VALUES ($1, $2, $3)`,
+                [listingId, photoUrl, JSON.stringify(tags)]
+            );
+        });
         await Promise.all(photoPromises);
 
         // Save custom details as key-value pairs
