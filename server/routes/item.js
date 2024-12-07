@@ -88,10 +88,11 @@ router.get('/:id', async (req, res) => {
         }, {});
 
         const userInfo = await db.query(
-            'Select user_name from users where id= $1',
+            'Select user_name,phone_number from users where id= $1',
             [item.user_id]
         );
         item.username = userInfo.rows[0]?.user_name || null;
+        item.phone_number = userInfo.rows[0]?.phone_number || null;
 
 
         res.status(200).json(item);

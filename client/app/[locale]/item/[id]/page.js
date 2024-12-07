@@ -80,6 +80,7 @@ const ProductPage = ({ params }) => {
         delivery,
         location,
         username,
+        phone_number,
         photos = [],
         customDetails = {}
     } = item;
@@ -191,7 +192,7 @@ const ProductPage = ({ params }) => {
                 />
                 <div className='flex flex-col'>
                     <h1 className="font-bold text-md">{username}</h1>
-                    {sellerPhoneNumber != null && <h2 className='text-md'>{sellerPhoneNumber}</h2>}
+                    {phone_number != null && <h2 className='text-md'>{phone_number}</h2>}
                 </div>
             </div>
             {/* Additional Details */}
