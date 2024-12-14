@@ -14,6 +14,7 @@ import azure from './routes/azure.js';
 import images from './routes/images.js';
 import categoriesRoutes from './routes/categories.js';
 import imageDescriptionRoutes from './routes/imageDesc.js';
+import searchRoutes from './routes/search.js';
 env.config();
 
 const app = express();
@@ -52,7 +53,7 @@ app.use('/azure', azure);
 app.use('/img', images)
 
 app.use('/imageDesc', imageDescriptionRoutes);
-
+app.use('/search',searchRoutes);
 app.use('/', (req, res) => {
     res.send("<h1>This is the backend server</h1>");
 });
