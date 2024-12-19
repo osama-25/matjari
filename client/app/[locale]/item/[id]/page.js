@@ -36,11 +36,25 @@ const ProductPage = ({ params }) => {
     const [showMoreDesc, setShowMoreDesc] = useState(false);
     const [sellerPhoneNumber, setSellerPhoneNumber] = useState('0789919165');
     const [edit, setEdit] = useState(false);
-
     const [item, setItem] = useState(null);
     const itemID = use(params).id;
     const t = useTranslations('Item');
     const [error, setError] = useState(null); // State to track errors
+    const [user_id, setUserId] = useState(null);
+    
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const info = await getInfo();
+                if (info) {
+                    setUserId(info.id); 
+                }
+            } catch (error) {
+                console.error('Error fetching user info:', error);
+            }
+        };
+        fetchUserInfo();
+    }, []);
 
     useEffect(() => {
         const fetchItem = async () => {
@@ -131,9 +145,35 @@ const ProductPage = ({ params }) => {
         }
     }
 
-    const HandleFavouriteClick = () => {
-        setHeart(!Heart);
+    
+    
+    const HandleFavouriteClick = async () => {
+        
         // change the item favourite status in the database
+        if (user_id) { // Reactively use the state value
+            try {
+                const response = await fetch('http://localhost:8080/api/favorites', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userId: user_id, listingId: itemID }),
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to toggle favorite');
+                }
+    
+                const result = await response.json();
+                console.log(result.message);
+                setHeart((prevHeart) => !prevHeart); // Toggle the UI state
+            } catch (error) {
+                console.error('Error toggling favorite:', error);
+            }
+        }
+        else{
+            //redirect to login page
+        }    
     }
 
     return (

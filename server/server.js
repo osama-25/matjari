@@ -15,6 +15,7 @@ import images from './routes/images.js';
 import categoriesRoutes from './routes/categories.js';
 import imageDescriptionRoutes from './routes/imageDesc.js';
 import searchRoutes from './routes/search.js';
+import favoriteRoutes from './routes/favorites.js'
 env.config();
 
 const app = express();
@@ -54,6 +55,7 @@ app.use('/img', images)
 
 app.use('/imageDesc', imageDescriptionRoutes);
 app.use('/search',searchRoutes);
+app.use('/api/favorites',favoriteRoutes);
 app.use('/', (req, res) => {
     res.send("<h1>This is the backend server</h1>");
 });

@@ -1,5 +1,4 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import db from '../config/db.js';
 import axios from 'axios';
 const router = express.Router();
