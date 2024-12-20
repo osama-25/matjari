@@ -70,8 +70,10 @@ const ProductPage = ({ params }) => {
         const fetchUser = async () => {
             try {
                 const info = await getInfo();
-                setUserId(info.id);
-                setUserEmail(info.email);
+                if (info) {
+                    setUserId(info.id);
+                    setUserEmail(info.email);
+                }
             } catch (error) {
                 setError(error.message);
             }
@@ -159,11 +161,35 @@ const ProductPage = ({ params }) => {
         }
     }
 
-    
-    
+
+
     const HandleFavouriteClick = async () => {
-        
+
         // change the item favourite status in the database
+        if (user_id) { // Reactively use the state value
+            try {
+                const response = await fetch('http://localhost:8080/api/favorites', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userId: user_id, listingId: itemID }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to toggle favorite');
+                }
+
+                const result = await response.json();
+                console.log(result.message);
+                setHeart((prevHeart) => !prevHeart); // Toggle the UI state
+            } catch (error) {
+                console.error('Error toggling favorite:', error);
+            }
+        }
+        else {
+            //redirect to login page
+        }
     }
 
     const togglePopup = () => {
@@ -211,7 +237,7 @@ const ProductPage = ({ params }) => {
                             {Heart ? <FaHeart size={24} color={'crimson'} /> : <FaRegHeart size={26} />}
                         </button>}
                         {/* Edit button for seller (change hidden to flex to show) */}
-                        {email == userEmail && <Link href={{pathname: '/edit_listing', query:{id: itemID}}} className={`h-10 w-10 flex items-center justify-center gap-2 bg-gray-800 text-white rounded-full shadow-md hover:bg-gray-700`}>
+                        {email == userEmail && <Link href={{ pathname: '/edit_listing', query: { id: itemID } }} className={`h-10 w-10 flex items-center justify-center gap-2 bg-gray-800 text-white rounded-full shadow-md hover:bg-gray-700`}>
                             <FaPen />
                         </Link>}
                         {email == userEmail && <button onClick={togglePopup} className={`h-10 w-10 flex items-center justify-center gap-2 bg-red-500 text-white rounded-full shadow-md hover:bg-red-700`}>
