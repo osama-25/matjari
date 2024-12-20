@@ -11,10 +11,26 @@ const items = [
 
 const SearchPage = () => {
     return (
-        <>
+        <div className="flex relative">
             <SearchFilter />
-            <ItemDisplay Items={items} />
-        </>
+            <div className="flex flex-col justify-between w-full">
+                <ItemDisplay Items={currentItems} />
+                <div className="flex justify-center items-center space-x-2 my-4">
+                    {Array.from({ length: Math.ceil(items.length / itemsPerPage) }, (_, index) => (
+                        <button
+                            key={index + 1}
+                            onClick={() => paginate(index + 1)}
+                            className={`px-3 py-1 rounded-md ${currentPage === index + 1
+                                ? 'bg-blue-600 text-white font-semibold'
+                                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                                }`}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
+                </div>
+            </div>
+        </div>
     )
 }
 export default SearchPage;

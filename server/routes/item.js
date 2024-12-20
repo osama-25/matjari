@@ -87,12 +87,12 @@ router.get('/:id', async (req, res) => {
         }, {});
 
         const userInfo = await db.query(
-            'Select user_name,phone_number from users where id= $1',
+            'Select user_name, phone_number, email from users where id= $1',
             [item.user_id]
         );
         item.username = userInfo.rows[0]?.user_name || null;
         item.phone_number = userInfo.rows[0]?.phone_number || null;
-
+        item.email = userInfo.rows[0]?.email || null;
 
         res.status(200).json(item);
     } catch (error) {
@@ -100,5 +100,19 @@ router.get('/:id', async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+
+router.get('/delete/:id', async (req, res) => {
+    const { id } = req.params;
+    try{
+        const result = await db.query('DELETE FROM listings WHERE id = $1', [id]);
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
+        res.status(200).json({ message: 'Item deleted successfully' });
+    } catch(error){
+        console.error('Error deleting item:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+})
 
 export default router;

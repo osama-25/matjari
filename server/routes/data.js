@@ -5,7 +5,6 @@ const router = express.Router();
 
 router.get("/get", verifyToken, async (req, res) => {
 
-
     const id = req.user.id;
     const dbRes = await db.query("select * from users where id = $1", [id]);
     // console.log(dbRes.rows[0]);

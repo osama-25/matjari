@@ -1,6 +1,6 @@
 "use client";
 import React, { use, useEffect, useState } from "react";
-import CategoryDisplay, { CategoryAd } from "../CategoryDisplay";
+import CategoryDisplay, { CategoryAd } from "./CategoryDisplay";
 import { HomeItem, Item } from "@/app/[locale]/Item";
 import { useTranslations } from "next-intl";
 import ErrorPage from "../../ErrorPage";
@@ -38,7 +38,7 @@ export default function SubCateg({ params }) {
                     throw new Error(`Failed to fetch categories: ${response.statusText}`);
                 }
                 const data = await response.json();
-                setCategories(data || []);
+                setCategories(data);
             } catch (error) {
                 setError(error.message);
             }
@@ -56,7 +56,7 @@ export default function SubCateg({ params }) {
                 }
                 const data = await response.json();
                 console.log(data);
-                setItems(data.items || []);
+                setItems(data.items);
             } catch (error) {
                 console.log(error);
                 setError(error.message);
@@ -91,7 +91,7 @@ export default function SubCateg({ params }) {
                 <p className="mb-4 mt-8 text-3xl">Other</p>
                 <div className="flex flex-col gap-y-5">
                     {currentItems.map(item => (
-                        <HomeItem key={item.id} item={item} image={item.image} />
+                        <HomeItem key={item.id} price={item.price} id={item.id} name={item.title} image={item.image} />
                     ))}
                 </div>
 

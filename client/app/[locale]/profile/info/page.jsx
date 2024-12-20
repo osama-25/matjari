@@ -23,7 +23,6 @@ function ProfilePicture({ pic, togglePopup }) {
 
 
 const Info = () => {
-
     const [info, setInfo] = useState({
         fname: '',
         lname: '',
@@ -83,7 +82,10 @@ const Info = () => {
     }
 
     function handleOnSave() {
-
+        // const phonepattern = /0[6-7]{1}[5789]{1}[0-9]{3}[0-9]{4}/;
+        // if(!phonepattern.test(info.number)){
+            
+        // }
         modifyData(info);
         setOriginalInfo(info);
         setIsDisabled(true);
@@ -178,6 +180,7 @@ const Info = () => {
                             value={info.fname}
                             onChange={handleOnChange}
                             className="shadow-inner border-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"
+                            required
                         />
                     </div>
                     <div className="m-2">
@@ -190,6 +193,7 @@ const Info = () => {
                             value={info.lname}
                             onChange={handleOnChange}
                             className="shadow-inner border-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"
+                            required
                         />
                     </div>
                     <div className="m-2">
@@ -202,6 +206,7 @@ const Info = () => {
                             value={info.user_name}
                             onChange={handleOnChange}
                             className="shadow-inner border-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"
+                            required
                         />
                     </div>
 
@@ -222,7 +227,7 @@ const Info = () => {
                         <input
                             disabled={isDisabled}
                             type="tel"
-                            pattern="[6-7]{1}[5789]{1}-[0-9]{3}-[0-9]{4}"
+                            pattern="0[6-7]{1}[5789]{1}[0-9]{3}[0-9]{4}"
                             name="phonenumber"
                             id="phonenumber"
                             className="shadow-inner border-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"

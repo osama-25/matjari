@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { IoCameraOutline, IoCloseCircle } from 'react-icons/io5';
 
-export default function AddPhoto({ onUpload, onDelete, id }) {
+export default function AddPhoto({ onUpload, onDelete, id, size = 'small' }) {
   const [image, setImage] = useState(null);
   // const [filename, setFilename] = useState("");
   // const [fileType, setFileType] = useState("");
@@ -52,9 +52,7 @@ export default function AddPhoto({ onUpload, onDelete, id }) {
   };
 
   return (
-    <div className="flex items-center justify-center w-24 h-24 md:w-26 md:h-26 lg:w-32 lg:h-32 border-2 border-gray-200 rounded-md relative group">
-
-
+    <div className={`flex items-center justify-center border-2 border-gray-200 rounded-md relative group ${size == 'large'? 'w-full h-24 md:w-full md:h-52' : 'w-24 h-24 md:w-26 md:h-26 lg:w-36 lg:h-36'}`}>
       {image ? (
         <div className="w-full h-full relative">
           <img
@@ -64,7 +62,7 @@ export default function AddPhoto({ onUpload, onDelete, id }) {
           />
           <button
             onClick={handleImageRemove}
-            className="absolute top-1 right-1 bg-white rounded-full p-1 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute top-1 right-1 rounded-full p-1 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
           >
             <IoCloseCircle size={24} />
           </button>
@@ -72,7 +70,7 @@ export default function AddPhoto({ onUpload, onDelete, id }) {
       ) : (
         <label
           htmlFor="dropzone-file"
-          className="w-32 h-32 flex items-center justify-center border-dashed rounded-lg cursor-pointer hover:bg-gray-100"
+          className="w-full h-full flex items-center justify-center border-dashed rounded-lg cursor-pointer hover:bg-gray-100"
         >
           <div className="w-12 h-12 border-2 border-dotted border-blue-500 flex items-center justify-center rounded-md">
             <IoCameraOutline color="blue" size={30} />
