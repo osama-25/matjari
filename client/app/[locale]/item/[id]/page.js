@@ -27,7 +27,6 @@ const ProductPage = ({ params }) => {
     useEffect(() => {
         const fetchItem = async () => {
             try {
-                console.log("item id: " + itemID);
                 const response = await fetch(`http://localhost:8080/api/listing/${itemID}`);
 
                 if (!response.ok) {
@@ -59,6 +58,27 @@ const ProductPage = ({ params }) => {
         }
         fetchUser();
     }, [itemID]);
+
+    useEffect(() => {
+        const fetchFavourited = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/api/favorites/${itemID}/${user_id}`);
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch favourited state');
+                }
+
+                const data = await response.json();
+                console.log(data);
+                setHeart(data.favourited);
+            } catch (error) {
+                setError(error.message);
+            }
+        }
+        if (user_id) {
+            fetchFavourited();
+        }
+    }, [itemID, user_id, Heart]);
 
     const HandleDelete = async () => {
         try {
@@ -142,10 +162,7 @@ const ProductPage = ({ params }) => {
         }
     }
 
-
-
     const HandleFavouriteClick = async () => {
-
         // change the item favourite status in the database
         if (user_id) { // Reactively use the state value
             try {

@@ -225,7 +225,7 @@ export const login = (req, res, next) => {
         }
 
         if (!user) {
-            return res.status(401).json({ success: false, message: info.message });
+            return res.status(401).json({ success: false, message: "email or password incorrect" });
         }
 
         // Generate a token for the logged-in user
