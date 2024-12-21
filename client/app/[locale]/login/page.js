@@ -78,13 +78,7 @@ export default function LoginPage() {
                     })
                 });
 
-
-
-
                 const data = await ress.json();
-
-
-
 
                 console.log(data);
 
@@ -98,18 +92,9 @@ export default function LoginPage() {
                     localStorage.setItem('token', data.token);
                     router.push('/home');
                 }
-                else
-                    handleShowToast('User not found');
-
-                // if (res.data.token) {
-                //     // localStorage.setItem("token", res.data.token);
-                //     login(res.data.user);
-                //     // console.log(res.data.user);
-
-                //     router.push('/home');
-                // } else {
-                //     handleShowToast('User not found');
-                // }
+                else {
+                    handleShowToast(data.message);
+                }
             } catch (err) {
                 handleShowToast('Error occured try again');
                 console.log("Error with /auth/login:", err);
@@ -156,7 +141,7 @@ export default function LoginPage() {
                                     className={`text-gray-600 absolute ${locale == 'ar' ? 'left-2' : 'right-2'} top-1/2 transform -translate-y-1/2`}
                                     onClick={() => setShowPassword(!showPassword)} // Toggle showPassword state
                                 >
-                                    {showPassword? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                                    {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
                                 </button>
                             </div>
                         </div>

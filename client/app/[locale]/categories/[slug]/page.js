@@ -5,6 +5,8 @@ import { HomeItem, Item } from "@/app/[locale]/Item";
 import { useTranslations } from "next-intl";
 import ErrorPage from "../../ErrorPage";
 import Loading from "../../global_components/loading";
+import ItemDisplay from "../../search/ItemDisplay";
+import { getInfo } from "../../global_components/dataInfo";
 
 const ads = [
     { category: 'electronics', img: 'https://matjariblob.blob.core.windows.net/ads/electronics-ad.png?sv=2022-11-02&ss=bfqt&srt=o&sp=rwdlacupiytfx&se=2025-11-17T16:46:50Z&st=2024-11-17T08:46:50Z&spr=https&sig=w%2Fj73uiro1P%2B2kPc4gvxyeykWKEz1N9X4jpsk6Vyv2Y%3D', text: 'electronics-ad' },
@@ -29,6 +31,8 @@ export default function SubCateg({ params }) {
     const [error, setError] = useState(null);
     const ad = ads.find(ad => ad.category === category);
     const t = useTranslations('ads');
+    const [user_id, setUserId] = useState(null);
+    const [favourited, setFavourited] = useState([]);
 
     useEffect(() => {
         const fetchCat = async () => {
@@ -66,6 +70,42 @@ export default function SubCateg({ params }) {
         fetchItems();
     },[currentPage])
 
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const info = await getInfo();
+                console.log(info);
+                if (info) {
+                    setUserId(info.id);
+                }
+            } catch (error) {
+                //setError(error.message);
+            }
+        }
+        fetchUser();
+    }, []);
+
+    useEffect(() => {
+        const fetchFavourited = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/api/favorites/batch/${user_id}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch favourited state');
+                }
+                
+                const data = await response.json();
+                
+                setFavourited(data.favorites);
+            } catch (error) {
+                setError(error.message);
+            }
+        }
+        if (user_id) {
+            fetchFavourited();
+        }
+    }, [currentPage, user_id]);
+
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     if (error) {
@@ -88,12 +128,7 @@ export default function SubCateg({ params }) {
             </div>
             <div className="p-5">
                 <CategoryDisplay categories={categories} />
-                <p className="mb-4 mt-8 text-3xl">Other</p>
-                <div className="flex flex-col gap-y-5">
-                    {currentItems.map(item => (
-                        <HomeItem key={item.id} price={item.price} id={item.id} name={item.title} image={item.image} />
-                    ))}
-                </div>
+                <ItemDisplay Items={currentItems} Favourited={favourited} />
 
                 <div className="flex justify-center items-center space-x-2 mt-4">
                     {Array.from({ length: Math.ceil(items.length / itemsPerPage) }, (_, index) => (
