@@ -55,9 +55,10 @@ const NavBar = () => {
       if (!response.ok) {
         throw new Error('Search failed');
       }
+      
   
       const data = await response.json();
-      setSearchResults(data.items);  // Assuming the backend returns an object with items
+      setSearchResults(data.items); // Assuming the backend returns an object with items
       
       // Navigate to search results page
       router.push(`/search?term=${encodeURIComponent(searchTerm)}&page=1&pageSize=10`);
