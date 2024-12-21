@@ -90,3 +90,4 @@ export const getUserByEmail = async (email) => {
 export const verifyPassword = async (plainPassword, hashedPassword) => {
     return await bcrypt.compare(plainPassword, hashedPassword);
 };
+

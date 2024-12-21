@@ -18,7 +18,7 @@ export default function Chats({ CloseChat }) {
     const [refresh, setRefresh] = useState(false);
     const messagesEndRef = useRef(null);
     const [getId, setID] = useState();
-    const room = 1;
+    const room = 4;
     const [modalContent, setModalContent] = useState(null); // To store the modal content
     const [isModalOpen, setIsModalOpen] = useState(false); // To track modal visibility
     const [hideSend, setHideSend] = useState(0);
@@ -171,7 +171,7 @@ export default function Chats({ CloseChat }) {
                 files: uploadedFiles,
                 type: uploadedFiles.filetype
             }]);
-            
+
             setRefresh(!refresh);
 
 
@@ -213,7 +213,7 @@ export default function Chats({ CloseChat }) {
 
     const handleFileUpload = async (event) => {
         const uploadedFiles = Array.from(event.target.files);
-    
+
         // File size validation
         const validFiles = uploadedFiles.filter((file) => {
             if (file.type.startsWith("image/")) {
@@ -224,20 +224,20 @@ export default function Chats({ CloseChat }) {
                 return false; // Ignore unsupported file types
             }
         });
-    
+
         const invalidFiles = uploadedFiles.filter((file) => !validFiles.includes(file));
         if (invalidFiles.length > 0) {
             console.warn("Some files were skipped due to size limits:", invalidFiles);
             alert("Some files exceed the size limits and were not uploaded.");
         }
-    
+
         // Generate file previews
         const filePreviews = validFiles.map((file) => ({
             file,
             url: URL.createObjectURL(file),
         }));
         setPreviewFiles((prevFiles) => [...prevFiles, ...filePreviews]);
-    
+
         // Convert valid files to base64
         const filePromises = validFiles.map((file) => {
             return new Promise((resolve, reject) => {
@@ -247,14 +247,14 @@ export default function Chats({ CloseChat }) {
                 reader.readAsDataURL(file);
             });
         });
-    
+
         try {
             const base64Files = await Promise.all(filePromises);
             setFiles((prevFiles) => [...prevFiles, ...base64Files]);
         } catch (error) {
             console.error("Error converting files to base64:", error);
         }
-    };    
+    };
 
     return (
         <div className="flex flex-col h-full p-1 md:p-4">
@@ -431,98 +431,4 @@ export default function Chats({ CloseChat }) {
         </div>
     );
 
-
-    // return (
-    //     <div className="flex flex-col h-screen p-4 bg-gray-100">
-    //         <h1 className="text-xl font-semibold text-blue-600 mb-4">Chat Room</h1>
-
-
-
-    //         <div className="flex-1 overflow-y-auto bg-white p-4 rounded-lg shadow-md mb-4">
-    //             {AllMessages.map((msg, index) => (
-
-    //                 <div
-    //                     key={index}
-
-    //                     className={`p-2 rounded-lg ${parseInt(msg.sentByUser) === parseInt(getId) ? "bg-blue-100 text-right" : "bg-gray-200 text-left"}`}
-
-    //                 >
-
-    //                     {/* <h1>TESTING
-    //                         <div> msg.sentByUser : {(msg.sentByUser)}</div>
-    //                         <div> getId: {parseInt(getId)}</div>
-    //                         <div> msg.sentByUser === getId: {parseInt(msg.sentByUser) === parseInt(getId) ? "YES" : "NO"}</div>
-
-    //                     </h1> */}
-    //                     {/* Display message content */}
-    //                     <p>{msg.message}</p>
-
-    //                     {/* Display files based on msg.type */}
-    //                     {msg.files && (
-    //                         <div className="mt-2">
-    //                             {msg.type?.startsWith("image") && (
-    //                                 <img
-    //                                     src={msg.files}
-    //                                     alt="Image"
-    //                                     className="w-24 h-auto rounded-md"
-    //                                 />
-    //                             )}
-    //                             {msg.type?.startsWith("video") && (
-    //                                 <video
-    //                                     src={msg.files}
-    //                                     controls
-    //                                     className="w-24 h-auto rounded-md"
-    //                                 />
-    //                             )}
-    //                             {/* {!msg.type?.startsWith("image") &&
-    //                                 !msg.type?.startsWith("video") && (
-    //                                     <a
-    //                                         href={msg.files}
-    //                                         download
-    //                                         className="text-blue-500"
-    //                                     >
-
-    //                                         {msg.split('/').pop() || "Download File"}
-    //                                     </a>
-    //                                 )} */}
-    //                         </div>
-    //                     )}
-    //                 </div>
-    //             ))}
-    //             <div ref={messagesEndRef} />
-
-    //         </div>
-
-
-
-    //         <div className="flex items-center space-x-2 mt-4">
-    //             <input
-    //                 type="text"
-    //                 className="flex-1 p-2 border border-gray-300 rounded-lg"
-    //                 placeholder="Type a message..."
-    //                 onChange={(event) => setMessage(event.target.value)}
-    //                 value={message}
-    //             />
-    //             <input
-    //                 type="file"
-    //                 multiple
-    //                 onChange={handleFileUpload}
-    //                 className="hidden"
-    //                 id="file-upload"
-    //             />
-    //             <label
-    //                 htmlFor="file-upload"
-    //                 className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg cursor-pointer"
-    //             >
-    //                 Upload
-    //             </label>
-    //             <button
-    //                 className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-    //                 onClick={sendMessage}
-    //             >
-    //                 Send
-    //             </button>
-    //         </div>
-    //     </div>
-    // );
 }

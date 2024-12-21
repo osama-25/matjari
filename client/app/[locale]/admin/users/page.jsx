@@ -1,6 +1,52 @@
+"use client";
+import { useState, useEffect } from 'react';
 import AdminLayout from '../AdminLayout';
 
 export default function Users() {
+    const [users, setUsers] = useState([]);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/admin/get-users'); // Adjust if using a different API route
+                const data = await response.json();
+                console.log(data);
+
+                setUsers(data);
+            } catch (error) {
+                console.error('Failed to fetch users:', error);
+            }
+        };
+
+        fetchUsers();
+    }, []);
+
+    const banUser = async (userId) => {
+        try {
+            const response = await fetch(`http://localhost:8080/admin/ban-user/${userId}`, {
+                method: 'POST', // Use 'PUT' or 'DELETE' if your API requires it
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                // Update the user's banned status in the UI
+                setUsers(prevUsers =>
+                    prevUsers.map(user =>
+                        user.id === userId ? { ...user, banned: true } : user
+                    )
+                );
+                alert('User has been banned successfully');
+            } else {
+                alert('Failed to ban user');
+            }
+        } catch (error) {
+            console.error('Error banning user:', error);
+            alert('An error occurred while banning the user');
+        }
+    };
+
     return (
         <AdminLayout>
             <h1 className="text-3xl font-bold mb-8">Users</h1>
@@ -9,23 +55,41 @@ export default function Users() {
                 <table className="min-w-full table-auto">
                     <thead>
                         <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                            <th className="py-3 px-6 text-left">ID</th>
                             <th className="py-3 px-6 text-left">Name</th>
                             <th className="py-3 px-6 text-left">Email</th>
-                            <th className="py-3 px-6 text-center">Role</th>
+                            <th className="py-3 px-6 text-center">User Name</th>
+                            <th className="py-3 px-6 text-center">Phone Number</th>
                             <th className="py-3 px-6 text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="text-gray-600 text-sm font-light">
-                        <tr className="border-b border-gray-200 hover:bg-gray-100">
-                            <td className="py-3 px-6 text-left">John Doe</td>
-                            <td className="py-3 px-6 text-left">john@example.com</td>
-                            <td className="py-3 px-6 text-center">Admin</td>
-                            <td className="py-3 px-6 text-center">
-                                <button className="text-blue-500 hover:text-blue-700">Edit</button>
-                                <button className="text-red-500 hover:text-red-700 ml-4">Delete</button>
-                            </td>
-                        </tr>
-                        {/* More rows can go here */}
+                        {users.map(user => (
+                            <tr
+                                key={user.id}
+                                className={`border-b border-gray-200 hover:bg-gray-100 ${user.banned ? 'bg-red-100 text-red-600' : ''
+                                    }`}
+                            >
+
+                                <td className="py-3 px-6 text-left">{`${user.id}`}</td>
+                                <td className="py-3 px-6 text-left">{`${user.fname} ${user.lname}`}</td>
+                                <td className="py-3 px-6 text-left">{user.email}</td>
+                                <td className="py-3 px-6 text-left">{user.user_name}</td>
+                                <td className="py-3 px-6 text-left">{user.phone_number || 'N/A'}</td>
+                                <td className="py-3 px-6 text-center">
+                                    {!user.banned ? (
+                                        <button
+                                            onClick={() => banUser(user.id)}
+                                            className="text-red-500 hover:text-red-700 ml-4"
+                                        >
+                                            Ban User
+                                        </button>
+                                    ) : (
+                                        <span>Banned</span>
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>
