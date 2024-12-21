@@ -237,6 +237,7 @@ const Listing = () => {
                             {t('category')}
                         </label>
                         <select
+                            data-testid="categories"
                             id="categories"
                             name="category"
                             className="w-full mt-2 h-12 border-2 border-gray-300 text-gray-600 rounded-lg px-3 focus:outline-none"
@@ -252,6 +253,7 @@ const Listing = () => {
                         </select>
                         {/* Subcategory Section */}
                         <select
+                            data-testid="subcat"
                             id="subcat"
                             name="subCategory"
                             className="w-full mt-2 h-12 border-2 border-gray-300 text-gray-600 rounded-lg px-3 focus:outline-none"
@@ -273,6 +275,7 @@ const Listing = () => {
                                 {t('title')}
                             </label>
                             <input
+                                data-testid="title"
                                 type="text"
                                 name="title"
                                 placeholder={t('titleph')}
@@ -287,6 +290,7 @@ const Listing = () => {
                                 {t('desc')}
                             </label>
                             <textarea
+                                data-testid="desc"
                                 name="description"
                                 placeholder={t('descph')}
                                 id="desc"
@@ -302,6 +306,7 @@ const Listing = () => {
                             {t('price')}
                         </label>
                         <input
+                            data-testid="price"
                             type="number"
                             name="price"
                             id="price"
@@ -318,6 +323,7 @@ const Listing = () => {
                             {t('location')}
                         </label>
                         <select
+                            data-testid="location"
                             id="location"
                             name="location"
                             className="w-full mt-2 h-12 border-2 border-gray-300 text-gray-600 rounded-lg px-3 focus:outline-none"
@@ -338,7 +344,7 @@ const Listing = () => {
                             <option value="KR">{t('Al Karak')}</option>
                         </select>
                     </div>
-                    <div className="w-full">
+                    <div className="w-full" data-testid="details">
                         <label className="text-gray-700 text-lg font-bold">{t('details')}</label>
                         <div className="p-4">
                             <label className="text-gray-700 text-md font-bold">{t('condition')}</label>
@@ -429,6 +435,7 @@ const Listing = () => {
                 {/* Submit Button */}
                 <div className="col-span-2 flex justify-center mt-6">
                     <button
+                        data-testid="submitbtn"
                         type="submit"
                         className="bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-3 px-6 rounded-lg focus:outline-none"
                     >
