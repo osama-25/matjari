@@ -31,14 +31,9 @@ const Listing = () => {
     const [categories, setCategories] = useState([]);
     const [subcategories, setSubCategories] = useState([]);
     const [error, setError] = useState();
-    const [image, setImage] = useState(null);
-    const [images, setImages] = useState(photos.map(() => null));
+   
 
-    const handleSetImage = (index, newImage) => {
-        const updatedImages = [...images];
-        updatedImages[index] = newImage;
-        setImages(updatedImages);
-    };
+    
 
     const HandleLocaleChange = () => {
         const currentLocale = pathname.split("/")[1]; // Get the current locale (e.g., "en" or "ar")
@@ -108,7 +103,7 @@ const Listing = () => {
                     body: JSON.stringify({
                         filename: photo.filename,
                         fileType: photo.fileType,
-                        imageBase64: photo.imageBase64,
+                        imageBase64: photo.imageBase64.split(",")[1],
                     }),
                 });
 
@@ -420,10 +415,10 @@ const Listing = () => {
                     <div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4 justify-items-center">
                             <div className="col-span-1 md:col-span-3 w-full">
-                                <AddPhoto image={image} setImage={setImage} onDelete={deletePhotoURL} onUpload={addPhotoURL} size="large" />
+                                <AddPhoto image={photoDataArray[0]?.imageBase64||null} key={0} id={0}  onDelete={deletePhotoURL} onUpload={addPhotoURL} size="large" />
                             </div>
                             {photos.map((photo, index) => (
-                                <AddPhoto image={images[index]} setImage={(newImage) => handleSetImage(index, newImage)} key={index} id={index} onDelete={deletePhotoURL} onUpload={addPhotoURL} size="small" />
+                                <AddPhoto image={photoDataArray[index+1]?.imageBase64||null}  key={index+1} id={index+1} onDelete={deletePhotoURL} onUpload={addPhotoURL} size="small" />
                             ))}
                             {photos.length < 9 && (
                                 <button

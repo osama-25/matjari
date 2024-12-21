@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { IoCameraOutline, IoCloseCircle } from 'react-icons/io5';
 
-export default function AddPhoto({ image, setImage, onUpload, onDelete, id, size = 'small' }) {
+export default function AddPhoto({ image, onUpload, onDelete, id, size = 'small' }) {
   // const [filename, setFilename] = useState("");
   // const [fileType, setFileType] = useState("");
   // const [imageBase64, setImageBase64] = useState("");
@@ -31,8 +31,8 @@ export default function AddPhoto({ image, setImage, onUpload, onDelete, id, size
 
 
 
-        setImage(imageBase64);
-        imageBase64 = imageBase64.split(",")[1];
+        //setImage(imageBase64);
+        //imageBase64 = imageBase64.split(",")[1];
         onUpload(filename,fileType,imageBase64);
         //onUpload(imgURL);
 
@@ -45,7 +45,7 @@ export default function AddPhoto({ image, setImage, onUpload, onDelete, id, size
   };
 
   const handleImageRemove = () => {
-    setImage(null);
+
     onDelete(id);
 
   };
@@ -62,6 +62,7 @@ export default function AddPhoto({ image, setImage, onUpload, onDelete, id, size
           <button
             onClick={handleImageRemove}
             className="absolute top-1 right-1 rounded-full p-1 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+            type='button'
           >
             <IoCloseCircle size={24} />
           </button>
