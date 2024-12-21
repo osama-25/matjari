@@ -1,26 +1,47 @@
 'use client';
-import React, { useState } from "react";
-import SearchFilter from "./SearchFilter";
-import ItemDisplay from "./ItemDisplay";
+import React, { use, useEffect, useState } from "react";
+import SearchFilter from "../../search/SearchFilter";
+import ItemDisplay from "../../search/ItemDisplay";
+import ErrorPage from "../../ErrorPage";
 
-const items = [
-    { id: 1, name: 'Electronics', image: '/favicon.ico', link: '/electronics' },
-    { id: 2, name: 'Fashion', image: '/favicon.ico', link: '/fashion' },
-    { id: 3, name: 'Home', image: '/favicon.ico', link: '/home' },
-    { id: 4, name: 'Books', image: '/favicon.ico', link: '/books' },
-];
-
-const SearchPage = () => {
+const SubCategories = ({ params }) => {
+    const subcategory = use(params).slug;
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(5);
     const [items, setItems] = useState([]);
-    
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchItems = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/subcategories/${subcategory}/${currentPage}/${itemsPerPage}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch items: ${response.statusText}`);
+                }
+                const data = await response.json();
+                console.log(data);
+                setItems(data.items);
+            } catch (error) {
+                console.log(error);
+                setError(error.message);
+            }
+        }
+        fetchItems();
+    }, [currentPage]);
+
+    if (error) {
+        return <ErrorPage message={error} statusCode={404} />;
+    }
+    console.log(items);
+
+    // Paginate items
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
     return (
-        <div className="flex relative">
+        <div className="flex">
             <SearchFilter />
             <div className="flex flex-col justify-between w-full">
                 <ItemDisplay Items={currentItems} />
@@ -42,4 +63,4 @@ const SearchPage = () => {
         </div>
     )
 }
-export default SearchPage;
+export default SubCategories;

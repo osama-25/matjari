@@ -24,7 +24,7 @@ const CustomDetails = ({ customDetails, setCustomDetails }) => {
     return (
         <div className="w-full p-4">
             {customDetails.map((detail, index) => (
-                <div key={index} className="relative flex flex-col md:flex-row mb-2 gap-1">
+                <div key={index} className="relative flex flex-col md:flex-row mb-2 gap-y-1">
                     <input
                         type="text"
                         placeholder={t('customtitle')}
@@ -47,7 +47,7 @@ const CustomDetails = ({ customDetails, setCustomDetails }) => {
             <button
                 type="button"
                 onClick={addCustomDetail}
-                className="mt-4 text-white bg-blue-500 px-4 py-2 rounded-lg"
+                className="text-white bg-blue-500 px-4 py-2 rounded-lg"
             >
                 + {t('custom')}
             </button>

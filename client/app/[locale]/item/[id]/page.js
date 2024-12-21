@@ -6,41 +6,23 @@ import Loading from '@/app/[locale]/global_components/loading';
 import { useTranslations } from 'next-intl';
 import ErrorPage from '../../ErrorPage';
 import { getInfo } from '../../global_components/dataInfo';
-
-const details = [
-    { title: 'Location', desc: 'Your Location Here' },
-    { title: 'Delivery', desc: 'Your Delivery Here' },
-    { title: 'Condition', desc: 'Your Condition Here' },
-    { title: 'Location', desc: 'Your Location Here' },
-    { title: 'Delivery', desc: 'Your Delivery Here' },
-    { title: 'Condition', desc: 'Your Condition Here' },
-    { title: 'Location', desc: 'Your Location Here' },
-    { title: 'Delivery', desc: 'Your Delivery Here' },
-    { title: 'Condition', desc: 'Your Condition Here' },
-    { title: 'Location', desc: 'Your Location Here' },
-    { title: 'Delivery', desc: 'Your Delivery Here' },
-    { title: 'Condition', desc: 'Your Condition Here' },
-    { title: 'Location', desc: 'Your Location Here' },
-    { title: 'Delivery', desc: 'Your Delivery Here' },
-    { title: 'Condition', desc: 'Your Condition Here' },
-    { title: 'Location', desc: 'Your Location Here' },
-    { title: 'Delivery', desc: 'Your Delivery Here' },
-    { title: 'Condition', desc: 'Your Condition Here' },
-]
+import { FaTrashCan } from 'react-icons/fa6';
+import Popup from '../../popup';
+import Link from 'next/link';
 
 const ProductPage = ({ params }) => {
     const router = useRouter();
     const [Heart, setHeart] = useState(0);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [photo, setPhoto] = useState('/Resources/profile-pic.jpg');
-    const [showMoreDesc, setShowMoreDesc] = useState(false);
-    const [sellerPhoneNumber, setSellerPhoneNumber] = useState('0789919165');
     const [edit, setEdit] = useState(false);
-
     const [item, setItem] = useState(null);
     const itemID = use(params).id;
     const t = useTranslations('Item');
     const [error, setError] = useState(null); // State to track errors
+    const [userEmail, setUserEmail] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const [user_id, setUserId] = useState(null);
 
     useEffect(() => {
         const fetchItem = async () => {
@@ -63,11 +45,39 @@ const ProductPage = ({ params }) => {
         fetchItem();
     }, [itemID]);
 
-    if (error) {
-        return <ErrorPage statusCode={500} message={error} />; // Render error page on error
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const info = await getInfo();
+                if (info) {
+                    setUserId(info.id);
+                    setUserEmail(info.email);
+                }
+            } catch (error) {
+                //setError(error.message);
+            }
+        }
+        fetchUser();
+    }, [itemID]);
+
+    const HandleDelete = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/listing/delete/${itemID}`, {
+                method: 'DELETE', // Explicitly set the method to DELETE
+            });
+            if (!response.ok) {
+                throw new Error('Failed to delete listing');
+            }
+            router.push('/home');
+        } catch (error) {
+            setError(error);
+        }
     }
 
-    // if (!item) return <p>Loading...</p>;
+    if (error) {
+        return <ErrorPage statusCode={404} message={error} />; // Render error page on error
+    }
+
     if (!item) return <Loading>Loading...</Loading>;
 
     const {
@@ -81,6 +91,7 @@ const ProductPage = ({ params }) => {
         location,
         username,
         phone_number,
+        email,
         photos = [],
         customDetails = {}
     } = item;
@@ -131,10 +142,40 @@ const ProductPage = ({ params }) => {
         }
     }
 
-    const HandleFavouriteClick = () => {
-        setHeart(!Heart);
+
+
+    const HandleFavouriteClick = async () => {
+
         // change the item favourite status in the database
+        if (user_id) { // Reactively use the state value
+            try {
+                const response = await fetch('http://localhost:8080/api/favorites', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userId: user_id, listingId: itemID }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to toggle favorite');
+                }
+
+                const result = await response.json();
+                console.log(result.message);
+                setHeart((prevHeart) => !prevHeart); // Toggle the UI state
+            } catch (error) {
+                console.error('Error toggling favorite:', error);
+            }
+        }
+        else {
+            //redirect to login page
+        }
     }
+
+    const togglePopup = () => {
+        setIsOpen(!isOpen);
+    };
 
     return (
         <div className="flex flex-col md:grid md:grid-cols-4 justify-items-center p-8 gap-4 bg-gray-100">
@@ -169,16 +210,19 @@ const ProductPage = ({ params }) => {
                     <p className="tetx-xl lg:text-2xl font-semibold mt-4">{price} JD</p>
                     {/* Buttons */}
                     <div className="flex mt-6 justify-between h-full items-end">
-                        {!edit && <button onClick={handleButtonClick} className={`h-12 w-16 lg:w-24 flex flex-row items-center justify-center gap-2 bg-gray-800 text-white shadow-md text-lg rounded-md hover:bg-gray-700`}>
+                        {email !== userEmail && <button onClick={handleButtonClick} className={`h-12 w-16 lg:w-24 flex flex-row items-center justify-center gap-2 bg-gray-800 text-white shadow-md text-lg rounded-md hover:bg-gray-700`}>
                             <FaComment />
                             <span className="hidden lg:block text-lg font-bold">{t('chat')}</span>
                         </button>}
-                        {!edit && <button onClick={HandleFavouriteClick} className={`h-12 w-12 flex flex-row items-center justify-center bg-white text-red-500 hover:bg-gray-100 rounded-full shadow-md`}>
+                        {email !== userEmail && <button onClick={HandleFavouriteClick} className={`h-12 w-12 flex flex-row items-center justify-center bg-white text-red-500 hover:bg-gray-100 rounded-full shadow-md`}>
                             {Heart ? <FaHeart size={24} color={'crimson'} /> : <FaRegHeart size={26} />}
                         </button>}
                         {/* Edit button for seller (change hidden to flex to show) */}
-                        {edit && <button className={`h-10 w-10 flex items-center justify-center gap-2 bg-gray-800 text-white rounded-full shadow-md hover:bg-gray-700`}>
+                        {email == userEmail && <Link href={{ pathname: '/edit_listing', query: { id: itemID } }} className={`h-10 w-10 flex items-center justify-center gap-2 bg-gray-800 text-white rounded-full shadow-md hover:bg-gray-700`}>
                             <FaPen />
+                        </Link>}
+                        {email == userEmail && <button onClick={togglePopup} className={`h-10 w-10 flex items-center justify-center gap-2 bg-red-500 text-white rounded-full shadow-md hover:bg-red-700`}>
+                            <FaTrashCan />
                         </button>}
                     </div>
                 </div>
@@ -202,8 +246,10 @@ const ProductPage = ({ params }) => {
                     <li><strong>Location:</strong> {location}</li>
                     <li><strong>Delivery:</strong> {delivery ? "Yes" : "No"}</li>
                     <li><strong>Condition:</strong> {condition}</li>
-                    {Object.entries(customDetails).map(([key, value], index) => (
-                        <li key={index}><strong>{key}:</strong> {value}</li>
+                    {customDetails.map((detail, index) => (
+                        <li key={index}>
+                            <strong>{detail.title}:</strong> {detail.description}
+                        </li>
                     ))}
                 </ul>
             </div>
@@ -216,6 +262,25 @@ const ProductPage = ({ params }) => {
                     {description}
                 </p>
             </div>
+            {/* Popup for Delete item */}
+            {isOpen && (
+                <Popup title={t('delete')} togglePopup={togglePopup}>
+                    <div className="flex space-x-4 mt-4 w-full justify-between">
+                        <button
+                            onClick={HandleDelete}
+                            className="bg-red-500 text-white px-4 py-2 w-1/3 rounded hover:bg-red-600"
+                        >
+                            {t('yes')}
+                        </button>
+                        <button
+                            onClick={togglePopup}
+                            className="bg-gray-300 text-black px-4 py-2 w-1/3 rounded hover:bg-gray-400"
+                        >
+                            {t('no')}
+                        </button>
+                    </div>
+                </Popup>
+            )}
         </div>
     );
 };

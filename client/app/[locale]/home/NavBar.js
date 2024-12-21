@@ -17,6 +17,8 @@ const NavBar = () => {
   const [isloggedIn, setIsloggedIn] = useState(1);
   const [flagIndex, setFlagIndex] = useState(1);
   const [isMenuOpen, setIsMenuOpen] = useState(false); // State for side menu visibility
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -36,6 +38,44 @@ const NavBar = () => {
       router.push("/profile");
     } else {
       router.push("/login");
+    }
+  };
+
+  const performSearch = async () => {
+    if (!searchTerm.trim()) return;
+  
+    try {
+      const response = await fetch(`/search?term=${encodeURIComponent(searchTerm)}&page=1&pageSize=10`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Search failed');
+      }
+      
+  
+      const data = await response.json();
+      setSearchResults(data.items); // Assuming the backend returns an object with items
+      
+      // Navigate to search results page
+      router.push(`/search?term=${encodeURIComponent(searchTerm)}&page=1&pageSize=10`);
+    } catch (err) {
+      console.error('Search error:', err);
+    }
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    performSearch();
+  };
+
+  const handleKeyDown = (e) => {
+    // Check if the pressed key is 'Enter'
+    if (e.key === 'Enter') {
+      performSearch();
     }
   };
 
@@ -59,23 +99,30 @@ const NavBar = () => {
                   />
                 </Link>
               </section>
-              <div className="flex-1 flex items-center justify-center p-4 w-full md:w-auto">
-                <button className="px-4 py-2 bg-gray-800 text-white rounded-l-md focus:outline-none">
+              <form onSubmit={handleSearchSubmit} className="flex-1 flex items-center justify-center p-4 w-full md:w-auto">
+                <button type="button" className="px-4 py-2 bg-gray-800 text-white rounded-l-md focus:outline-none">
                   <IoCamera size={24} />
                 </button>
-                <a className="w-full flex focus-within:outline rounded-md">
+                <div className="w-full flex focus-within:outline rounded-md">
                   <input
                     dir={pathname.split("/")[1] === 'ar' ? 'rtl' : 'ltr'}
                     type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     className="w-full py-2 px-4 border text-black focus:outline-none"
                     placeholder={t('searchph')}
                   />
-                  <button className="px-4 py-2 bg-blue-500 text-white rounded-r-md focus:outline-none">
+                  <button 
+                    type="submit"
+                    onClick={performSearch}
+                    className="px-4 py-2 bg-blue-500 text-white rounded-r-md focus:outline-none"
+                  >
                     <p className="hidden sm:block">{t("search")}</p>
                     <FaSearch className="block sm:hidden" />
                   </button>
-                </a>
-              </div>
+                </div>
+              </form>
               <div className="flex md:hidden items-center">
                 <button onClick={() => setIsMenuOpen(true)}>
                   <FaBars />

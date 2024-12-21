@@ -153,7 +153,7 @@ export default function LoginPage() {
                                 />
                                 <button
                                     type="button"
-                                    className="text-gray-600 absolute right-2 top-1/2 transform -translate-y-1/2"
+                                    className={`text-gray-600 absolute ${locale == 'ar' ? 'left-2' : 'right-2'} top-1/2 transform -translate-y-1/2`}
                                     onClick={() => setShowPassword(!showPassword)} // Toggle showPassword state
                                 >
                                     {showPassword? <FaEyeSlash size={18} /> : <FaEye size={18} />}

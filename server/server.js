@@ -13,8 +13,12 @@ import verifyToken from './middleware/middleware.js';
 import azure from './routes/azure.js';
 import images from './routes/images.js';
 import categoriesRoutes from './routes/categories.js';
+import subcategoriesRoutes from './routes/subcategory.js';
 import imageDescriptionRoutes from './routes/imageDesc.js';
+import searchRoutes from './routes/search.js';
+import favoriteRoutes from './routes/favorites.js'
 import adminRoutes from './routes/admin.js';
+
 env.config();
 
 const app = express();
@@ -46,6 +50,8 @@ app.use('/data', verifyToken, dataRoutes);
 //app.use('/profile', verifyToken, profileRoutes);
 app.use('/api/listing', itemRoutes);
 app.use('/categories', categoriesRoutes);
+app.use('/subcategories', subcategoriesRoutes);
+
 
 // app.use('/socket', socketRoutes);
 app.use('/chat', chatRoutes);
@@ -54,7 +60,8 @@ app.use('/img', images);
 app.use('/admin', adminRoutes);
 
 app.use('/imageDesc', imageDescriptionRoutes);
-
+app.use('/search',searchRoutes);
+app.use('/api/favorites',favoriteRoutes);
 app.use('/', (req, res) => {
     res.send("<h1>This is the backend server</h1>");
 });

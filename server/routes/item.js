@@ -1,5 +1,4 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import db from '../config/db.js';
 import axios from 'axios';
 const router = express.Router();
@@ -87,13 +86,19 @@ router.get('/:id', async (req, res) => {
             return acc;
         }, {});
 
+        // Transform `customDetails` from object to array format
+        item.customDetails = Object.entries(item.customDetails).map(([key, value]) => ({
+            title: key,
+            description: value,
+        }));
+
         const userInfo = await db.query(
-            'Select user_name,phone_number from users where id= $1',
+            'Select user_name, phone_number, email from users where id= $1',
             [item.user_id]
         );
         item.username = userInfo.rows[0]?.user_name || null;
         item.phone_number = userInfo.rows[0]?.phone_number || null;
-
+        item.email = userInfo.rows[0]?.email || null;
 
         res.status(200).json(item);
     } catch (error) {
@@ -101,5 +106,86 @@ router.get('/:id', async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+router.delete('/delete/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        console.log(`Deleting listing with ID: ${id}`);
+
+        // Delete listing record
+        const listingResult = await db.query('DELETE FROM listings WHERE id = $1', [id]);
+        if (listingResult.rowCount === 0) {
+            return res.status(404).json({ message: 'Listing not found' });
+        }
+
+        // Delete associated photos
+        await db.query('DELETE FROM listing_photos WHERE listing_id = $1', [id]);
+
+        // Delete associated custom details
+        await db.query('DELETE FROM listing_details WHERE listing_id = $1', [id]);
+
+        res.status(200).json({ message: 'Listing deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting listing:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+router.post('/update/:listingId', async (req, res) => {
+    const { listingId } = req.params;
+    const { category, subCategory, title, description, condition, delivery, price, location, photos, customDetails } = req.body;
+    const excludedTags = ['text', 'indoor', 'person'];
+    const IMAGE_DESCRIPTION_API = 'http://localhost:8080/imageDesc/describe';
+
+    try {
+        console.log('listingId' + listingId);
+        console.log(req.body);
+        // Update the listing in the database
+        const updateListingResult = await db.query(
+            `UPDATE listings
+             SET category = $1, sub_category = $2, title = $3, description = $4, condition = $5, 
+                 delivery = $6, price = $7, location = $8
+             WHERE id = $9`,
+            [category, subCategory, title, description, condition, delivery, price, location, listingId]
+        );
+
+        if (updateListingResult.rowCount === 0) {
+            return res.status(404).json({ message: 'Listing not found' });
+        }
+
+        // Delete existing photos and add new ones
+        await db.query(`DELETE FROM listing_photos WHERE listing_id = $1`, [listingId]);
+
+        const photoPromises = photos.map(async (photoUrl) => {
+            // Call the image description API
+            const response = await axios.post(IMAGE_DESCRIPTION_API, { image: photoUrl });
+            let tags = response.data.data?.tags.slice(0, 10).map(tag => tag.name) || [];
+
+            // Filter out unwanted tags
+            tags = tags.filter(tag => !excludedTags.includes(tag));
+
+            // Save new photo URL and tags to the database
+            return db.query(
+                `INSERT INTO listing_photos (listing_id, photo_url, tags) VALUES ($1, $2, $3)`,
+                [listingId, photoUrl, JSON.stringify(tags)]
+            );
+        });
+        await Promise.all(photoPromises);
+
+        // Delete existing custom details and add new ones
+        await db.query(`DELETE FROM listing_details WHERE listing_id = $1`, [listingId]);
+
+        const detailPromises = Object.entries(customDetails).map(([key, value]) =>
+            db.query(`INSERT INTO listing_details (listing_id, detail_key, detail_value) VALUES ($1, $2, $3)`, [listingId, key, value])
+        );
+        await Promise.all(detailPromises);
+
+        res.status(201).json({ message: 'Listing updated successfully' });
+    } catch (error) {
+        console.error('Error updating listing:', error);
+        res.status(500).json({ message: 'Error updating listing' });
+    }
+});
+
 
 export default router;

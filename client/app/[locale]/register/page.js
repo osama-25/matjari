@@ -29,14 +29,30 @@ function RegisterPage() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const form = event.currentTarget;
-        if (form.checkValidity() === false) {
+        const mailpattern = /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-zA-Z]{2,4}/i;
+        const passpattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/gm;
+        if(!mailpattern.test(info.email)){
             event.preventDefault();
             event.stopPropagation();
+            setMessage("email not entered correctly!");
+            setShowToast(true);
+            return;
+        }
+        else if(!passpattern.test(info.password) || (info.password != info.confirmPassword)){
+            event.preventDefault();
+            event.stopPropagation();
+            setMessage("password not entered correctly!");
+            setShowToast(true);
+            return;
+        }
+        else if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+            form.reportValidity();
             setMessage("Incorrect input!");
             setShowToast(true);
             return;
         }
-
         HandleRegisterPage();
     };
 
@@ -167,12 +183,20 @@ function RegisterPage() {
                                 required
                             />
                             <button
-                            type="button"
-                            className="text-gray-600 absolute right-2 top-1/2 transform -translate-y-1/2"
-                            onClick={() => setShowPassword(!showPassword)} // Toggle showPassword state
-                        >
-                            {showPassword ? <FaEyeSlash size={24} /> : <FaEye size={24} />}
-                        </button>
+                                type="button"
+                                className={`text-gray-600 absolute ${locale == 'ar' ? 'left-2' : 'right-2'} top-1/2 transform -translate-y-1/2`}
+                                onClick={() => setShowPassword(!showPassword)} // Toggle showPassword state
+                            >
+                                {showPassword ? <FaEyeSlash size={24} /> : <FaEye size={24} />}
+                            </button>
+                        </div>
+                        {/* Password Rules */}
+                        <div className="text-gray-500 text-xs mt-2">
+                            <ul className="list-disc list-inside">
+                                <li>{t('rule1')}</li> {/* e.g., Minimum 8 characters */}
+                                <li>{t('rule2')}</li> {/* e.g., At least one uppercase letter */}
+                                <li>{t('rule3')}</li> {/* e.g., At least one number */}
+                            </ul>
                         </div>
                     </div>
 
@@ -184,7 +208,7 @@ function RegisterPage() {
                         <input
                             className="shadow-inner border-2 rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-gray-400"
                             id="confirmPassword"
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             placeholder={t('confirmpassph')}
                             value={info.confirmPassword}
                             onChange={(event) => setInfo({ ...info, confirmPassword: event.target.value })}
@@ -229,7 +253,6 @@ function RegisterPage() {
             </p>
         </div>
     );
-
 }
 
 export default RegisterPage;

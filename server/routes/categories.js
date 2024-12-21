@@ -1,7 +1,7 @@
 import express from 'express';
 import db from '../config/db.js';
 
-const router = express.Router();
+export const router = express.Router();
 
 router.get('/:name', async (req, res) => {
     console.log('Route hit');
@@ -18,10 +18,9 @@ router.get('/:name', async (req, res) => {
             return res.status(404).json({ error: "Category not found" });
         }
 
-        const categoryId = categoryCheckResult.rows[0].id;
         const result = await db.query(
             `SELECT * FROM categories WHERE parent_cat = $1`,
-            [categoryId]
+            [name]
         );
 
         const data = result.rows;
@@ -66,7 +65,11 @@ router.get("/:category/:page/:pageSize", async (req, res) => {
 
         // Fetch items for the current page with limit and offset
         const itemsResult = await db.query(
-            "SELECT * FROM listings WHERE category = $1 LIMIT $2 OFFSET $3",
+            `SELECT l.*, 
+                    (SELECT photo_url FROM listing_photos lp WHERE lp.listing_id = l.id LIMIT 1) AS image
+             FROM listings l 
+             WHERE l.category = $1 
+             LIMIT $2 OFFSET $3`,
             [category, parsedPageSize, offset]
         );
 
@@ -84,6 +87,16 @@ router.get("/:category/:page/:pageSize", async (req, res) => {
     }
 });
 
-
+router.get("/", async (req, res) => {
+    try {
+        const categoryResult = await db.query(
+            `SELECT name FROM categories WHERE parent_cat is NULL`,
+        );
+        const data = categoryResult.rows;
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
 
 export default router;

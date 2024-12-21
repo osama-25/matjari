@@ -1,4 +1,5 @@
-import React from "react";
+'use client';
+import React, { useEffect, useState } from "react";
 import { FaArrowRight } from "react-icons/fa";
 import { HomeItem, Item } from "../Item";
 import { useTranslations } from "next-intl";
@@ -12,8 +13,23 @@ const items = [
     { id: 6, name: 'Home', image: '/favicon.ico' },
 ];
 
-const ItemsDisplay = () => {
+const ItemsDisplay = ({ ad }) => {
     const t = useTranslations('Home');
+    const [items, setItems] = useState([]);
+
+    useEffect(() => {
+        const fetchItems = async () => {
+            const response = await fetch(`http://localhost:8080/subcategories/${ad}/1/6`);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch items: ${response.statusText}`);
+            }
+            const data = await response.json();
+            console.log(data);
+            setItems(data.items);
+        }
+        fetchItems();
+    }, [])
+
     return (
         <div className="flex flex-col px-6 py-2">
             {/* Header Section - Sticky */}

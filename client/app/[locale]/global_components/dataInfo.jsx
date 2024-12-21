@@ -34,7 +34,8 @@ const getInfo = async () => {
         return info;
 
     } catch (error) {
-        console.error("Error fetching token info:", error);
+        //console.error("Error fetching token info:", error);
+        throw new Error("Failed to fetch token info");
         // setError(error.message); // Set error state
     }
 
