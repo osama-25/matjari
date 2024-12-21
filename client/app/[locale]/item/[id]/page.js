@@ -10,27 +10,6 @@ import { FaTrashCan } from 'react-icons/fa6';
 import Popup from '../../popup';
 import Link from 'next/link';
 
-const details = [
-    { title: 'Location', desc: 'Your Location Here' },
-    { title: 'Delivery', desc: 'Your Delivery Here' },
-    { title: 'Condition', desc: 'Your Condition Here' },
-    { title: 'Location', desc: 'Your Location Here' },
-    { title: 'Delivery', desc: 'Your Delivery Here' },
-    { title: 'Condition', desc: 'Your Condition Here' },
-    { title: 'Location', desc: 'Your Location Here' },
-    { title: 'Delivery', desc: 'Your Delivery Here' },
-    { title: 'Condition', desc: 'Your Condition Here' },
-    { title: 'Location', desc: 'Your Location Here' },
-    { title: 'Delivery', desc: 'Your Delivery Here' },
-    { title: 'Condition', desc: 'Your Condition Here' },
-    { title: 'Location', desc: 'Your Location Here' },
-    { title: 'Delivery', desc: 'Your Delivery Here' },
-    { title: 'Condition', desc: 'Your Condition Here' },
-    { title: 'Location', desc: 'Your Location Here' },
-    { title: 'Delivery', desc: 'Your Delivery Here' },
-    { title: 'Condition', desc: 'Your Condition Here' },
-]
-
 const ProductPage = ({ params }) => {
     const router = useRouter();
     const [Heart, setHeart] = useState(0);
@@ -75,7 +54,7 @@ const ProductPage = ({ params }) => {
                     setUserEmail(info.email);
                 }
             } catch (error) {
-                setError(error.message);
+                //setError(error.message);
             }
         }
         fetchUser();
@@ -83,7 +62,9 @@ const ProductPage = ({ params }) => {
 
     const HandleDelete = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/listing/delete/${itemID}`);
+            const response = await fetch(`http://localhost:8080/api/listing/delete/${itemID}`, {
+                method: 'DELETE', // Explicitly set the method to DELETE
+            });
             if (!response.ok) {
                 throw new Error('Failed to delete listing');
             }
@@ -94,7 +75,7 @@ const ProductPage = ({ params }) => {
     }
 
     if (error) {
-        return <ErrorPage statusCode={500} message={error} />; // Render error page on error
+        return <ErrorPage statusCode={404} message={error} />; // Render error page on error
     }
 
     if (!item) return <Loading>Loading...</Loading>;
@@ -265,8 +246,10 @@ const ProductPage = ({ params }) => {
                     <li><strong>Location:</strong> {location}</li>
                     <li><strong>Delivery:</strong> {delivery ? "Yes" : "No"}</li>
                     <li><strong>Condition:</strong> {condition}</li>
-                    {Object.entries(customDetails).map(([key, value], index) => (
-                        <li key={index}><strong>{key}:</strong> {value}</li>
+                    {customDetails.map((detail, index) => (
+                        <li key={index}>
+                            <strong>{detail.title}:</strong> {detail.description}
+                        </li>
                     ))}
                 </ul>
             </div>

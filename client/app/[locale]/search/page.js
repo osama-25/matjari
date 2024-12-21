@@ -1,4 +1,5 @@
-import React from "react";
+'use client';
+import React, { useState } from "react";
 import SearchFilter from "./SearchFilter";
 import ItemDisplay from "./ItemDisplay";
 
@@ -10,6 +11,14 @@ const items = [
 ];
 
 const SearchPage = () => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(5);
+    const [items, setItems] = useState([]);
+    
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
     return (
         <div className="flex relative">
             <SearchFilter />

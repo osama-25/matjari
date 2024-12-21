@@ -8,17 +8,17 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import ErrorPage from "../ErrorPage";
 import CustomDetails from "../add_listing/CustomDetail";
 import AddPhoto from "../add_listing/AddPhoto";
+import Loading from "../global_components/loading";
 
 const EditListing = () => {
     const searchParams = useSearchParams();
-    const itemID = searchParams.get('id'); console.log('hhhh' + itemID);
+    const itemID = searchParams.get('id');
     const [photos, setPhotos] = useState([1, 2, 3]);
     const [customDetails, setCustomDetails] = useState([]);
     const [photoDataArray, setPhotoDataArray] = useState([]); // Track photo data as state
-    const [photosURL, setPhotosURL] = useState([]); // Track URLs as state
     const [formData, setFormData] = useState({
         category: "",
-        subCategory: "",
+        sub_category: "",
         title: "",
         description: "",
         condition: "",
@@ -31,9 +31,17 @@ const EditListing = () => {
     const pathname = usePathname();
     const locale = pathname.split('/')[1];
     const [categories, setCategories] = useState([]);
-    const [subcategories, setSubCategories] = useState([]);
+    const [subcategories, setSubCategories] = useState(null);
     const [error, setError] = useState();
     const router = useRouter();
+    const [loading, setLoading] = useState(true); // To manage loading state
+    const [images, setImages] = useState([]); // Initialize images state with photoDataArray
+
+    const handleSetImage = (index, newImage) => {
+        const updatedImages = [...images];
+        updatedImages[index] = newImage; // Update the specific image by index
+        setImages(updatedImages); // Update the state with the new array
+    };
 
     const HandleLocaleChange = () => {
         const currentLocale = pathname.split("/")[1]; // Get the current locale (e.g., "en" or "ar")
@@ -74,9 +82,16 @@ const EditListing = () => {
 
     useEffect(() => {
         const fetchUserInfo = async () => {
-            const info = await getInfo();
-            if (info) {
-                setFormData(prev => ({ ...prev, userID: info.id }));
+            try {
+                const info = await getInfo();
+                if (info) {
+                    setFormData(prev => ({ ...prev, userID: info.id }));
+                }
+                else {
+                    throw new Error("Failed to fetch profile info");
+                }
+            } catch (error) {
+                setError(error.message);
             }
         };
         fetchUserInfo();
@@ -84,6 +99,7 @@ const EditListing = () => {
 
     useEffect(() => {
         const fetchItemInfo = async () => {
+            setLoading(true);
             try {
                 console.log("item id: " + itemID);
                 const response = await fetch(`http://localhost:8080/api/listing/${itemID}`);
@@ -95,9 +111,14 @@ const EditListing = () => {
                 const data = await response.json();
                 console.log(data);
                 setFormData(data);
+                setCustomDetails(data.customDetails);
+                setPhotoDataArray(data.photos);
+                setImages(data.photos);
             } catch (error) {
                 //console.error("Error fetching item:", error);
                 setError(error.message); // Set error state
+            } finally {
+                setLoading(false);
             }
         };
         fetchItemInfo();
@@ -115,32 +136,37 @@ const EditListing = () => {
         const uploadedUrls = [];
 
         for (const photo of photoDataArray) {
-            try {
-                const response = await fetch("http://localhost:8080/azure/upload", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        filename: photo.filename,
-                        fileType: photo.fileType,
-                        imageBase64: photo.imageBase64,
-                    }),
-                });
+            if (photo.filename) {
+                try {
+                    const response = await fetch("http://localhost:8080/azure/upload", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            filename: photo.filename,
+                            fileType: photo.fileType,
+                            imageBase64: photo.imageBase64,
+                        }),
+                    });
 
-                if (!response.ok) {
-                    throw new Error(`Error uploading photo: ${photo.filename}`);
-                }
+                    if (!response.ok) {
+                        throw new Error(`Error uploading photo: ${photo.filename}`);
+                    }
 
-                const result = await response.json();
-                if (result.imgURL) {
-                    uploadedUrls.push(result.imgURL);
-                } else {
-                    throw new Error('No image URL received from server');
+                    const result = await response.json();
+                    if (result.imgURL) {
+                        uploadedUrls.push(result.imgURL);
+                    } else {
+                        throw new Error('No image URL received from server');
+                    }
+                } catch (error) {
+                    console.error("Error uploading photo:", error);
+                    throw error; // Propagate error to handle it in the main submission
                 }
-            } catch (error) {
-                console.error("Error uploading photo:", error);
-                throw error; // Propagate error to handle it in the main submission
+            }
+            else{
+                uploadedUrls.push(photo);
             }
         }
 
@@ -158,6 +184,16 @@ const EditListing = () => {
             (detail) => detail.title.trim() !== "" && detail.description.trim() !== ""
         );
         setCustomDetails(filteredDetails);
+
+        const cleanedData = Object.fromEntries(
+            Object.entries(formData).filter(([key, value]) => {
+                // Exclude unwanted keys or empty values
+                // For example, exclude 'unwantedKey' or any empty strings, null, or undefined values
+                const unwantedKeys = ['email', 'id', 'phone_number', 'username', 'photos', 'customDetails']; // Define the keys you want to remove
+                return !unwantedKeys.includes(key);
+            })
+        );
+        setFormData(cleanedData);
     };
 
     const handleSubmit = async (e) => {
@@ -166,6 +202,7 @@ const EditListing = () => {
         try {
             removeEmptyDetails();
             formCheck();
+
             // First upload all photos and get their URLs
             const uploadedPhotoUrls = await uploadPhotos();
 
@@ -183,9 +220,8 @@ const EditListing = () => {
                 }), {})
             };
 
-            // Send the listing data to the backend
-            const response = await fetch('http://localhost:8080/api/listing', {
-                method: 'POST',
+            const response = await fetch(`http://localhost:8080/api/listing/update/${itemID}`, {
+                method: 'POST', // POST request to edit
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -194,16 +230,15 @@ const EditListing = () => {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(`Failed to create listing: ${errorText}`);
+                throw new Error(`Failed to update listing: ${errorText}`);
             }
 
-            const data = await response.json();
-            console.log('Listing created successfully:', data);
-            alert('Listing created successfully!');
+            const data = await response.json();            
+            console.log('Listing updated successfully:', data);
+            alert('Listing updated successfully!');
 
             // Clear the form and photo data
             setPhotoDataArray([]);
-            setPhotosURL([]);
             setPhotos([1, 2, 3]); // Reset to initial state
             setCustomDetails([]);
             setFormData({
@@ -215,17 +250,19 @@ const EditListing = () => {
                 delivery: "",
                 price: "",
                 location: "",
-                userID: formData.userID // Preserve the user ID
+                userID: formData.userID, // Preserve the user ID
+                listingId: "" // Clear the listing ID after update
             });
+            router.push(`/item/${itemID}`);
 
         } catch (error) {
-            //console.error('Error during submission:', error);
-            alert(`Failed to create listing: ${error.message}`);
+            console.error('Error during submission:', error);
+            alert(`Failed to update listing: ${error.message}`);
         }
     };
 
     const addPhoto = () => {
-        if (photos.length < 12) setPhotos([...photos, photos.length + 1]);
+        if (images.length < 12) setImages([...images, null]);
     };
 
     const addPhotoURL = (filename, fileType, imageBase64) => {
@@ -238,6 +275,11 @@ const EditListing = () => {
 
     if (error) {
         return <ErrorPage message={error} statusCode={404} />
+    }
+
+    // Show loading state while fetching data
+    if (loading) {
+        return <Loading />;
     }
 
     return (
@@ -274,11 +316,11 @@ const EditListing = () => {
                             ))}
                         </select>
                         {/* Subcategory Section */}
-                        <select
+                        {subcategories && <select
                             id="subcat"
                             name="subCategory"
                             className="w-full mt-2 h-12 border-2 border-gray-300 text-gray-600 rounded-lg px-3 focus:outline-none"
-                            value={formData.subCategory}
+                            value={formData.sub_category}
                             onChange={handleInputChange}
                         >
                             <option value="">{t('subcatph')}</option>
@@ -287,7 +329,7 @@ const EditListing = () => {
                                     {t(subcategory.name)}
                                 </option>
                             ))}
-                        </select>
+                        </select>}
                     </div>
                     {/* Info Section */}
                     <div className="space-y-2">
@@ -348,17 +390,17 @@ const EditListing = () => {
                             onChange={handleInputChange}
                         >
                             <option value="">{t('locationph')}</option>
-                            <option value="AM">{t('Amman')}</option>
-                            <option value="IR">{t('Irbid')}</option>
-                            <option value="AZ">{t('Az Zarqa')}</option>
-                            <option value="AJ">{t('Ajlun')}</option>
-                            <option value="TF">{t('Al Tafilah')}</option>
-                            <option value="MF">{t('Al Mafraq')}</option>
-                            <option value="MA">{t('Maan')}</option>
-                            <option value="AQ">{t('Al Aqaba')}</option>
-                            <option value="JR">{t('Jerash')}</option>
-                            <option value="MD">{t('Madaba')}</option>
-                            <option value="KR">{t('Al Karak')}</option>
+                            <option value="Amman">{t('Amman')}</option>
+                            <option value="Irbid">{t('Irbid')}</option>
+                            <option value="Az Zarqa">{t('Az Zarqa')}</option>
+                            <option value="Ajlun">{t('Ajlun')}</option>
+                            <option value="Al Tafilah">{t('Al Tafilah')}</option>
+                            <option value="Al Mafraq">{t('Al Mafraq')}</option>
+                            <option value="Maan">{t('Maan')}</option>
+                            <option value="Al Aqaba">{t('Al Aqaba')}</option>
+                            <option value="Jerash">{t('Jerash')}</option>
+                            <option value="Madaba">{t('Madaba')}</option>
+                            <option value="Al Karak">{t('Al Karak')}</option>
                         </select>
                     </div>
                     <div className="w-full">
@@ -431,12 +473,12 @@ const EditListing = () => {
                     <div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4 justify-items-center">
                             <div className="col-span-1 md:col-span-3 w-full">
-                                <AddPhoto onDelete={deletePhotoURL} onUpload={addPhotoURL} size="large" />
+                                <AddPhoto image={images[0]} setImage={(newImage) => handleSetImage(0, newImage)} onDelete={deletePhotoURL} onUpload={addPhotoURL} size="large" />
                             </div>
                             {photos.map((photo, index) => (
-                                <AddPhoto key={index} id={index} onDelete={deletePhotoURL} onUpload={addPhotoURL} size="small" />
+                                <AddPhoto image={images[index + 1]} setImage={(newImage) => handleSetImage(index + 1, newImage)} key={index} id={index} onDelete={deletePhotoURL} onUpload={addPhotoURL} size="small" />
                             ))}
-                            {photos.length < 9 && (
+                            {images.length < 9 && (
                                 <button
                                     type="button"
                                     onClick={addPhoto}

@@ -2,8 +2,7 @@
 import { useState } from 'react';
 import { IoCameraOutline, IoCloseCircle } from 'react-icons/io5';
 
-export default function AddPhoto({ onUpload, onDelete, id, size = 'small' }) {
-  const [image, setImage] = useState(null);
+export default function AddPhoto({ image, setImage, onUpload, onDelete, id, size = 'small' }) {
   // const [filename, setFilename] = useState("");
   // const [fileType, setFileType] = useState("");
   // const [imageBase64, setImageBase64] = useState("");

@@ -13,7 +13,6 @@ const Listing = () => {
     const [photos, setPhotos] = useState([1, 2, 3]);
     const [customDetails, setCustomDetails] = useState([]);
     const [photoDataArray, setPhotoDataArray] = useState([]); // Track photo data as state
-    const [photosURL, setPhotosURL] = useState([]); // Track URLs as state
     const [formData, setFormData] = useState({
         category: "",
         subCategory: "",
@@ -32,6 +31,14 @@ const Listing = () => {
     const [categories, setCategories] = useState([]);
     const [subcategories, setSubCategories] = useState([]);
     const [error, setError] = useState();
+    const [image, setImage] = useState(null);
+    const [images, setImages] = useState(photos.map(() => null));
+
+    const handleSetImage = (index, newImage) => {
+        const updatedImages = [...images];
+        updatedImages[index] = newImage;
+        setImages(updatedImages);
+    };
 
     const HandleLocaleChange = () => {
         const currentLocale = pathname.split("/")[1]; // Get the current locale (e.g., "en" or "ar")
@@ -180,7 +187,6 @@ const Listing = () => {
 
             // Clear the form and photo data
             setPhotoDataArray([]);
-            setPhotosURL([]);
             setPhotos([1, 2, 3]); // Reset to initial state
             setCustomDetails([]);
             setFormData({
@@ -325,17 +331,17 @@ const Listing = () => {
                             onChange={handleInputChange}
                         >
                             <option value="">{t('locationph')}</option>
-                            <option value="AM">{t('Amman')}</option>
-                            <option value="IR">{t('Irbid')}</option>
-                            <option value="AZ">{t('Az Zarqa')}</option>
-                            <option value="AJ">{t('Ajlun')}</option>
-                            <option value="TF">{t('Al Tafilah')}</option>
-                            <option value="MF">{t('Al Mafraq')}</option>
-                            <option value="MA">{t('Maan')}</option>
-                            <option value="AQ">{t('Al Aqaba')}</option>
-                            <option value="JR">{t('Jerash')}</option>
-                            <option value="MD">{t('Madaba')}</option>
-                            <option value="KR">{t('Al Karak')}</option>
+                            <option value="Amman">{t('Amman')}</option>
+                            <option value="Irbid">{t('Irbid')}</option>
+                            <option value="Az Zarqa">{t('Az Zarqa')}</option>
+                            <option value="Ajlun">{t('Ajlun')}</option>
+                            <option value="Al Tafilah">{t('Al Tafilah')}</option>
+                            <option value="Al Mafraq">{t('Al Mafraq')}</option>
+                            <option value="Maan">{t('Maan')}</option>
+                            <option value="Al Aqaba">{t('Al Aqaba')}</option>
+                            <option value="Jerash">{t('Jerash')}</option>
+                            <option value="Madaba">{t('Madaba')}</option>
+                            <option value="Al Karak">{t('Al Karak')}</option>
                         </select>
                     </div>
                     <div className="w-full">
@@ -408,10 +414,10 @@ const Listing = () => {
                     <div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4 justify-items-center">
                             <div className="col-span-1 md:col-span-3 w-full">
-                                <AddPhoto onDelete={deletePhotoURL} onUpload={addPhotoURL} size="large" />
+                                <AddPhoto image={image} setImage={setImage} onDelete={deletePhotoURL} onUpload={addPhotoURL} size="large" />
                             </div>
                             {photos.map((photo, index) => (
-                                <AddPhoto key={index} id={index} onDelete={deletePhotoURL} onUpload={addPhotoURL} size="small" />
+                                <AddPhoto image={images[index]} setImage={(newImage) => handleSetImage(index, newImage)} key={index} id={index} onDelete={deletePhotoURL} onUpload={addPhotoURL} size="small" />
                             ))}
                             {photos.length < 9 && (
                                 <button
