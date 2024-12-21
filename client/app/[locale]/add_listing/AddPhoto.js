@@ -68,13 +68,15 @@ export default function AddPhoto({ image, setImage, onUpload, onDelete, id, size
         </div>
       ) : (
         <label
+          
           htmlFor="dropzone-file"
           className="w-full h-full flex items-center justify-center border-dashed rounded-lg cursor-pointer hover:bg-gray-100"
         >
-          <div className="w-12 h-12 border-2 border-dotted border-blue-500 flex items-center justify-center rounded-md">
+          <div   data-testid="photo" className="w-12 h-12 border-2 border-dotted border-blue-500 flex items-center justify-center rounded-md">
             <IoCameraOutline color="blue" size={30} />
           </div>
           <input
+            data-testid="photoUpload"
             id="dropzone-file"
             type="file"
             className="hidden"
