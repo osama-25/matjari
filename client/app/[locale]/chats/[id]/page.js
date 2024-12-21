@@ -21,7 +21,8 @@ const ChatRoom = ({ params }) => {
         <SideNav onPress={toggleOverlay} />
       </div>
       <div className={`flex-1 p-2 sm:block ${isPressed ? 'block' : 'hidden'}`}>
-        <Chats room={getRoomId}
+        <Chats room={2}
+
           CloseChat={toggleOverlay} />
       </div>
     </div>

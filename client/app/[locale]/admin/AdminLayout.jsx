@@ -13,20 +13,26 @@ export default function AdminLayout({ children }) {
                 <nav>
                     <ul>
 
-                        <MenuItem
+                        {/* <MenuItem
                             text="Dashboard"
                             href="/admin/dashboard"
                         />
 
                         <MenuItem
+                            text="Settings"
+                            href="/admin/settings"
+                        /> */}
+                        <MenuItem
                             text="Users"
                             href="/admin/users"
                         />
 
+
                         <MenuItem
-                            text="Settings"
-                            href="/admin/settings"
+                            text="Reports"
+                            href="/admin/reports"
                         />
+
 
 
                     </ul>

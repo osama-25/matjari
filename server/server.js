@@ -14,6 +14,7 @@ import azure from './routes/azure.js';
 import images from './routes/images.js';
 import categoriesRoutes from './routes/categories.js';
 import imageDescriptionRoutes from './routes/imageDesc.js';
+import adminRoutes from './routes/admin.js';
 env.config();
 
 const app = express();
@@ -49,7 +50,8 @@ app.use('/categories', categoriesRoutes);
 // app.use('/socket', socketRoutes);
 app.use('/chat', chatRoutes);
 app.use('/azure', azure);
-app.use('/img', images)
+app.use('/img', images);
+app.use('/admin', adminRoutes);
 
 app.use('/imageDesc', imageDescriptionRoutes);
 
