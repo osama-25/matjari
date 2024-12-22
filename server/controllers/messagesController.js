@@ -1,6 +1,6 @@
 // controllers/messageController.js
 
-import { saveMessage, getMessagesByRoom, createRoom, findRoom } from '../models/messagesModel.js';
+import { saveMessage, getMessagesByRoom, createRoom, findRoom, getUserRooms } from '../models/messagesModel.js';
 
 export const createMessage = async (req, res) => {
     const { content, room, sentByUser, files } = req.body;
@@ -31,6 +31,8 @@ export const createMessage = async (req, res) => {
 export const fetchMessagesByRoom = async (req, res) => {
     const room = req.params.room;
 
+
+
     try {
         const result = await getMessagesByRoom(room);
         res.json(result.rows);
@@ -42,6 +44,29 @@ export const fetchMessagesByRoom = async (req, res) => {
 
 
 // 6 / 2    2-6
+export const getRoomsForUser = async (req, res) => {
+
+    const { userId } = req.params;
+
+    if (!userId)
+        return res.status(400).json({ message: 'user ID is required' });
+
+
+
+    try {
+        const getRooms = await getUserRooms(userId);
+
+        console.log(getRooms);
+
+
+        res.status(200).json(getRooms)
+    } catch (error) {
+        res.status(500).json({ error: "Failed to get user rooms" });
+        console.error(errro);
+    }
+}
+
+
 export const findOrCreateRoom = async (req, res) => {
     const { userId1, userId2 } = req.body;
 
@@ -54,7 +79,7 @@ export const findOrCreateRoom = async (req, res) => {
 
     // const roomId = [userId1, userId2].sort().join('_');
 
-    
+
     const roomId = [Number(userId1), Number(userId2)].sort((a, b) => a - b).join('-');
 
     console.log(roomId);

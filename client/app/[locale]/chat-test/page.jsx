@@ -10,7 +10,7 @@ import { FaArrowLeft, FaImage, FaPaperPlane, FaPlay, FaXmark } from 'react-icons
 
 const socket = io.connect("http://localhost:8080");
 
-export default function Chats({ CloseChat }) {
+export default function Chats({ CloseChat, roomId }) {
     const [message, setMessage] = useState("");
     const [AllMessages, setAllMessages] = useState([]);
     const [files, setFiles] = useState([]);
@@ -18,7 +18,7 @@ export default function Chats({ CloseChat }) {
     const [refresh, setRefresh] = useState(false);
     const messagesEndRef = useRef(null);
     const [getId, setID] = useState();
-    const room = 4;
+    const room = roomId;
     const [modalContent, setModalContent] = useState(null); // To store the modal content
     const [isModalOpen, setIsModalOpen] = useState(false); // To track modal visibility
     const [hideSend, setHideSend] = useState(0);
@@ -166,7 +166,7 @@ export default function Chats({ CloseChat }) {
 
             setAllMessages((prevMessages) => [...prevMessages, {
                 content: message,
-                room,
+                room: roomId,
                 sentByUser: true,
                 files: uploadedFiles,
                 type: uploadedFiles.filetype

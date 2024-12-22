@@ -135,7 +135,8 @@ const ProductPage = ({ params }) => {
 
 
             // Assuming you want to navigate after the data is returned
-            router.push(`/chats/${data.room.room_id}`); // You can use the room_id from the response data
+            console.log(data.room.id);
+            router.push(`/chats/${data.room.id}`); // You can use the room_id from the response data
             // router.push(`/chats/2`); // You can use the room_id from the response data
         } catch (error) {
             console.error('Error:', error);
