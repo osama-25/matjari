@@ -2,7 +2,7 @@ import React from "react";
 import { HomeItem, Item } from "../Item";
 import { FaFilter } from "react-icons/fa";
 
-const ItemDisplay = ({ Items }) => {
+const ItemDisplay = ({ Items, Favourited }) => {
     return (
         <div className={`flex flex-col overflow-x-auto px-6 py-2 w-full gap-y-4`}>
             <span className="flex justify-between items-center mt-4">
@@ -20,7 +20,7 @@ const ItemDisplay = ({ Items }) => {
                     <HomeItem
                         key={index}
                         id={item.id} name={item.title} image={item.image}
-                        price={item.price} heart={false}
+                        price={item.price} heart={Favourited.includes(item.id)}
                     />
                 ))}
             </div>

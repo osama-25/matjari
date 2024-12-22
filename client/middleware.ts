@@ -93,7 +93,7 @@ export async function middleware(request: NextRequest) {
   const intlResponse = intlMiddleware(request);
 
   // Check for protected routes
-  const baseProtectedRoutes = ["/admin", "/profile", "/add_listing" , "/chats"];
+  const baseProtectedRoutes = ["/admin", "/profile", "/add_listing" , "/chats", "/favourites"];
   const locales = ["en", "ar"]; // Add other locales if needed
   const protectedRoutes = baseProtectedRoutes.flatMap((route) =>
     locales.map((locale) => `/${locale}${route}`)

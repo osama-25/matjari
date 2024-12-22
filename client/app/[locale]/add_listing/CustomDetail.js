@@ -39,12 +39,13 @@ const CustomDetails = ({ customDetails, setCustomDetails }) => {
                         onChange={(e) => handleDetailChange(index, "description", e.target.value)}
                         className="shadow-inner border-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"
                     />
-                    <button type="button" onClick={() => removeDetail(index)} className="absolute md:relative right-0">
+                    <button  type="button" onClick={() => removeDetail(index)} className="absolute md:relative right-0">
                         <IoCloseCircle size={24} color="red" />
                     </button>
                 </div>
             ))}
             <button
+                data-testid="customDetails"
                 type="button"
                 onClick={addCustomDetail}
                 className="text-white bg-blue-500 px-4 py-2 rounded-lg"

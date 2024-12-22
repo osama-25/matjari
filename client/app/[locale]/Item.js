@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
+import FetchUserAndFavorite from "./global_components/fav";
 
 export const HomeItem = ({ name, image, id, price, heart }) => {
     const [Heart, setHeart] = useState(heart);
@@ -10,6 +11,7 @@ export const HomeItem = ({ name, image, id, price, heart }) => {
 
     const handleHeartClick = (event) => {
         event.stopPropagation();
+        FetchUserAndFavorite(id);
         setHeart(!Heart);
     }
 
@@ -57,6 +59,7 @@ export const Item = ({ id, name, image, price, heart }) => {
 
     const handleHeartClick = (event) => {
         event.stopPropagation();
+        FetchUserAndFavorite(id);
         setHeart(!Heart);
     }
 
@@ -68,8 +71,8 @@ export const Item = ({ id, name, image, price, heart }) => {
             <Link href={`/item/${id}`} className="break-words w-full sm:w-3/4 overflow-hidden p-1">
                 <p className="text-sm hover:underline cursor-pointer">{name}</p>
             </Link>
-            <div className="flex w-full justify-between items-center">
-                <span className="text-sm">{price}</span>
+            <div className="flex w-full justify-between items-center p-1">
+                <span className="text-sm font-bold">{price}</span>
                 <button onClick={handleHeartClick} className="w-7 h-7 hover:bg-gray-100 rounded-full flex flex-row items-center justify-center shadow">
                     {Heart ? <FaHeart size={16} color={'crimson'} /> : <FaRegHeart size={16} />}
                 </button>

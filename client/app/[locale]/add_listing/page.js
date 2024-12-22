@@ -31,14 +31,9 @@ const Listing = () => {
     const [categories, setCategories] = useState([]);
     const [subcategories, setSubCategories] = useState([]);
     const [error, setError] = useState();
-    const [image, setImage] = useState(null);
-    const [images, setImages] = useState(photos.map(() => null));
+   
 
-    const handleSetImage = (index, newImage) => {
-        const updatedImages = [...images];
-        updatedImages[index] = newImage;
-        setImages(updatedImages);
-    };
+    
 
     const HandleLocaleChange = () => {
         const currentLocale = pathname.split("/")[1]; // Get the current locale (e.g., "en" or "ar")
@@ -108,7 +103,7 @@ const Listing = () => {
                     body: JSON.stringify({
                         filename: photo.filename,
                         fileType: photo.fileType,
-                        imageBase64: photo.imageBase64,
+                        imageBase64: photo.imageBase64.split(",")[1],
                     }),
                 });
 
@@ -243,6 +238,7 @@ const Listing = () => {
                             {t('category')}
                         </label>
                         <select
+                            data-testid="categories"
                             id="categories"
                             name="category"
                             className="w-full mt-2 h-12 border-2 border-gray-300 text-gray-600 rounded-lg px-3 focus:outline-none"
@@ -258,6 +254,7 @@ const Listing = () => {
                         </select>
                         {/* Subcategory Section */}
                         <select
+                            data-testid="subcat"
                             id="subcat"
                             name="subCategory"
                             className="w-full mt-2 h-12 border-2 border-gray-300 text-gray-600 rounded-lg px-3 focus:outline-none"
@@ -279,6 +276,7 @@ const Listing = () => {
                                 {t('title')}
                             </label>
                             <input
+                                data-testid="title"
                                 type="text"
                                 name="title"
                                 placeholder={t('titleph')}
@@ -293,6 +291,7 @@ const Listing = () => {
                                 {t('desc')}
                             </label>
                             <textarea
+                                data-testid="desc"
                                 name="description"
                                 placeholder={t('descph')}
                                 id="desc"
@@ -308,6 +307,7 @@ const Listing = () => {
                             {t('price')}
                         </label>
                         <input
+                            data-testid="price"
                             type="number"
                             name="price"
                             id="price"
@@ -324,6 +324,7 @@ const Listing = () => {
                             {t('location')}
                         </label>
                         <select
+                            data-testid="location"
                             id="location"
                             name="location"
                             className="w-full mt-2 h-12 border-2 border-gray-300 text-gray-600 rounded-lg px-3 focus:outline-none"
@@ -344,7 +345,7 @@ const Listing = () => {
                             <option value="Al Karak">{t('Al Karak')}</option>
                         </select>
                     </div>
-                    <div className="w-full">
+                    <div className="w-full" data-testid="details">
                         <label className="text-gray-700 text-lg font-bold">{t('details')}</label>
                         <div className="p-4">
                             <label className="text-gray-700 text-md font-bold">{t('condition')}</label>
@@ -414,10 +415,10 @@ const Listing = () => {
                     <div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4 justify-items-center">
                             <div className="col-span-1 md:col-span-3 w-full">
-                                <AddPhoto image={image} setImage={setImage} onDelete={deletePhotoURL} onUpload={addPhotoURL} size="large" />
+                                <AddPhoto image={photoDataArray[0]?.imageBase64||null} key={0} id={0}  onDelete={deletePhotoURL} onUpload={addPhotoURL} size="large" />
                             </div>
                             {photos.map((photo, index) => (
-                                <AddPhoto image={images[index]} setImage={(newImage) => handleSetImage(index, newImage)} key={index} id={index} onDelete={deletePhotoURL} onUpload={addPhotoURL} size="small" />
+                                <AddPhoto image={photoDataArray[index+1]?.imageBase64||null}  key={index+1} id={index+1} onDelete={deletePhotoURL} onUpload={addPhotoURL} size="small" />
                             ))}
                             {photos.length < 9 && (
                                 <button
@@ -435,6 +436,7 @@ const Listing = () => {
                 {/* Submit Button */}
                 <div className="col-span-2 flex justify-center mt-6">
                     <button
+                        data-testid="submitbtn"
                         type="submit"
                         className="bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-3 px-6 rounded-lg focus:outline-none"
                     >

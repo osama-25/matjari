@@ -30,7 +30,7 @@ router.post('/', async (req, res) => {
 
 router.get('/:userId', async (req, res) => {
     const { userId } = req.params;
-    console.log("User id is: "+userId);
+    console.log("User id is: " + userId);
     try {
         const favorites = await db.query(
             `SELECT l.id, l.title, l.price, l.location, lp.photo_url
@@ -48,5 +48,32 @@ router.get('/:userId', async (req, res) => {
     }
 });
 
+router.get('/batch/:userId', async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const favorites = await db.query('SELECT listing_id FROM favorites WHERE user_id = $1', [userId]);
+        const favoriteListingIds = favorites.rows.map(row => row.listing_id);
+        res.status(200).json({ favorites: favoriteListingIds });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ message: 'Error retrieving favorites' });
+    }
+});
+
+
+router.get('/:listingId/:userId', async (req, res) => {
+    const { listingId, userId } = req.params;
+    try {
+        const isFavorited = await db.query(
+            `SELECT * FROM favorites
+              WHERE user_id = $1 AND listing_id = $2`,
+            [userId, listingId]
+        );
+
+        res.status(200).json({ favourited: isFavorited.rowCount > 0 });
+    } catch (error) {
+        res.status(500).json({ message: 'Error retrieving favorites' });
+    }
+})
 
 export default router;
