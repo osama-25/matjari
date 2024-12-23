@@ -23,7 +23,7 @@ export const getMessagesByRoom = async (room) => {
 
 
 export const findRoom = async (roomId) => {
-    
+
 
     const roomQuery = await db.query(`SELECT * FROM rooms WHERE room_id = $1`, [roomId]);
     // console.log("THIS??");
@@ -39,3 +39,20 @@ export const createRoom = async (userId1, userId2, roomId) => {
 }
 
 
+
+export const getUserRooms = async (userId) => {
+    try {
+        const query = `SELECT r.id, r.room_id, u.user_name
+            FROM rooms r , users u
+            WHERE (r.user1_id = u.id or r.user2_id = u.id) 
+            and  (r.user1_id = $1 or r.user2_id = $1) 
+            and (u.id != $1)
+`;
+        const result = await db.query(query, [userId]);
+        return result.rows;
+    } catch (error) {
+        console.log("Error in getUserRooms");
+        throw error;
+
+    }
+}
