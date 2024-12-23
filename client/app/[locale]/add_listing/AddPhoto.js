@@ -16,6 +16,7 @@ export default function AddPhoto({ image, onUpload, onDelete, id, size = 'small'
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
+    console.log(file);
     if (file) {
       const reader = new FileReader();
       reader.onload = async () => {
@@ -55,11 +56,13 @@ export default function AddPhoto({ image, onUpload, onDelete, id, size = 'small'
       {image ? (
         <div className="w-full h-full relative">
           <img
+            data-testid="photoUploaded"
             src={image}
             alt="Uploaded"
             className="w-full h-full object-cover rounded-md"
           />
           <button
+            data-testid="deletePhoto"
             onClick={handleImageRemove}
             className="absolute top-1 right-1 rounded-full p-1 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
             type='button'
@@ -69,7 +72,6 @@ export default function AddPhoto({ image, onUpload, onDelete, id, size = 'small'
         </div>
       ) : (
         <label
-          
           htmlFor="dropzone-file"
           className="w-full h-full flex items-center justify-center border-dashed rounded-lg cursor-pointer hover:bg-gray-100"
         >
@@ -77,7 +79,7 @@ export default function AddPhoto({ image, onUpload, onDelete, id, size = 'small'
             <IoCameraOutline color="blue" size={30} />
           </div>
           <input
-            data-testid="photoUpload"
+            data-testid="Uploadphoto"
             id="dropzone-file"
             type="file"
             className="hidden"

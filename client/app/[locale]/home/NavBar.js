@@ -100,9 +100,15 @@ const NavBar = () => {
                 </Link>
               </section>
               <form onSubmit={handleSearchSubmit} className="flex-1 flex items-center justify-center p-4 w-full md:w-auto">
-                <button type="button" className="px-4 py-2 bg-gray-800 text-white rounded-l-md focus:outline-none">
-                  <IoCamera size={24} />
-                </button>
+              <label htmlFor="search-image" className="flex items-center px-4 py-2 bg-gray-800 text-white rounded-l-md focus:outline-none cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/jpg"
+                    className="hidden"
+                    id="search-image"
+                  />
+                  <IoCamera size={24} className="text-white" />
+                </label>
                 <div className="w-full flex focus-within:outline rounded-md">
                   <input
                     dir={pathname.split("/")[1] === 'ar' ? 'rtl' : 'ltr'}
