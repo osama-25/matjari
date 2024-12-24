@@ -1,6 +1,6 @@
 // controllers/messageController.js
 
-import { saveMessage, getMessagesByRoom, createRoom, findRoom, getUserRooms } from '../models/messagesModel.js';
+import { saveMessage, getMessagesByRoom, createRoom, findRoom, getUserRooms, isUserAllow } from '../models/messagesModel.js';
 
 export const createMessage = async (req, res) => {
     const { content, room, sentByUser, files } = req.body;
@@ -30,12 +30,26 @@ export const createMessage = async (req, res) => {
 
 export const fetchMessagesByRoom = async (req, res) => {
     const room = req.params.room;
+    const userId = req.params.userId;
+    console.log("CHK");
+    console.log(room, userId);
 
 
 
     try {
-        const result = await getMessagesByRoom(room);
-        res.json(result.rows);
+
+        const check = await isUserAllow(room, userId);
+        console.log(check);
+
+        if (check == 0) {
+            res.status(400).json({
+                error: "Not allow"
+            })
+        } else {
+            const result = await getMessagesByRoom(room);
+
+            res.json(result.rows);
+        }
     } catch (error) {
         console.error('Error retrieving messages:', error);
         res.status(500).json({ error: 'Failed to retrieve messages' });
@@ -44,29 +58,6 @@ export const fetchMessagesByRoom = async (req, res) => {
 
 
 // 6 / 2    2-6
-export const getRoomsForUser = async (req, res) => {
-
-    const { userId } = req.params;
-
-    if (!userId)
-        return res.status(400).json({ message: 'user ID is required' });
-
-
-
-    try {
-        const getRooms = await getUserRooms(userId);
-
-        console.log(getRooms);
-
-
-        res.status(200).json(getRooms)
-    } catch (error) {
-        res.status(500).json({ error: "Failed to get user rooms" });
-        console.error(errro);
-    }
-}
-
-
 export const findOrCreateRoom = async (req, res) => {
     const { userId1, userId2 } = req.body;
 
@@ -104,7 +95,42 @@ export const findOrCreateRoom = async (req, res) => {
     }
 
 
-
-
-
 }
+
+
+export const getRoomsForUser = async (req, res) => {
+
+    const { userId } = req.params;
+
+    if (!userId)
+        return res.status(400).json({ message: 'user ID is required' });
+
+
+
+
+    try {
+        const getRooms = await getUserRooms(userId);
+        console.log(getRooms);
+
+        // console.log("#");
+        // console.log(userId);
+        // console.log(getRooms.user1_id);
+        // console.log(getRooms.user2_id);
+        // console.log("#");
+
+
+
+        // if (userId == getRooms.user1_id || userId == getRooms.user2_id)
+        res.status(200).json(getRooms)
+        // else res.status(400).json({
+        //     Error: "user can't acess others rooms",
+        // })
+
+    } catch (error) {
+        res.status(500).json({ error: "Failed to get user rooms" });
+        console.error(errro);
+    }
+}
+
+
+

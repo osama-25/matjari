@@ -193,7 +193,9 @@ const EditListing = () => {
                 return !unwantedKeys.includes(key);
             })
         );
+
         setFormData(cleanedData);
+        
     };
 
     const handleSubmit = async (e) => {

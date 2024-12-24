@@ -66,7 +66,7 @@ router.get('/:listingId/:userId', async (req, res) => {
     try {
         const isFavorited = await db.query(
             `SELECT * FROM favorites
-              WHERE user_id = $1 AND listing_id = $2`,
+            WHERE user_id = $1 AND listing_id = $2`,
             [userId, listingId]
         );
 

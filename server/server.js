@@ -19,6 +19,8 @@ import searchRoutes from './routes/search.js';
 import favoriteRoutes from './routes/favorites.js'
 import adminRoutes from './routes/admin.js';
 
+
+
 env.config();
 
 const app = express();
@@ -57,6 +59,8 @@ app.use('/subcategories', subcategoriesRoutes);
 app.use('/chat', chatRoutes);
 app.use('/azure', azure);
 app.use('/img', images);
+
+//localhost8080:
 app.use('/admin', adminRoutes);
 
 app.use('/imageDesc', imageDescriptionRoutes);

@@ -75,14 +75,15 @@ export default function Chats({ CloseChat, roomId }) {
         const fetchMessages = async () => {
             try {
 
-                const response = await fetch(`http://localhost:8080/chat/messages/${room}`);
+                const userId = await getUserID();
+                const response = await fetch(`http://localhost:8080/chat/messages/${room}/${userId}`);
                 if (response.ok) {
                     const data = await response.json();
                     console.log("########هنا###########");
                     console.log(data);
 
 
-                    const userId = await getUserID();
+
                     setAllMessages(data.map(msg => ({
                         id: msg.id,
                         message: msg.content,
@@ -94,9 +95,13 @@ export default function Chats({ CloseChat, roomId }) {
 
                     })));
                 }
+                else {
+                    console.error('Error retrieving messages:', error);
+                }
 
             } catch (error) {
                 console.error('Error retrieving messages:', error);
+
             }
         };
 

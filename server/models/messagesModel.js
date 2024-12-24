@@ -39,10 +39,26 @@ export const createRoom = async (userId1, userId2, roomId) => {
 }
 
 
-
-export const getUserRooms = async (userId) => {
+export const isUserAllow = async (roomId, userId) => {
     try {
-        const query = `SELECT r.id, r.room_id, u.user_name
+        const query = `SELECT * from rooms
+     Where id = $1 
+     and (user1_id = $2 or user2_id = $2);
+    `;
+
+        const result = await db.query(query, [roomId, userId]);
+
+        return result.rowCount;
+    } catch (error) {
+        console.log("Error is isUserAllow ");
+        throw error;
+    }
+}
+export const getUserRooms = async (userId) => {
+
+
+    try {
+        const query = `SELECT r.user1_id , r.user2_id,r.id, r.room_id, u.user_name
             FROM rooms r , users u
             WHERE (r.user1_id = u.id or r.user2_id = u.id) 
             and  (r.user1_id = $1 or r.user2_id = $1) 
