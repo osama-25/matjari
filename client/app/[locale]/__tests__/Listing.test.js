@@ -8,11 +8,14 @@ jest.mock('next-intl', () => ({
     useTranslations: () => (key) => key,
 }));
 
+const mockRouter = {
+    push: jest.fn(),
+};
+
+let mockPathname = '/en/listing';
 jest.mock('next/navigation', () => ({
-    usePathname: () => '/en/listing',
-    useRouter: () => ({
-        push: jest.fn(),
-    }),
+    usePathname: () => mockPathname,
+    useRouter: () => mockRouter,
 }));
 
 jest.mock('../global_components/dataInfo', () => ({
@@ -22,17 +25,15 @@ jest.mock('../global_components/dataInfo', () => ({
 // Mock fetch globally
 global.fetch = jest.fn();
 
-// Set up a mock FileReader
-class MockFileReader {
-    readAsDataURL(blob) {
-        setTimeout(() => {
-            this.onload({ target: { result: 'data:image/png;base64,mockBase64Data' } });
-        }, 0);
-    }
-}
+// Create a more sophisticated mock for FileReader
+const mockFileReader = {
+    readAsDataURL: jest.fn(),
+    result: 'data:image/jpeg;base64,mockImageContent',
+    onload: null,
+};
 
-// Replace the global FileReader with our mock
-global.FileReader = MockFileReader;
+// Override the global FileReader constructor
+global.FileReader = jest.fn(() => mockFileReader);
 
 // Mock data
 const mockCategories = [
@@ -51,7 +52,51 @@ describe("Listing Component", () => {
     beforeEach(() => {
         user = userEvent.setup();
         jest.clearAllMocks();
-        
+        fetch.mockReset();
+        global.alert = jest.fn();
+
+        // Reset FileReader mock
+        mockFileReader.readAsDataURL.mockReset();
+        mockFileReader.readAsDataURL.mockImplementation(() => {
+            setTimeout(() => {
+                mockFileReader.onload({ target: { result: mockFileReader.result } });
+            }, 0);
+        });
+    });
+
+    afterEach(cleanup);
+
+    test("Listing form rendering", async () => {
+        // Mock only the initial categories fetch
+        fetch.mockImplementationOnce(() => 
+            Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve(mockCategories)
+            })
+        );
+
+        await act(async () => {
+            render(<Listing />);
+        });
+
+        const elements = [
+            "categories", "subcat", "title", "desc", "price", 
+            "location", "details", "customDetails", "submitbtn"
+        ];
+
+        for (const element of elements) {
+            const el = await screen.findByTestId(element);
+            expect(el).toBeInTheDocument();
+        }
+
+        const photos = await screen.findAllByTestId("photo");
+        expect(photos).toHaveLength(4);
+        photos.forEach(photo => expect(photo).toBeInTheDocument());
+
+        expect(fetch).toHaveBeenCalledWith("http://localhost:8080/categories");
+    });
+
+    test("handles category selection and fetches subcategories", async () => {
         // Mock the initial categories fetch
         fetch.mockImplementationOnce(() => 
             Promise.resolve({
@@ -60,7 +105,7 @@ describe("Listing Component", () => {
             })
         );
 
-        // Mock the subcategories fetch
+        // Mock the subcategories fetch that will happen after category selection
         fetch.mockImplementationOnce(() => 
             Promise.resolve({
                 ok: true,
@@ -68,184 +113,343 @@ describe("Listing Component", () => {
             })
         );
 
-        // Mock successful image upload
-        fetch.mockImplementationOnce(() => 
-            Promise.resolve({
-                ok: true,
-                json: () => Promise.resolve({ imgURL: 'http://example.com/image.jpg' })
-            })
-        );
-
-        // Mock successful listing creation
-        fetch.mockImplementationOnce(() => 
-            Promise.resolve({
-                ok: true,
-                json: () => Promise.resolve({ success: true })
-            })
-        );
-
-        // Mock window.alert
-        global.alert = jest.fn();
-    });
-
-
-    afterEach(() => {
-        cleanup();
-    });
-
-    test("Listing form rendering", async () => {
         await act(async () => {
             render(<Listing />);
         });
 
-        // Wait for elements to be available
-        const categories = await screen.findByTestId("categories");
-        const subcat= await screen.findByTestId("subcat");
-        const title = await screen.findByTestId("title");
-        const description = await screen.findByTestId("desc");
-        const price = await screen.findByTestId("price");
-        const location = await screen.findByTestId("location");
-        const details = await screen.findByTestId("details");
-        const customDetails = await screen.findByTestId("customDetails");
-        const submit = await screen.findByTestId("submitbtn");
-        const photo = await screen.findAllByTestId("photo");
-
-        // Assert elements are present
-        expect(categories).toBeInTheDocument();
-        expect(subcat).toBeInTheDocument();
-        expect(title).toBeInTheDocument();
-        expect(description).toBeInTheDocument();
-        expect(price).toBeInTheDocument();
-        expect(location).toBeInTheDocument();
-        expect(details).toBeInTheDocument();
-        expect(customDetails).toBeInTheDocument();
-        expect(submit).toBeInTheDocument();
-        //initial 4 photo elements
-        expect(photo).toHaveLength(4);
-        photo.forEach(element => {
-            expect(element).toBeInTheDocument();
-        });
-
-        // Verify categories were fetched
-        expect(fetch).toHaveBeenCalledWith("http://localhost:8080/categories");
-    });
-
-    test("submitting form with all values", async () => {
-        await act(async () => {
-            render(<Listing />);
-        });
-
-       
+        const categorySelect = await screen.findByTestId('categories');
         
-
-        // Fill out the form
         await act(async () => {
-            // Select category
-            const categorySelect = screen.getByTestId('categories');
             fireEvent.change(categorySelect, { target: { value: 'electronics' } });
         });
 
-        await act(async () => {
-            // Select subcategory
-            const subcategorySelect = screen.getByTestId('subcat');
-            fireEvent.change(subcategorySelect, { target: { value: 'Mobile Phones' } });
+        await waitFor(() => {
+            expect(fetch).toHaveBeenCalledTimes(2);
+            expect(fetch).toHaveBeenCalledWith("http://localhost:8080/categories/electronics");
         });
-
-        // Fill title
-        await act(async () => {
-            const titleInput = screen.getByTestId('title');
-            await user.type(titleInput, 'Test Item');
-        });
-
-        // Fill description
-        await act(async () => {
-            const descriptionInput = screen.getByTestId('desc');
-            await user.type(descriptionInput, 'This is a test item description');
-        });
-
-        // Fill price
-        await act(async () => {
-            const priceInput = screen.getByTestId('price');
-            await user.type(priceInput, '100');
-        });
-
-        // Select location
-        await act(async () => {
-            const locationSelect = screen.getByTestId('location');
-            fireEvent.change(locationSelect, { target: { value: 'Amman' } });
-        });
-
-        // Select condition and delivery
-        await act(async () => {
-            const conditionNewRadio = screen.getByLabelText('condition1');
-            await user.click(conditionNewRadio);
-            const deliveryYesRadio = screen.getByLabelText('delivery1');
-            await user.click(deliveryYesRadio);
-        });
-
-        // const mockFile = new File(['mock-image'], './test.png', { type: 'image/png' });
-        // // Handle file upload
-        // await act(async () => {
-        //     const fileInput = screen.getAllByTestId("photoUpload");
-        //     fireEvent.change(fileInput[0], { target: { files: [mockFile] } });
-        //     expect(fileInput[0].files[0]).toEqual(mockFile);
-        // });
-
-        // Submit form
-        await act(async () => {
-            const submitButton = screen.getByTestId('submitbtn');
-            await user.click(submitButton);
-        });
-
-        // // Wait for form submission and verify
-        // await waitFor(() => {
-        //     // Verify that fetch was called for listing creation
-        //     expect(fetch).toHaveBeenCalledWith('http://localhost:8080/api/listing', expect.any(Object));
-            
-        //     // Verify success alert was shown
-        //     expect(global.alert).toHaveBeenCalledWith('Listing created successfully!');
-        // });
-
-        // Verify form was reset
-        // expect(screen.getByTestId('title')).toHaveValue('');
-        // expect(screen.getByTestId('desc')).toHaveValue('');
-        // expect(screen.getByTestId('price')).toHaveValue('');
     });
 
-    // test("handles form submission error", async () => {
-    //     // Mock fetch to simulate an error
-    //     fetch.mockRejectedValueOnce(new Error('Failed to upload image'));
+   test("handles photo upload and deletion", async () => {
+        // Mock the initial categories fetch
+        fetch.mockImplementationOnce(() => 
+            Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve(mockCategories)
+            })
+        );
 
-    //     await act(async () => {
-    //         render(<Listing />);
-    //     });
+        await act(async () => {
+            render(<Listing />);
+        });
 
-    //     // Fill out minimum required fields
-    //     await act(async () => {
-    //         const submitButton = screen.getByTestId('submitbtn');
-    //         await user.click(submitButton);
-    //     });
+        // Create a mock file
+        const mockFile = new File(['mock content'], 'test-image.jpg', { type: 'image/jpeg' });
 
-    //     // Verify error alert was shown
-    //     await waitFor(() => {
-    //         expect(global.alert).toHaveBeenCalledWith(expect.stringContaining('Failed to create listing'));
-    //     });
-    // });
+        // Get the first upload label
+        const fileInput = screen.getAllByTestId('Uploadphoto')[0];
 
-    // test("validates required fields", async () => {
-    //     await act(async () => {
-    //         render(<Listing />);
-    //     });
+        // Trigger file upload
+        await act(async () => {
+            //const input = fileInput.querySelector('input[type="file"]');
+            fireEvent.change(fileInput, { target: { files: [mockFile] } });
+        });
 
-    //     // Try to submit empty form
-    //     await act(async () => {
-    //         const submitButton = screen.getByTestId('submitbtn');
-    //         await user.click(submitButton);
-    //     });
+        // Wait for FileReader mock to complete
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
 
-    //     // Verify error alert for required fields
-    //     await waitFor(() => {
-    //         expect(global.alert).toHaveBeenCalledWith(expect.stringContaining('is required'));
-    //     });
-    // });
+        // Verify the uploaded photo is displayed
+        await waitFor(() => {
+            const uploadedImage = screen.queryByTestId('photoUploaded');
+            expect(uploadedImage).toBeInTheDocument();
+            expect(uploadedImage).toHaveAttribute('src', mockFileReader.result);
+        }, { timeout: 3000 });
+
+        // Test deletion
+        const deleteButton = await screen.findByTestId('deletePhoto');
+        await act(async () => {
+            fireEvent.click(deleteButton);
+        });
+
+        // Verify the photo is removed
+        await waitFor(() => {
+            const uploadedImage = screen.queryByTestId('photoUploaded');
+            expect(uploadedImage).not.toBeInTheDocument();
+        });
+    });
+
+
+    test("handles custom details addition and removal", async () => {
+        // Mock the initial categories fetch
+        fetch.mockImplementationOnce(() => 
+            Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve(mockCategories)
+            })
+        );
+
+        await act(async () => {
+            render(<Listing />);
+        });
+
+        const addCustomDetailBtn = await screen.findByTestId('customDetails');
+        
+        await act(async () => {
+            fireEvent.click(addCustomDetailBtn);
+        });
+
+        const titleInput = screen.getByPlaceholderText('customtitle');
+        const descInput = screen.getByPlaceholderText('customdesc');
+
+        await act(async () => {
+            await user.type(titleInput, 'Test Detail');
+            await user.type(descInput, 'Test Description');
+        });
+
+        expect(titleInput).toHaveValue('Test Detail');
+        expect(descInput).toHaveValue('Test Description');
+
+        // Test removal
+        const removeButton = screen.getByTestId('removeCustDetails');
+        await act(async () => {
+            fireEvent.click(removeButton);
+        });
+    });
+
+    test("successfully creates a listing with photos", async () => {
+        // Mock API responses
+        fetch
+            // Initial categories fetch
+            .mockImplementationOnce(() => Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve(mockCategories)
+            }))
+            // Subcategories fetch
+            .mockImplementationOnce(() => Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve(mockSubcategories)
+            }))
+            // Photo upload response
+            .mockImplementationOnce(() => Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ imgURL: 'https://example.com/image1.jpg' })
+            }))
+            // Listing creation response
+            .mockImplementationOnce(() => Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ success: true, id: '123' })
+            }));
+
+        await act(async () => {
+            render(<Listing />);
+        });
+
+        // Fill out the form
+        const inputs = {
+            categories: 'electronics',
+            subcat: 'Mobile Phones',
+            title: 'Test Item',
+            desc: 'Test Description',
+            price: '100',
+            location: 'Amman'
+        };
+
+        for (const [id, value] of Object.entries(inputs)) {
+            const input = await screen.findByTestId(id);
+            await act(async () => {
+                fireEvent.change(input, { target: { value } });
+            });
+        }
+
+        // Select condition and delivery options
+        const conditionRadio = screen.getByLabelText('condition1');
+        const deliveryRadio = screen.getByLabelText('delivery1');
+        
+        await act(async () => {
+            fireEvent.click(conditionRadio);
+            fireEvent.click(deliveryRadio);
+        });
+
+        // Upload a photo
+        const mockFile = new File(['mock content'], 'test-image.jpg', { type: 'image/jpeg' });
+        const fileInput = screen.getAllByTestId('Uploadphoto')[0];
+        
+        await act(async () => {
+            //const input = fileInput.querySelector('input[type="file"]');
+            fireEvent.change(fileInput, { target: { files: [mockFile] } });
+        });
+
+        // Wait for FileReader mock to complete
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        // Verify photo is uploaded
+        await waitFor(() => {
+            const uploadedImage = screen.queryByTestId('photoUploaded');
+            expect(uploadedImage).toBeInTheDocument();
+        });
+
+        // Submit the form
+        const submitButton = screen.getByTestId('submitbtn');
+        await act(async () => {
+            fireEvent.click(submitButton);
+        });
+
+        // Verify success alert
+        await waitFor(() => {
+            expect(global.alert).toHaveBeenCalledWith('Listing created successfully!');
+        });
+
+        // Verify API calls
+        expect(fetch).toHaveBeenCalledTimes(4); // Categories, subcategories, photo upload, and listing creation
+        
+        // Verify form reset
+        await waitFor(() => {
+            expect(screen.getByTestId('title')).toHaveValue('');
+            expect(screen.getByTestId('desc')).toHaveValue('');
+            expect(screen.queryByTestId('photoUploaded')).not.toBeInTheDocument();
+        });
+
+        // Verify listing creation API call
+        expect(fetch).toHaveBeenCalledWith('http://localhost:8080/api/listing', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                category: 'electronics',
+                subCategory: 'Mobile Phones',
+                title: 'Test Item',
+                description: 'Test Description',
+                condition: 'New',
+                delivery: 'Yes',
+                price: '100',
+                location: 'Amman',
+                userID: '123',
+                photos: ['https://example.com/image1.jpg'],
+                customDetails: {}
+            })
+        });
+    });
+
+    test("handles form submission with validation when no photos", async () => {
+        // Mock all necessary fetch calls
+        fetch
+            .mockImplementationOnce(() => Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve(mockCategories)
+            }))
+            .mockImplementationOnce(() => Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve(mockSubcategories)
+            }))
+            .mockImplementationOnce(() => Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ success: true })
+            }));
+
+        await act(async () => {
+            render(<Listing />);
+        });
+
+        // Fill out the form
+        const inputs = {
+            categories: 'electronics',
+            subcat: 'Mobile Phones',
+            title: 'Test Item',
+            desc: 'Test Description',
+            price: '100',
+            location: 'Amman'
+        };
+
+        for (const [id, value] of Object.entries(inputs)) {
+            const input = await screen.findByTestId(id);
+            await act(async () => {
+                fireEvent.change(input, { target: { value } });
+            });
+        }
+
+        // Select radio buttons
+        const conditionRadio = screen.getByLabelText('condition1');
+        const deliveryRadio = screen.getByLabelText('delivery1');
+        
+        await act(async () => {
+            fireEvent.click(conditionRadio);
+            fireEvent.click(deliveryRadio);
+        });
+
+        // Submit form
+        const submitButton = screen.getByTestId('submitbtn');
+        await act(async () => {
+            fireEvent.click(submitButton);
+        });
+
+        await waitFor(() => {
+            expect(global.alert).toHaveBeenCalledWith(expect.stringContaining('Failed to create listing: No photos were successfully uploaded'));
+        });
+    });
+
+    test("handles form submission errors", async () => {
+        // Mock the initial categories fetch
+        fetch.mockImplementationOnce(() => 
+            Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve(mockCategories)
+            })
+        );
+
+        // Mock the submission to fail
+        fetch.mockImplementationOnce(() => Promise.reject(new Error('Network error')));
+
+        await act(async () => {
+            render(<Listing />);
+        });
+
+        const submitButton = screen.getByTestId('submitbtn');
+        await act(async () => {
+            fireEvent.click(submitButton);
+        });
+
+        await waitFor(() => {
+            expect(global.alert).toHaveBeenCalledWith(expect.stringContaining('Failed to create listing'));
+        });
+    });
+
+    test("handles language toggle", async () => {
+        // Mock the initial categories fetch
+        fetch.mockImplementationOnce(() =>
+            Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve(mockCategories)
+            })
+        );
+
+        await act(async () => {
+            render(<Listing />);
+        });
+
+        // Verify initial direction is ltr (English)
+        const form = screen.getByTestId('form');
+        expect(form).toHaveAttribute('dir', 'ltr');
+
+        // Find and click the language toggle
+        const languageToggle = screen.getByTestId('Languagebtn');
+        
+        // Mock the pathname change before clicking
+        mockPathname = '/ar/listing';
+        
+        await act(async () => {
+            fireEvent.click(languageToggle);
+        });
+
+        // Re-render the component with the new locale
+        await act(async () => {
+            render(<Listing />);
+        });
+
+        // Verify the router.push was called with the correct path
+        expect(mockRouter.push).toHaveBeenCalledWith('/ar/listing');
+    });
 });

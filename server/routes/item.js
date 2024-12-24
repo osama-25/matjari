@@ -96,9 +96,11 @@ router.get('/:id', async (req, res) => {
             'Select user_name, phone_number, email from users where id= $1',
             [item.user_id]
         );
-        item.username = userInfo.rows[0]?.user_name || null;
-        item.phone_number = userInfo.rows[0]?.phone_number || null;
-        item.email = userInfo.rows[0]?.email || null;
+        const user = userInfo.rows[0] || {};
+
+        if (user.user_name) item.username = user.user_name;
+        if (user.phone_number) item.phone_number = user.phone_number;
+        if (user.email) item.email = user.email;    
 
         res.status(200).json(item);
     } catch (error) {

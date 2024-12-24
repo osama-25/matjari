@@ -221,11 +221,14 @@ const Listing = () => {
     return (
         <div className="flex justify-center items-center p-6 min-h-screen">
             <form
+                data-testid="form"
                 dir={locale === 'ar' ? 'rtl' : 'ltr'}
                 className="w-full grid grid-cols-1 lg:grid-cols-2 gap-6 bg-white rounded-lg max-w-6xl p-6"
                 onSubmit={handleSubmit}
             >
-                <p onClick={HandleLocaleChange}
+                <p 
+                    data-testid="Languagebtn"
+                    onClick={HandleLocaleChange}
                     className={`absolute ${locale == 'ar' ? 'left-0' : 'right-0'} top-0 p-8 text-lg cursor-pointer`}>
                     {locale == 'ar' ? 'EN' : 'عربي'}
                 </p>

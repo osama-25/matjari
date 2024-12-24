@@ -37,11 +37,7 @@ const EditListing = () => {
     const [loading, setLoading] = useState(true); // To manage loading state
     const [images, setImages] = useState([]); // Initialize images state with photoDataArray
 
-    const handleSetImage = (index, newImage) => {
-        const updatedImages = [...images];
-        updatedImages[index] = newImage; // Update the specific image by index
-        setImages(updatedImages); // Update the state with the new array
-    };
+    
 
     const HandleLocaleChange = () => {
         const currentLocale = pathname.split("/")[1]; // Get the current locale (e.g., "en" or "ar")
@@ -112,8 +108,10 @@ const EditListing = () => {
                 console.log(data);
                 setFormData(data);
                 setCustomDetails(data.customDetails);
-                setPhotoDataArray(data.photos);
-                setImages(data.photos);
+                setPhotoDataArray(data.photos.map(photo => ({
+                    imageBase64: photo 
+                })));
+                //setImages(data.photos);
             } catch (error) {
                 //console.error("Error fetching item:", error);
                 setError(error.message); // Set error state
@@ -264,7 +262,7 @@ const EditListing = () => {
     };
 
     const addPhoto = () => {
-        if (images.length < 12) setImages([...images, null]);
+        if (photos.length < 12) setPhotos([...photos, photos.length + 1]);
     };
 
     const addPhotoURL = (filename, fileType, imageBase64) => {
@@ -475,10 +473,10 @@ const EditListing = () => {
                     <div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4 justify-items-center">
                             <div className="col-span-1 md:col-span-3 w-full">
-                                <AddPhoto image={images[0]} setImage={(newImage) => handleSetImage(0, newImage)} onDelete={deletePhotoURL} onUpload={addPhotoURL} size="large" />
+                                <AddPhoto image={photoDataArray[0]?.imageBase64||null} key={0} id={0}onDelete={deletePhotoURL} onUpload={addPhotoURL} size="large" />
                             </div>
                             {photos.map((photo, index) => (
-                                <AddPhoto image={images[index + 1]} setImage={(newImage) => handleSetImage(index + 1, newImage)} key={index} id={index} onDelete={deletePhotoURL} onUpload={addPhotoURL} size="small" />
+                                <AddPhoto image={photoDataArray[index+1]?.imageBase64||null}  key={index+1} id={index+1} onDelete={deletePhotoURL} onUpload={addPhotoURL} size="small" />
                             ))}
                             {images.length < 9 && (
                                 <button
