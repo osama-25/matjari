@@ -165,7 +165,7 @@ const ProductPage = ({ params }) => {
 
     const HandleFavouriteClick = async () => {
         // change the item favourite status in the database
-        if (user_id) { // Reactively use the state value
+        if (user_id) { 
             try {
                 const response = await fetch('http://localhost:8080/api/favorites', {
                     method: 'POST',
@@ -187,7 +187,8 @@ const ProductPage = ({ params }) => {
             }
         }
         else {
-            //redirect to login page
+            //redirect to login page if user is not logged in
+            router.push("/login");
         }
     }
 

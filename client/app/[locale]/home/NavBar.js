@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import { FaComments, FaHeart, FaPlus, FaSearch, FaUser } from "react-icons/fa";
 import { FaBars, FaCamera, FaX, FaXmark } from "react-icons/fa6";
 import { IoCamera, IoCameraOutline } from "react-icons/io5";
-
+import SearchPage from "../search/page";
 const flags = [
   "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Flag_of_the_United_Kingdom_%281-2%29.svg/1200px-Flag_of_the_United_Kingdom_%281-2%29.svg.png",
   "https://cdn.britannica.com/79/5779-050-46C999AF/Flag-Saudi-Arabia.jpg",
@@ -45,25 +45,54 @@ const NavBar = () => {
     if (!searchTerm.trim()) return;
   
     try {
-      const response = await fetch(`/search?term=${encodeURIComponent(searchTerm)}&page=1&pageSize=10`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      if (!response.ok) {
-        throw new Error('Search failed');
-      }
-      
-  
-      const data = await response.json();
-      setSearchResults(data.items); // Assuming the backend returns an object with items
-      
       // Navigate to search results page
       router.push(`/search?term=${encodeURIComponent(searchTerm)}&page=1&pageSize=10`);
     } catch (err) {
       console.error('Search error:', err);
+    }
+  };
+
+  const handleImageSearch = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const imageBase64 = reader.result.split(",")[1];
+        const filename = file.name;
+        const fileType = file.type;
+        //convert base64 to imageURL
+        try {
+          const response = await fetch("http://localhost:8080/azure/upload", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                filename,
+                fileType,
+                imageBase64
+              }),
+          });
+
+          if (!response.ok) {
+              throw new Error(`Error uploading photo: ${photo.filename}`);
+          }
+
+          const result = await response.json();
+          if (result.imgURL) {
+            localStorage.setItem('searchImageUrl', result.imgURL);
+            const locale = pathname.split('/')[1];
+            router.push(`/${locale}/search?type=image`);
+          } else {
+              throw new Error('No image URL received from server');
+          }
+      } catch (error) {
+          console.error("Error uploading photo:", error); 
+      }
+
+        
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -106,6 +135,7 @@ const NavBar = () => {
                     accept="image/png, image/jpeg, image/jpg"
                     className="hidden"
                     id="search-image"
+                    onChange={handleImageSearch}
                   />
                   <IoCamera size={24} className="text-white" />
                 </label>

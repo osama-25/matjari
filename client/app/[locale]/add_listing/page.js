@@ -8,8 +8,10 @@ import { getInfo } from "../global_components/dataInfo";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import ErrorPage from "../ErrorPage";
+import Loading from '@/app/[locale]/global_components/loading';
 
 const Listing = () => {
+    
     const [photos, setPhotos] = useState([1, 2, 3]);
     const [customDetails, setCustomDetails] = useState([]);
     const [photoDataArray, setPhotoDataArray] = useState([]); // Track photo data as state
@@ -31,7 +33,7 @@ const Listing = () => {
     const [categories, setCategories] = useState([]);
     const [subcategories, setSubCategories] = useState([]);
     const [error, setError] = useState();
-   
+    const [isLoading, setIsLoading] = useState(false);
 
     
 
@@ -141,7 +143,7 @@ const Listing = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        setIsLoading(true);
         try {
             removeEmptyDetails();
             formCheck();
@@ -178,30 +180,39 @@ const Listing = () => {
 
             const data = await response.json();
             console.log('Listing created successfully:', data);
-            alert('Listing created successfully!');
+             
+            //alert('Listing created successfully!');
 
-            // Clear the form and photo data
-            setPhotoDataArray([]);
-            setPhotos([1, 2, 3]); // Reset to initial state
-            setCustomDetails([]);
-            setFormData({
-                category: "",
-                subCategory: "",
-                title: "",
-                description: "",
-                condition: "",
-                delivery: "",
-                price: "",
-                location: "",
-                userID: formData.userID // Preserve the user ID
-            });
+            // Navigate to the new item page
+            router.push(`/item/${data.itemId}`);
+
+            // // Clear the form and photo data
+            // setPhotoDataArray([]);
+            // setPhotos([1, 2, 3]); // Reset to initial state
+            // setCustomDetails([]);
+            // setFormData({
+            //     category: "",
+            //     subCategory: "",
+            //     title: "",
+            //     description: "",
+            //     condition: "",
+            //     delivery: "",
+            //     price: "",
+            //     location: "",
+            //     userID: formData.userID // Preserve the user ID
+            // });
 
         } catch (error) {
             //console.error('Error during submission:', error);
             alert(`Failed to create listing: ${error.message}`);
+        } finally {
+            setIsLoading(false);
         }
     };
 
+    if (isLoading) {
+        return <Loading>Creating Listing....</Loading>;
+    }
     const addPhoto = () => {
         if (photos.length < 12) setPhotos([...photos, photos.length + 1]);
     };

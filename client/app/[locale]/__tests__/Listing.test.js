@@ -238,7 +238,10 @@ describe("Listing Component", () => {
             // Listing creation response
             .mockImplementationOnce(() => Promise.resolve({
                 ok: true,
-                json: () => Promise.resolve({ success: true, id: '123' })
+                json: () => Promise.resolve({ 
+                    message: 'Listing created successfully',
+                    itemId: 12
+                })
             }));
 
         await act(async () => {
@@ -305,11 +308,9 @@ describe("Listing Component", () => {
         // Verify API calls
         expect(fetch).toHaveBeenCalledTimes(4); // Categories, subcategories, photo upload, and listing creation
         
-        // Verify form reset
+       // Verify router navigation to new item page
         await waitFor(() => {
-            expect(screen.getByTestId('title')).toHaveValue('');
-            expect(screen.getByTestId('desc')).toHaveValue('');
-            expect(screen.queryByTestId('photoUploaded')).not.toBeInTheDocument();
+            expect(mockRouter.push).toHaveBeenCalledWith('/item/12');
         });
 
         // Verify listing creation API call

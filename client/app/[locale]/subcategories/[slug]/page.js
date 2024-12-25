@@ -4,6 +4,7 @@ import SearchFilter from "../../search/SearchFilter";
 import ItemDisplay from "../../search/ItemDisplay";
 import ErrorPage from "../../ErrorPage";
 import { getInfo } from "../../global_components/dataInfo";
+import { Router } from "next/router";
 
 const SubCategories = ({ params }) => {
     const subcategory = use(params).slug;
