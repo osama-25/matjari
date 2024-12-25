@@ -18,11 +18,7 @@ const customJestConfig = {
   collectCoverage: true,
   coverageDirectory: 'coverage',
   collectCoverageFrom: [
-    '**/*.{js,jsx,ts,tsx}',
-    '!**/*.test.{js,jsx,ts,tsx}',
-    '!**/*.spec.{js,jsx,ts,tsx}',
-    '!**/node_modules/**',
-    '!**/.next/**'
+     "app/[locale]/add_listing/**/*.{js,jsx,ts,tsx}"
   ],
   coveragePathIgnorePatterns: [
     'node_modules',
