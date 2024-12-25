@@ -3,13 +3,14 @@ import db from '../config/db.js';
 
 const router = express.Router();
 
-router.get('/search', async (req, res) => {
+router.get('/', async (req, res) => {
     const { term, page, pageSize } = req.query;
+    console.log("Search route: "+term);
     try {
         // Default values if not provided
         const parsedPage = parseInt(page) || 1;
         const parsedPageSize = parseInt(pageSize) || 10;
-        console.log("Search route: "+term);
+        //console.log("Search route: "+term);
         // Validate page and pageSize
         if (isNaN(parsedPage) || parsedPage < 1 || isNaN(parsedPageSize) || parsedPageSize < 1) {
             return res.status(400).json({ error: "Invalid pagination parameters" });
@@ -32,11 +33,25 @@ router.get('/search', async (req, res) => {
         const totalPages = Math.ceil(totalItems / parsedPageSize);
 
         // Fetch items for the current page with limit and offset
-        const itemsResult = await db.query(
-            "SELECT * FROM listings WHERE title ILIKE $1 LIMIT $2 OFFSET $3",
+        const itemsResult = await db.query(`
+            SELECT l.*, 
+                   (SELECT photo_url 
+                    FROM listing_photos lp 
+                    WHERE lp.listing_id = l.id  
+                    LIMIT 1) as main_photo
+            FROM listings l 
+            WHERE l.title ILIKE $1 
+            LIMIT $2 OFFSET $3`,
             [`%${term}%`, parsedPageSize, offset]
         );
-
+        console.log("Search Results:", {
+            totalItems: itemsResult.rows.length,
+            items: itemsResult.rows.map(item => ({
+                id: item.id,
+                title: item.title,
+                main_photo: item.main_photo
+            }))
+        });
         // Return paginated results along with metadata
         res.status(200).json({
             items: itemsResult.rows,

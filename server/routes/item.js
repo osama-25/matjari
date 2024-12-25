@@ -45,7 +45,10 @@ router.post('/', async (req, res) => {
         await Promise.all(detailPromises);
 
 
-        res.status(201).json({ message: 'Listing created successfully' });
+        res.status(201).json({ 
+            message: 'Listing created successfully',
+            itemId: listingId 
+        });
     } catch (error) {
         console.error('Error saving listing:', error);
         res.status(500).json({ message: 'Error saving listing' });

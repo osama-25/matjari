@@ -40,7 +40,10 @@ router.post('/describe', async (req, res) => {
 const IMAGE_DESCRIPTION_API = 'http://localhost:8080/imageDesc/describe';
 router.post('/search-by-image', async (req, res) => {
     const { image } = req.body;
-
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const offset = (page - 1) * pageSize;
+    console.log("Search by image route: "+image);
     try {
         // Extract tags for the uploaded image
         const response = await axios.post(IMAGE_DESCRIPTION_API, { image });
@@ -52,7 +55,7 @@ router.post('/search-by-image', async (req, res) => {
         
         console.log(extractedTags);
         // Search for listings with matching tags
-        const result = await db.query(
+        const countResult = await db.query(
             `SELECT DISTINCT  l.* 
              FROM listing_photos lp
              JOIN listings l ON lp.listing_id = l.id
@@ -63,10 +66,36 @@ router.post('/search-by-image', async (req, res) => {
              )`,
             [extractedTags]
         );
+        const totalItems = parseInt(countResult.rows[0].total);
+        const totalPages = Math.ceil(totalItems / pageSize);
 
-        const listings = result.rows;
 
-        res.status(200).json({ listings });
+        // Get paginated results
+        const result = await db.query(
+            `SELECT DISTINCT l.*, 
+                    (SELECT photo_url 
+                     FROM listing_photos lp2 
+                     WHERE lp2.listing_id = l.id 
+                     ORDER BY lp2.id ASC 
+                     LIMIT 1) as main_photo
+             FROM listing_photos lp
+             JOIN listings l ON lp.listing_id = l.id
+             WHERE EXISTS (
+                 SELECT 1
+                 FROM jsonb_array_elements_text(lp.tags::jsonb) AS tag
+                 WHERE tag = ANY ($1)
+             )
+             LIMIT $2 OFFSET $3`,
+            [extractedTags, pageSize, offset]
+        );
+
+        res.status(200).json({
+            items: result.rows,
+            page,
+            pageSize,
+            totalItems,
+            totalPages
+        });
     } catch (error) {
         console.error('Error searching by image:', error);
         res.status(500).json({ message: 'Error searching by image' });
