@@ -149,7 +149,7 @@ const Listing = () => {
             formCheck();
             // First upload all photos and get their URLs
             const uploadedPhotoUrls = await uploadPhotos();
-
+            console.log("uploadedPhotoUrls: ", uploadedPhotoUrls);
             if (uploadedPhotoUrls.length === 0) {
                 throw new Error('No photos were successfully uploaded');
             }
@@ -181,7 +181,7 @@ const Listing = () => {
             const data = await response.json();
             console.log('Listing created successfully:', data);
              
-            //alert('Listing created successfully!');
+            alert('Listing created successfully!');
 
             // Navigate to the new item page
             router.push(`/item/${data.itemId}`);

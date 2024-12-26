@@ -18,7 +18,11 @@ const customJestConfig = {
   collectCoverage: true,
   coverageDirectory: 'coverage',
   collectCoverageFrom: [
-     "app/[locale]/add_listing/**/*.{js,jsx,ts,tsx}"
+     "app/[locale]/add_listing/**/*.{js,jsx,ts,tsx}",
+     "app/[locale]/edit_listing/**/*.{js,jsx,ts,tsx}",
+     "app/[locale]/search/**/*.{js,jsx,ts,tsx}",
+     "app/[locale]/global_components/loading/**/*.{js,jsx,ts,tsx}",
+     "app/[locale]/home/NavBar.js"
   ],
   coveragePathIgnorePatterns: [
     'node_modules',
@@ -27,7 +31,13 @@ const customJestConfig = {
     'jest.setup.js',
     'jest.config.js'
   ],
-  coverageReporters: ['text', 'lcov', 'html', 'text-summary']
+  silent: true,
+  verbose: true,
+  maxWorkers: 1,
+  coverageReporters: ['text', 'lcov', 'html', 'text-summary'],
+  testEnvironmentOptions: {
+    showConsole: false
+  }
 };
 
 module.exports = createJestConfig(customJestConfig);

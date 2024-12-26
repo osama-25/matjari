@@ -38,7 +38,7 @@ router.get('/', async (req, res) => {
                    (SELECT photo_url 
                     FROM listing_photos lp 
                     WHERE lp.listing_id = l.id  
-                    LIMIT 1) as main_photo
+                    LIMIT 1) as image
             FROM listings l 
             WHERE l.title ILIKE $1 
             LIMIT $2 OFFSET $3`,
@@ -49,7 +49,7 @@ router.get('/', async (req, res) => {
             items: itemsResult.rows.map(item => ({
                 id: item.id,
                 title: item.title,
-                main_photo: item.main_photo
+                image: item.image
             }))
         });
         // Return paginated results along with metadata

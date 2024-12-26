@@ -125,9 +125,10 @@ const ProductPage = ({ params }) => {
     }
 
     const handleButtonClick = async () => {
+        if (user_id) { // Check if user is logged in
         try {
-            const info = await getInfo();
-            const current_user_id = info.id;
+            
+            const current_user_id = user_id;
             const item_user_id = item.user_id;
 
             console.log("#current_user_id", current_user_id);
@@ -160,6 +161,9 @@ const ProductPage = ({ params }) => {
             // router.push(`/chats/2`); // You can use the room_id from the response data
         } catch (error) {
             console.error('Error:', error);
+        }}
+        else{
+            router.push("/login");
         }
     }
 
@@ -263,7 +267,7 @@ const ProductPage = ({ params }) => {
                 <h1 className="font-bold text-xl mb-4">{t('details')}</h1>
                 <ul className="grid md:grid-cols-2 gap-y-2 list-disc list-inside">
                     <li><strong>Location:</strong> {location}</li>
-                    <li><strong>Delivery:</strong> {delivery ? "Yes" : "No"}</li>
+                    <li><strong>Delivery:</strong> {delivery=="Yes" ? "Yes" : "No"}</li>
                     <li><strong>Condition:</strong> {condition}</li>
                     {customDetails.map((detail, index) => (
                         <li key={index}>

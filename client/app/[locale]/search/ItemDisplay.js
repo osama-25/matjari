@@ -19,7 +19,7 @@ const ItemDisplay = ({ Items, Favourited }) => {
                 {Items.map((item, index) => (
                     <HomeItem
                         key={index}
-                        id={item.id} name={item.title} image={item.main_photo}
+                        id={item.id} name={item.title} image={item.image}
                         price={item.price} heart={Favourited.includes(item.id)}
                     />
                 ))}

@@ -31,7 +31,7 @@ const SearchPage = () => {
         setIsLoading(true);
         
         try {
-            console.log('here');
+            console.log('Fetching search results...');
             let endpoint;
             const options = {
                 headers: {
@@ -41,11 +41,9 @@ const SearchPage = () => {
     
             if (searchType === 'image') {
                 endpoint = `http://localhost:8080/imageDesc/search-by-image?page=${currentPage}&pageSize=${itemsPerPage}`;
-                const imageUrl = localStorage.getItem('searchImageUrl');
-                if (!imageUrl){ console.log("there's no URL"); return;}
-                
+                if (!imgSrc){ console.log("there's no URL"); return;}
                 options.method = 'POST';
-                options.body = JSON.stringify({ image:imageUrl });
+                options.body = JSON.stringify({ image:imgSrc });
             } else {
                 endpoint = `http://localhost:8080/search?term=${encodeURIComponent(searchTerm)}&page=${currentPage}&pageSize=${itemsPerPage}`;
                 options.method = 'GET';
@@ -63,6 +61,7 @@ const SearchPage = () => {
             const data = await response.json();
             if (data.items && data.items.length > 0) {
                 setItems(data.items);
+                console.log('Items:', data.items);
                 setisItemsReturned(true);
             } else {
                 setItems([]);
@@ -76,11 +75,20 @@ const SearchPage = () => {
         }
     };
 
-    
 
     useEffect(() => {
+        console.log('Search type:', searchType);
+        if (searchType === 'image') {
+            const storedImageUrl = localStorage.getItem('searchImageUrl');
+            console.log('Stored image URL:', storedImageUrl);
+            if (storedImageUrl) {
+                setImgSrc(storedImageUrl);
+                localStorage.removeItem('searchImageUrl');
+                console.log('Removed image URL from localStorage');
+            }
+        }
         fetchSearchResults();
-    }, [searchTerm, imgSrc, currentPage]);
+    }, [searchTerm, imgSrc, currentPage,searchParams, searchType]);
 
     if (isLoading) {
             return <Loading>Creating Listing....</Loading>;
@@ -112,7 +120,7 @@ const SearchPage = () => {
             </div>
         ) : (
             <div className="flex justify-center items-center h-96"> 
-                <h1 className="text-2xl">No items found for {searchTerm}</h1>
+                <h1 className="text-2xl">No items found matching this {searchType === 'image' ? 'photo' : 'term:'} {searchTerm}</h1>
             </div>
         )
     )

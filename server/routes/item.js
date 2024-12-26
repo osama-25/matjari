@@ -2,13 +2,13 @@ import express from 'express';
 import db from '../config/db.js';
 import axios from 'axios';
 const router = express.Router();
-
-
+const excludedTags = ['text', 'indoor', 'person', 'outdoor', 'clothing', 'fashion', 'people'];
+const IMAGE_DESCRIPTION_API = 'http://localhost:8080/imageDesc/describe';
 //add Items
 router.post('/', async (req, res) => {
     const { category, subCategory, title, description, condition, delivery, price, location, photos, customDetails, userID } = req.body;
-    const excludedTags = ['text', 'indoor', 'person'];
-    const IMAGE_DESCRIPTION_API = 'http://localhost:8080/imageDesc/describe';
+    
+    
     try {
         //const db = await pool.connect();
 
@@ -138,10 +138,10 @@ router.delete('/delete/:id', async (req, res) => {
 
 router.post('/update/:listingId', async (req, res) => {
     const { listingId } = req.params;
-    const { category, subCategory, title, description, condition, delivery, price, location, photos, customDetails } = req.body;
-    const excludedTags = ['text', 'indoor', 'person'];
-    const IMAGE_DESCRIPTION_API = 'http://localhost:8080/imageDesc/describe';
-
+    const { category, sub_category, title, description, condition, delivery, price, location, photos, customDetails } = req.body;
+    //const excludedTags = ['text', 'indoor', 'person'];
+    //const IMAGE_DESCRIPTION_API = 'http://localhost:8080/imageDesc/describe';
+    
     try {
         console.log('listingId' + listingId);
         console.log(req.body);
@@ -151,17 +151,29 @@ router.post('/update/:listingId', async (req, res) => {
              SET category = $1, sub_category = $2, title = $3, description = $4, condition = $5, 
                  delivery = $6, price = $7, location = $8
              WHERE id = $9`,
-            [category, subCategory, title, description, condition, delivery, price, location, listingId]
+            [category, sub_category, title, description, condition, delivery, price, location, listingId]
         );
 
         if (updateListingResult.rowCount === 0) {
             return res.status(404).json({ message: 'Listing not found' });
         }
 
-        // Delete existing photos and add new ones
-        await db.query(`DELETE FROM listing_photos WHERE listing_id = $1`, [listingId]);
+        // Delete removed photos
+        const photoPlaceholders = photos.map((_, index) => `$${index + 2}`).join(',');
+        await db.query(
+            `DELETE FROM listing_photos WHERE listing_id = $1 AND photo_url NOT IN (${photoPlaceholders})`,
+            [listingId, ...photos]
+        );
 
         const photoPromises = photos.map(async (photoUrl) => {
+            // Check if photo already exists
+            const existingPhoto = await db.query(
+                'SELECT 1 FROM listing_photos WHERE listing_id = $1 AND photo_url = $2',
+                [listingId, photoUrl]
+            );
+            if (existingPhoto.rows.length > 0) {
+                return Promise.resolve(); // Skip if photo already exists
+            }
             // Call the image description API
             const response = await axios.post(IMAGE_DESCRIPTION_API, { image: photoUrl });
             let tags = response.data.data?.tags.slice(0, 10).map(tag => tag.name) || [];

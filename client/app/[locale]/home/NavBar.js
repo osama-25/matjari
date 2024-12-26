@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import { FaComments, FaHeart, FaPlus, FaSearch, FaUser } from "react-icons/fa";
 import { FaBars, FaCamera, FaX, FaXmark } from "react-icons/fa6";
 import { IoCamera, IoCameraOutline } from "react-icons/io5";
-import SearchPage from "../search/page";
+
 const flags = [
   "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Flag_of_the_United_Kingdom_%281-2%29.svg/1200px-Flag_of_the_United_Kingdom_%281-2%29.svg.png",
   "https://cdn.britannica.com/79/5779-050-46C999AF/Flag-Saudi-Arabia.jpg",
@@ -18,7 +18,6 @@ const NavBar = () => {
   const [flagIndex, setFlagIndex] = useState(1);
   const [isMenuOpen, setIsMenuOpen] = useState(false); // State for side menu visibility
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -42,11 +41,14 @@ const NavBar = () => {
   };
 
   const performSearch = async () => {
+    
     if (!searchTerm.trim()) return;
   
     try {
+      console.log('Search term: ', searchTerm);
       // Navigate to search results page
       router.push(`/search?term=${encodeURIComponent(searchTerm)}&page=1&pageSize=10`);
+      setSearchTerm('');
     } catch (err) {
       console.error('Search error:', err);
     }
@@ -81,8 +83,8 @@ const NavBar = () => {
           const result = await response.json();
           if (result.imgURL) {
             localStorage.setItem('searchImageUrl', result.imgURL);
-            const locale = pathname.split('/')[1];
-            router.push(`/${locale}/search?type=image`);
+            console.log('Search image URL:', result.imgURL);
+            router.push(`/search?type=image`);
           } else {
               throw new Error('No image URL received from server');
           }
@@ -131,6 +133,7 @@ const NavBar = () => {
               <form onSubmit={handleSearchSubmit} className="flex-1 flex items-center justify-center p-4 w-full md:w-auto">
               <label htmlFor="search-image" className="flex items-center px-4 py-2 bg-gray-800 text-white rounded-l-md focus:outline-none cursor-pointer">
                   <input
+                    data-testid="imgInput"
                     type="file"
                     accept="image/png, image/jpeg, image/jpg"
                     className="hidden"
@@ -142,6 +145,7 @@ const NavBar = () => {
                 <div className="w-full flex focus-within:outline rounded-md">
                   <input
                     dir={pathname.split("/")[1] === 'ar' ? 'rtl' : 'ltr'}
+                    data-testid="searchInput"
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -150,6 +154,7 @@ const NavBar = () => {
                     placeholder={t('searchph')}
                   />
                   <button 
+                    data-testid="searchBtn"
                     type="submit"
                     onClick={performSearch}
                     className="px-4 py-2 bg-blue-500 text-white rounded-r-md focus:outline-none"
@@ -194,6 +199,7 @@ const NavBar = () => {
                   <FaPlus size={18} />
                 </Link>
                 <button
+                  data-testid="flagBtn"
                   onClick={HandleFlagPress}
                   className="p-2 rounded-md hover:bg-gray-200"
                 >
