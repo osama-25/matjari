@@ -204,5 +204,32 @@ router.post('/update/:listingId', async (req, res) => {
     }
 });
 
+router.get('/store/:userId', async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const listingsResult = await db.query(
+            `SELECT * FROM listings WHERE user_id = $1`,
+            [userId]
+        );
+
+        const listings = listingsResult.rows;
+
+        // Fetch one photo for each listing
+        const listingsWithPhotos = await Promise.all(listings.map(async (listing) => {
+            const photosResult = await db.query(
+            `SELECT photo_url FROM listing_photos WHERE listing_id = $1 LIMIT 1`,
+            [listing.id]
+            );
+            listing.image = photosResult.rows[0]?.photo_url || null;
+            return listing;
+        }));
+
+        res.status(200).json({ listings: listingsWithPhotos });
+    } catch (error) {
+        console.error('Error fetching listings:', error);
+        res.status(500).json({ message: 'Error fetching listings' });
+    }
+});
+
 
 export default router;

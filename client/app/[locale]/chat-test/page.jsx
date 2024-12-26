@@ -10,7 +10,7 @@ import { FaArrowLeft, FaImage, FaPaperPlane, FaPlay, FaXmark } from 'react-icons
 
 const socket = io.connect("http://localhost:8080");
 
-export default function Chats({ CloseChat, roomId }) {
+export default function Chats({ CloseChat, roomId, chatName }) {
     const [message, setMessage] = useState("");
     const [AllMessages, setAllMessages] = useState([]);
     const [files, setFiles] = useState([]);
@@ -269,14 +269,9 @@ export default function Chats({ CloseChat, roomId }) {
                 </button>
 
                 {/* Chat Info */}
-                <div className="flex items-center space-x-3">
-                    <img
-                        src="/Resources/profile-pic.jpg" // Replace with dynamic photo URL
-                        alt="Chat Avatar"
-                        className="w-12 h-12 rounded-full object-cover"
-                    />
+                <div className="flex items-center space-x-3 p-2">
                     <h2 className="text-lg font-semibold text-gray-800">
-                        Chat Name {/* Replace with dynamic chat name */}
+                        {chatName}
                     </h2>
                 </div>
 
@@ -285,7 +280,7 @@ export default function Chats({ CloseChat, roomId }) {
             </div>
 
             {/* Render Messages */}
-            <div dir='ltr' className="flex flex-col overflow-y-auto bg-white rounded-lg shadow-md mb-1 py-2">
+            <div dir='ltr' className="flex flex-col overflow-y-auto bg-white rounded-lg shadow-md mb-1 py-2 flex-grow">
                 {AllMessages.map((msg, index) => (
                     <div key={index} className="w-full">
                         <div

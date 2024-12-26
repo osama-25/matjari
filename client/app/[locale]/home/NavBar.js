@@ -43,7 +43,7 @@ const NavBar = () => {
   const performSearch = async () => {
     
     if (!searchTerm.trim()) return;
-  
+
     try {
       console.log('Search term: ', searchTerm);
       // Navigate to search results page
@@ -65,19 +65,19 @@ const NavBar = () => {
         //convert base64 to imageURL
         try {
           const response = await fetch("http://localhost:8080/azure/upload", {
-              method: "POST",
-              headers: {
-                  "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                filename,
-                fileType,
-                imageBase64
-              }),
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              filename,
+              fileType,
+              imageBase64
+            }),
           });
 
           if (!response.ok) {
-              throw new Error(`Error uploading photo: ${photo.filename}`);
+            throw new Error(`Error uploading photo: ${photo.filename}`);
           }
 
           const result = await response.json();
@@ -86,13 +86,13 @@ const NavBar = () => {
             console.log('Search image URL:', result.imgURL);
             router.push(`/search?type=image`);
           } else {
-              throw new Error('No image URL received from server');
+            throw new Error('No image URL received from server');
           }
-      } catch (error) {
-          console.error("Error uploading photo:", error); 
-      }
+        } catch (error) {
+          console.error("Error uploading photo:", error);
+        }
 
-        
+
       };
       reader.readAsDataURL(file);
     }
@@ -131,7 +131,7 @@ const NavBar = () => {
                 </Link>
               </section>
               <form onSubmit={handleSearchSubmit} className="flex-1 flex items-center justify-center p-4 w-full md:w-auto">
-              <label htmlFor="search-image" className="flex items-center px-4 py-2 bg-gray-800 text-white rounded-l-md focus:outline-none cursor-pointer">
+                <label htmlFor="search-image" className="flex items-center px-4 py-2 bg-gray-800 text-white rounded-l-md focus:outline-none cursor-pointer">
                   <input
                     data-testid="imgInput"
                     type="file"

@@ -66,4 +66,80 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.post('/filter', async (req, res) => {
+    const { searchTerm, minPrice, maxPrice, location, delivery, condition, order } = req.body;
+
+    let query = `SELECT COUNT(*) AS total FROM listings WHERE title ILIKE $1`;
+    const queryParams = [`%${searchTerm}%`];
+
+    if (minPrice) {
+        queryParams.push(minPrice);
+        query += ` AND price >= $${queryParams.length}`;
+    }
+
+    if (maxPrice) {
+        queryParams.push(maxPrice);
+        query += ` AND price <= $${queryParams.length}`;
+    }
+
+    if (location) {
+        queryParams.push(location);
+        query += ` AND location = $${queryParams.length}`;
+    }
+
+    if (delivery) {
+        queryParams.push(delivery);
+        query += ` AND delivery = $${queryParams.length}`;
+    }
+
+    if (condition) {
+        queryParams.push(condition);
+        query += ` AND condition = $${queryParams.length}`;
+    }
+
+    try {
+        const parsedPage = parseInt(req.query.page) || 1;
+        const parsedPageSize = parseInt(req.query.pageSize) || 10;
+
+        const countResult = await db.query(query, queryParams);
+        const totalItems = countResult.rows[0].total;
+        const totalPages = Math.ceil(totalItems / parsedPageSize);
+
+        const offset = (parsedPage - 1) * parsedPageSize;
+
+        let filterQuery = `
+            SELECT l.*, 
+                   (SELECT photo_url 
+                    FROM listing_photos lp 
+                    WHERE lp.listing_id = l.id  
+                    LIMIT 1) as image
+            FROM listings l 
+            WHERE l.title ILIKE $1`;
+
+        filterQuery += query.replace('SELECT COUNT(*) AS total FROM listings WHERE title ILIKE $1', '');
+
+        if (order === 'lowtohigh') {
+            filterQuery += ` ORDER BY price ASC`;
+        } else if (order === 'hightolow') {
+            filterQuery += ` ORDER BY price DESC`;
+        }
+
+        filterQuery += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
+        queryParams.push(parsedPageSize, offset);
+
+        const itemsResult = await db.query(filterQuery, queryParams);
+
+        res.status(200).json({
+            items: itemsResult.rows,
+            page: parsedPage,
+            pageSize: parsedPageSize,
+            totalItems,
+            totalPages,
+        });
+    } catch (error) {
+        console.error("Error fetching items:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 export default router;

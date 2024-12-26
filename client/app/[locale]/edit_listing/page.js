@@ -193,6 +193,7 @@ const EditListing = () => {
                 return !unwantedKeys.includes(key);
             })
         );
+        
         setFormData(cleanedData);
     };
 

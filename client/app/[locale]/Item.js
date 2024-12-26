@@ -5,13 +5,18 @@ import React, { useState } from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import FetchUserAndFavorite from "./global_components/fav";
 
-export const HomeItem = ({ name, image, id, price, heart }) => {
+export const HomeItem = ({ name, image, id, price, heart, hideFav }) => {
     const [Heart, setHeart] = useState(heart);
     const router = useRouter();
 
-    const handleHeartClick = (event) => {
+    const handleHeartClick = async (event) => {
         event.stopPropagation();
-        FetchUserAndFavorite(id);
+        const response = await FetchUserAndFavorite(id);
+        console.log(response);
+        if (response == 'User not logged in') {
+            router.push('/login');
+            return;
+        }
         setHeart(!Heart);
     }
 
@@ -31,12 +36,12 @@ export const HomeItem = ({ name, image, id, price, heart }) => {
                         src={image}
                         className="object-contain w-full h-full"
                     />
-                    <button
+                    {!hideFav && <button
                         onClick={handleHeartClick}
                         className="absolute top-1 right-1 w-7 h-7 hover:bg-gray-100 bg-white rounded-full flex items-center justify-center shadow"
                     >
                         {Heart ? <FaHeart size={16} color="crimson" className="w-full" /> : <FaRegHeart size={16} className="w-full" />}
-                    </button>
+                    </button>}
                 </div>
             </div>
             <div className="flex flex-col justify-between w-full py-1 px-3">
@@ -54,17 +59,22 @@ export const HomeItem = ({ name, image, id, price, heart }) => {
     );
 };
 
-export const Item = ({ id, name, image, price, heart }) => {
+export const Item = ({ id, name, image, price, heart, hideFav }) => {
     const [Heart, setHeart] = useState(heart);
+    const router = useRouter();
 
-    const handleHeartClick = (event) => {
+    const handleHeartClick = async (event) => {
         event.stopPropagation();
-        FetchUserAndFavorite(id);
+        const response = await FetchUserAndFavorite(id);
+        if (response == 'User not logged in') {
+            router.push('/login');
+            return;
+        }
         setHeart(!Heart);
     }
 
     return (
-        <div className="flex flex-col rounded-md gap-2 m-2">
+        <div className="flex flex-col rounded-md gap-2 m-2 max-w-60">
             <Link href={`/item/${id}`} className="w-24 h-24 sm:w-32 sm:h-32 md:w-52 md:h-52 lg:w-60 lg:h-60 rounded-lg bg-gray-100 p-2 cursor-pointer">
                 <img src={image} alt={name} className="object-contain w-full h-full rounded-lg" />
             </Link>
@@ -73,9 +83,9 @@ export const Item = ({ id, name, image, price, heart }) => {
             </Link>
             <div className="flex w-full justify-between items-center p-1">
                 <span className="text-sm font-bold">{price}</span>
-                <button onClick={handleHeartClick} className="w-7 h-7 hover:bg-gray-100 rounded-full flex flex-row items-center justify-center shadow">
+                {!hideFav && <button onClick={handleHeartClick} className="w-7 h-7 hover:bg-gray-100 rounded-full flex flex-row items-center justify-center shadow">
                     {Heart ? <FaHeart size={16} color={'crimson'} /> : <FaRegHeart size={16} />}
-                </button>
+                </button>}
             </div>
         </div>
     );
