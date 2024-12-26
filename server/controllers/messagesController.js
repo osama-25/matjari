@@ -62,7 +62,7 @@ export const getRoomsForUser = async (req, res) => {
         res.status(200).json(getRooms)
     } catch (error) {
         res.status(500).json({ error: "Failed to get user rooms" });
-        console.error(errro);
+        console.error(error);
     }
 }
 

@@ -219,5 +219,32 @@
                 "sports-ad": "Boost your game with premium sports gear.",
                 "cars-ad": "Drive your dream car today.",
                 "properties-ad": "Find the perfect property for your next move."
+        },
+        "Search": {
+                "toggleFilter": "Toggle Filter",
+                "filter": "Filter",
+                "price": "Price Range",
+                "min": "Min",
+                "max": "Max",
+                "location": "City",
+                "locationph": "Select a city",
+                "Amman": "Amman",
+                "Irbid": "Irbid",
+                "Az Zarqa": "Az Zarqa",
+                "Ajlun": "Ajlun",
+                "Al Tafilah": "Al Tafilah",
+                "Al Mafraq": "Al Mafraq",
+                "Maan": "Maan",
+                "Al Aqaba": "Al Aqaba",
+                "Jerash": "Jerash",
+                "Madaba": "Madaba",
+                "Al Karak": "Al Karak",
+                "delivery": "Delivery",
+                "yes": "Yes",
+                "no": "No",
+                "condition": "Condition",
+                "new": "New",
+                "used": "Used",
+                "apply": "Apply"
         }
 }

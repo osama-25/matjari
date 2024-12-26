@@ -83,6 +83,7 @@ const ItemsDisplay = ({ ad }) => {
                         image={item.image}
                         price={item.price}
                         heart={favourited.includes(item.id)}
+                        hideFav={item.user_id === user_id}
                     />
                 ))}
             </div>
