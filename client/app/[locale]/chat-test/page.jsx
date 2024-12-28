@@ -4,7 +4,8 @@
 import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import { getInfo } from '../global_components/dataInfo';
-import { FaArrowLeft, FaImage, FaPaperPlane, FaPlay, FaXmark } from 'react-icons/fa6';
+import { FaArrowLeft, FaCheck, FaImage, FaPaperPlane, FaPlay, FaXmark } from 'react-icons/fa6';
+import { IoCheckmark, IoCheckmarkDone } from 'react-icons/io5';
 
 
 
@@ -22,6 +23,8 @@ export default function Chats({ CloseChat, roomId, chatName }) {
     const [modalContent, setModalContent] = useState(null); // To store the modal content
     const [isModalOpen, setIsModalOpen] = useState(false); // To track modal visibility
     const [hideSend, setHideSend] = useState(0);
+    const [fetching, setFetching] = useState(false);
+    const [flag, setFlag] = useState(false);
 
     const openModal = (content) => {
         setModalContent(content);
@@ -38,8 +41,19 @@ export default function Chats({ CloseChat, roomId, chatName }) {
         const info = await getInfo();
         setID(info.id);
         return info.id;
-
     };
+    const markMessageAsSeen = async (messageId) => {
+        const response = await fetch(`http://localhost:8080/chat/mark-seen/${messageId}`);
+        console.log(messageId);
+        if (!response.ok) {
+            throw new Error('Failed to mark message as seen');
+        } else {
+            socket.emit("mark_message_seen", { messageId, room });
+        }
+
+        return response.json();
+    };
+
     useEffect(() => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -47,6 +61,24 @@ export default function Chats({ CloseChat, roomId, chatName }) {
 
         console.log("ALLMESSAGES");
         console.log(AllMessages);
+        console.log(new Date().toISOString());
+
+        const newestMessage = AllMessages[AllMessages.length - 1];
+        console.log("NEWEST MESSAGE");
+        console.log(newestMessage);
+        console.log("GET ID");
+        console.log(getId);
+        if (newestMessage && !newestMessage.seen && parseInt(newestMessage.sentByUser) != parseInt(getId)) {
+            console.log("MARKING MESSAGE AS SEEN");
+            newestMessage.seen = true;
+            markMessageAsSeen(newestMessage.id);
+            console.log(newestMessage);
+            setAllMessages((prevMessages) =>
+                prevMessages.map((msg) =>
+                    msg.id === newestMessage.id ? { ...msg, seen: true } : msg
+                )
+            );
+        }
 
     }, [AllMessages]);
 
@@ -55,21 +87,43 @@ export default function Chats({ CloseChat, roomId, chatName }) {
     }, [files])
 
     useEffect(() => {
-        if (room) {
-            socket.emit("join_room", room);
-        }
-
+        if (!room) return;
+    
+        // Join the chat room
+        socket.emit("join_room", room);
+    
+        // Listener for receiving new messages
         socket.on("receive_message", (data) => {
-            setAllMessages((prevMessages) => [
-                ...prevMessages,
-                { message: data.content, sentByUser: getId, files: data.files }
-            ]);
+            setAllMessages((prevMessages) => {
+                // Check if the message already exists
+                const existingMessage = prevMessages.find((msg) => msg.id === data.id);
+                if (existingMessage) {
+                    // Update existing message
+                    return prevMessages.map((msg) =>
+                        msg.id === data.id ? [ ...msg, { id: data.id, message: data.content, sentByUser: data.sentByUser, files: data.files, timestamp: data.timestamp, seen: data.seen } ] : msg
+                    );
+                }
+                // Add new message
+                return [...prevMessages, { id: data.id, message: data.content, sentByUser: data.sentByUser, files: data.files, timestamp: data.timestamp, seen: data.seen }];
+            });
         });
-
+    
+        // Listener for marking messages as seen
+        socket.on("message_seen", ({ messageId }) => {
+            setAllMessages((prevMessages) =>
+                prevMessages.map((msg) =>
+                    msg.id === messageId ? { ...msg, seen: true } : msg
+                )
+            );
+        });
+    
+        // Cleanup on room change or component unmount
         return () => {
             socket.off("receive_message");
+            socket.off("message_seen");
         };
     }, [room]);
+    
 
     useEffect(() => {
         const fetchMessages = async () => {
@@ -89,7 +143,8 @@ export default function Chats({ CloseChat, roomId, chatName }) {
                         sentByUser: msg.sent_by_user,
                         url: msg.blob_data,
                         type: msg.blob_type,
-
+                        seen: msg.seen,
+                        timestamp: msg.timestamp,
                         files: msg.blob_data,
 
                     })));
@@ -160,16 +215,19 @@ export default function Chats({ CloseChat, roomId, chatName }) {
                 room,
                 sentByUser: getId,
                 files: uploadedFiles,
-                type: uploadedFiles.filetype
-
+                type: uploadedFiles.filetype,
+                seen: false,
+                timestamp: new Date().toISOString(),
             };
 
             setAllMessages((prevMessages) => [...prevMessages, {
                 content: message,
                 room: roomId,
-                sentByUser: true,
+                sentByUser: getId,
                 files: uploadedFiles,
-                type: uploadedFiles.filetype
+                type: uploadedFiles.filetype,
+                seen: false,
+                timestamp: new Date().toISOString(),
             }]);
 
             setRefresh(!refresh);
@@ -185,7 +243,10 @@ export default function Chats({ CloseChat, roomId, chatName }) {
                     },
                     body: JSON.stringify(messageData),
                 });
-
+                const data = await response.json();
+                messageData.id = data.id;
+                console.log("Message Data:");
+                console.log(messageData);
                 if (response.ok) {
                     socket.emit("sent_message", messageData);
                     setMessage("");
@@ -256,6 +317,30 @@ export default function Chats({ CloseChat, roomId, chatName }) {
         }
     };
 
+    const handleKeyDown = (e) => {
+        // Check if the pressed key is 'Enter'
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    };
+    useEffect(() => {
+        
+    }, [AllMessages]);
+
+    useEffect(() => {
+        const markseen = () => {
+            AllMessages.map(async (msg) => {
+                if (!msg.seen && msg.sentByUser != getId) {
+                    await markMessageAsSeen(msg.id);
+                    msg.seen = true;
+                }
+            });
+        }
+        if (getId) {
+            markseen();
+        }
+    },[getId])
+
     return (
         <div className="flex flex-col h-full p-1 md:p-4">
             {/* Chat Header */}
@@ -318,6 +403,14 @@ export default function Chats({ CloseChat, roomId, chatName }) {
                                 </div>
                             )}
                             {msg.message && <p className="px-4">{msg.message}</p>}
+                            <div className="flex justify-between items-center px-3">
+                                <span className="text-xs text-gray-400">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                {parseInt(msg.sentByUser) === parseInt(getId) && (msg.seen ? (
+                                    <IoCheckmarkDone size={16} className='mx-2 text-blue-500' />
+                                ) : (
+                                    <IoCheckmark size={16} color="gray" className='mx-2' />
+                                ))}
+                            </div>
                         </div>
                     </div>
                 ))}
@@ -412,6 +505,7 @@ export default function Chats({ CloseChat, roomId, chatName }) {
                         className="w-full h-14 pl-4 pr-12 border border-gray-300 rounded-full focus:outline-none shadow-md"
                         placeholder="Type a message..."
                         onChange={(event) => setMessage(event.target.value)}
+                        onKeyDown={handleKeyDown}
                         value={message}
                     />
                     <button

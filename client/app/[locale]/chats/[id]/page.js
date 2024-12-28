@@ -19,13 +19,12 @@ const ChatRoom = ({ params }) => {
         // Fetch user info to get the user ID
         const result = await getInfo();
         const userId = result.id;
-        console.log(userId);
 
 
         // Fetch chat rooms for the user
         const response = await fetch(`http://localhost:8080/chat/get-rooms/${userId}`);
         const roomsData = await response.json();
-        console.log(userId);
+        
 
         const room = roomsData.find(room => room.id == id);
         if (room) {

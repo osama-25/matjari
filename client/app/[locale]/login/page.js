@@ -1,7 +1,7 @@
 "use client";
 import axios from 'axios';
 import { useState, useEffect } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import ToastMessage from '../toast';
 import { login } from '../../../lib';
 import { useTranslations } from 'next-intl';
@@ -21,6 +21,8 @@ export default function LoginPage() {
     const pathname = usePathname();
     const locale = pathname.split('/')[1];
     const [showPassword, setShowPassword] = useState(false);
+    const searchParams = useSearchParams();
+    const redirect = searchParams.get('redirectTo') || '/home';
 
     const HandleLocaleChange = () => {
         const currentLocale = pathname.split("/")[1]; // Get the current locale (e.g., "en" or "ar")
@@ -90,7 +92,7 @@ export default function LoginPage() {
                     console.log("res.token: " + data.token);
                     // 
                     localStorage.setItem('token', data.token);
-                    router.push('/home');
+                    router.push(redirect);
                 }
                 else {
                     handleShowToast(data.message);

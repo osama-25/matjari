@@ -120,6 +120,7 @@ export async function middleware(request: NextRequest) {
     if (!sessionCookie || !sessionCookie.value) {
       console.log("No session found or session is invalid.");
       const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("redirectTo", pathname.split('/')[2]);
       return NextResponse.redirect(loginUrl);
     }
 

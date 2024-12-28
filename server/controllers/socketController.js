@@ -17,6 +17,11 @@ export const initializeSocket = (server) => {
         socket.on('sent_message', (data) => {
             socket.to(data.room).emit("receive_message", data);
         })
+        socket.on("mark_message_seen", ({ messageId, room }) => {
+            // Update the "seen" status in the database (not shown here)
+            // Emit the update to everyone in the room
+            socket.to(room).emit("message_seen", { messageId });
+        })
     });
 };
 
