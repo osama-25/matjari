@@ -15,10 +15,32 @@ jest.mock('next/navigation', () => ({
   })
 }));
 
+jest.mock('../global_components/dataInfo', () => ({
+  getInfo: jest.fn()
+}));
+
+
 // Mock next-intl
 jest.mock('next-intl', () => ({
   useTranslations: () => (key) => key
 }));
+
+jest.mock('next/link', () => {
+  return ({ href, children, ...props }) => {
+    return (
+      <a 
+        href={href} 
+        onClick={(e) => {
+          e.preventDefault();
+          mockPush(href);
+        }}
+        {...props}
+      >
+        {children}
+      </a>
+    );
+  };
+});
 
 describe('NavBar', () => {
     beforeEach(() => {
@@ -113,15 +135,31 @@ describe('NavBar', () => {
     expect(mockPush).not.toHaveBeenCalled();
   });
   
-  test('handles profile button click when logged in', async () => {
+  test('handles profile link click', async () => {
     render(<NavBar />);
-    const profileButton = screen.getByTitle('profile');
     
-    await act(async () => {
-      fireEvent.click(profileButton);
-    });
-
+    const profileLink = screen.getByTitle('profile');
+    fireEvent.click(profileLink);
+    
     expect(mockPush).toHaveBeenCalledWith('/profile');
+  });
+  
+  test('handles chats link click', async () => {
+    render(<NavBar />);
+    
+    const chatsLink = screen.getByTitle('chats');
+    fireEvent.click(chatsLink);
+    
+    expect(mockPush).toHaveBeenCalledWith('/chats');
+  });
+  
+  test('handles favorites link click', async () => {
+    render(<NavBar />);
+    
+    const favoritesLink = screen.getByTitle('favourites');
+    fireEvent.click(favoritesLink);
+    
+    expect(mockPush).toHaveBeenCalledWith('/favourites');
   });
 
   test('handles language toggle', async () => {
