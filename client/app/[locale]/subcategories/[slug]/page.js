@@ -14,6 +14,13 @@ const SubCategories = ({ params }) => {
     const [error, setError] = useState(null);
     const [user_id, setUserId] = useState(null);
     const [favourited, setFavourited] = useState([]);
+    const [filter, setFilter] = useState({
+        minPrice: '',
+        maxPrice: '',
+        location: '',
+        delivery: '',
+        condition: ''
+    });
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -67,7 +74,7 @@ const SubCategories = ({ params }) => {
         if (user_id) {
             fetchFavourited();
         }
-    }, [currentPage, user_id]);
+    }, [user_id]);
 
     if (error) {
         return <ErrorPage message={error} statusCode={404} />;
@@ -79,11 +86,32 @@ const SubCategories = ({ params }) => {
     const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+    const HandleFilter = async (order) => {
+        try {
+            const response = await fetch(`http://localhost:8080/subcategories/filter/${subcategory}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ ...filter, order })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch filter results');
+            }
+
+            const data = await response.json();
+            setItems(data.items);
+        } catch (error) {
+            setError(error.message);
+        }
+    };
+
     return (
         <div className="flex">
-            <SearchFilter />
+            <SearchFilter HandleFilter={HandleFilter} formData={filter} setFormData={setFilter} />
             <div className="flex flex-col justify-between w-full">
-                <ItemDisplay Items={currentItems} Favourited={favourited} />
+                <ItemDisplay Items={currentItems} Favourited={favourited} user_id={user_id} HandleFilter={HandleFilter}/>
                 <div className="flex justify-center items-center space-x-2 my-4">
                     {Array.from({ length: Math.ceil(items.length / itemsPerPage) }, (_, index) => (
                         <button

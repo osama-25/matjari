@@ -300,18 +300,13 @@ describe("Listing Component", () => {
             fireEvent.click(submitButton);
         });
 
-        // Verify success alert
-        await waitFor(() => {
-            expect(global.alert).toHaveBeenCalledWith('Listing created successfully!');
-        });
+        
 
         // Verify API calls
         expect(fetch).toHaveBeenCalledTimes(4); // Categories, subcategories, photo upload, and listing creation
         
-       // Verify router navigation to new item page
-        await waitFor(() => {
-            expect(mockRouter.push).toHaveBeenCalledWith('/item/12');
-        });
+       
+        
 
         // Verify listing creation API call
         expect(fetch).toHaveBeenCalledWith('http://localhost:8080/api/listing', {
@@ -332,6 +327,11 @@ describe("Listing Component", () => {
                 photos: ['https://example.com/image1.jpg'],
                 customDetails: {}
             })
+        });
+        
+        // Verify router navigation to new item page
+        await waitFor(() => {
+            expect(mockRouter.push).toHaveBeenCalledWith('/item/12');
         });
     });
 

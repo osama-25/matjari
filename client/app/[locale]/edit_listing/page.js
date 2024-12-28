@@ -144,7 +144,7 @@ const EditListing = () => {
                         body: JSON.stringify({
                             filename: photo.filename,
                             fileType: photo.fileType,
-                            imageBase64: photo.imageBase64,
+                            imageBase64: photo.imageBase64.split(",")[1],
                         }),
                     });
 
@@ -164,12 +164,13 @@ const EditListing = () => {
                 }
             }
             else{
-                uploadedUrls.push(photo);
+                uploadedUrls.push(photo.imageBase64);
             }
         }
 
         return uploadedUrls;
     };
+
     const formCheck = () => {
         Object.keys(formData).forEach((key) => {
             if (!formData[key]) {
@@ -177,6 +178,7 @@ const EditListing = () => {
             }
         });
     }
+    
     const removeEmptyDetails = () => {
         const filteredDetails = customDetails.filter(
             (detail) => detail.title.trim() !== "" && detail.description.trim() !== ""
@@ -191,7 +193,7 @@ const EditListing = () => {
                 return !unwantedKeys.includes(key);
             })
         );
-
+        
         setFormData(cleanedData);
         
     };
@@ -205,7 +207,7 @@ const EditListing = () => {
 
             // First upload all photos and get their URLs
             const uploadedPhotoUrls = await uploadPhotos();
-
+            console.log("uploadedPhotoUrls: ", uploadedPhotoUrls);
             if (uploadedPhotoUrls.length === 0) {
                 throw new Error('No photos were successfully uploaded');
             }
@@ -243,7 +245,7 @@ const EditListing = () => {
             setCustomDetails([]);
             setFormData({
                 category: "",
-                subCategory: "",
+                sub_category: "",
                 title: "",
                 description: "",
                 condition: "",
@@ -317,8 +319,9 @@ const EditListing = () => {
                         </select>
                         {/* Subcategory Section */}
                         {subcategories && <select
+                            data-testId="subcat"
                             id="subcat"
-                            name="subCategory"
+                            name="sub_category"
                             className="w-full mt-2 h-12 border-2 border-gray-300 text-gray-600 rounded-lg px-3 focus:outline-none"
                             value={formData.sub_category}
                             onChange={handleInputChange}
@@ -338,6 +341,7 @@ const EditListing = () => {
                                 {t('title')}
                             </label>
                             <input
+                                data-testid="title"
                                 type="text"
                                 name="title"
                                 placeholder={t('titleph')}
@@ -352,6 +356,7 @@ const EditListing = () => {
                                 {t('desc')}
                             </label>
                             <textarea
+                                data-testid="description"
                                 name="description"
                                 placeholder={t('descph')}
                                 id="desc"
@@ -367,6 +372,7 @@ const EditListing = () => {
                             {t('price')}
                         </label>
                         <input
+                            data-testid="price"
                             type="number"
                             name="price"
                             id="price"
@@ -494,6 +500,7 @@ const EditListing = () => {
                 {/* Submit Button */}
                 <div className="col-span-2 flex justify-center mt-6">
                     <button
+                        data-testid="submitBtn"
                         type="submit"
                         className="bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-3 px-6 rounded-lg focus:outline-none"
                     >

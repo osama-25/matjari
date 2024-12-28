@@ -1,12 +1,14 @@
-'use client';
 import { getInfo } from './dataInfo';
 
 const FetchUserAndFavorite = async (itemID) => {
+    let info;
     try {
-        const info = await getInfo(); // Replace this with your API call
-        if (!info) {
-            return;
-        }
+        info = await getInfo(); // Replace this with your API call
+    } catch (error) {
+        return 'User not logged in';
+    }
+
+    try {
         const response = await fetch('http://localhost:8080/api/favorites', {
             method: 'POST',
             headers: {
@@ -16,14 +18,10 @@ const FetchUserAndFavorite = async (itemID) => {
         });
 
         if (!response.ok) {
-            throw new Error(`Failed to toggle favorite: ${response.text}`);
+            throw new Error(`Failed to toggle favorite: ${response.statusText}`);
         }
-
-        const result = await response.json();
-        console.log(result.message);
-        return;
     } catch (error) {
-        throw new Error(`Failed to fetch favourited state: ${error.message}`);
+        console.error('Failed to toggle favorite:', error);
     }
 };
 

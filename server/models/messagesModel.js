@@ -4,16 +4,11 @@ import db from '../config/db.js';
 export const saveMessage = async ({ content, room, sentByUser, blobData = null, blobType = null }) => {
     const query = `
         INSERT INTO messages (content, room, sent_by_user, blob_data, blob_type)
-        VALUES ($1, $2, $3, $4, $5) 
-        Returning *;
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING *
     `;
     const values = [content, room, sentByUser, blobData, blobType];
-    console.log("In saveMessage");
-    const data = await db.query(query, values);
-    console.log(data.rows[0]);
-    console.log("###");
-
-    return data;
+    return await db.query(query, values);
 };
 
 export const getMessagesByRoom = async (room) => {
@@ -78,3 +73,12 @@ export const getUserRooms = async (userId) => {
 
     }
 }
+
+export const markSeen = async (messageId) => {
+    const query = `
+        UPDATE messages
+        SET seen = true
+        WHERE id = $1
+    `;
+    return db.query(query, [messageId]);
+};

@@ -3,6 +3,66 @@ import db from '../config/db.js';
 
 export const router = express.Router();
 
+router.post("/filter/:category", async (req, res) => {
+    const { category } = req.params;
+    const { order } = req.body;
+
+    try {
+        // Get category ID from the database
+        const categoryResult = await db.query(
+            "SELECT id FROM categories WHERE name = $1",
+            [category]
+        );
+
+        if (categoryResult.rowCount === 0) {
+            return res.status(404).json({ error: "Category not found" });
+        }
+
+        const parsedPage = parseInt(req.query.page) || 1;
+        const parsedPageSize = parseInt(req.query.pageSize) || 10;
+
+        const countResult = await db.query(
+            "SELECT COUNT(*) AS total FROM listings WHERE category = $1",
+            [category]
+        );
+        const totalItems = countResult.rows[0].total;
+        const totalPages = Math.ceil(totalItems / parsedPageSize);
+
+        const offset = (parsedPage - 1) * parsedPageSize;
+
+        let filterQuery = `
+            SELECT l.*, 
+                   (SELECT photo_url 
+                    FROM listing_photos lp 
+                    WHERE lp.listing_id = l.id  
+                    LIMIT 1) as image
+            FROM listings l 
+            WHERE l.category = $1`;
+
+        if (order === 'lowtohigh') {
+            filterQuery += ` ORDER BY price ASC`;
+        } else if (order === 'hightolow') {
+            filterQuery += ` ORDER BY price DESC`;
+        }
+
+        filterQuery += ` LIMIT $2 OFFSET $3`;
+        const queryParams = [category, parsedPageSize, offset];
+
+        const itemsResult = await db.query(filterQuery, queryParams);
+
+        res.status(200).json({
+            items: itemsResult.rows,
+            page: parsedPage,
+            pageSize: parsedPageSize,
+            totalItems,
+            totalPages,
+        });
+    } catch (error) {
+        console.error("Error fetching filtered items:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 router.get('/:name', async (req, res) => {
     console.log('Route hit');
     const { name } = req.params;
