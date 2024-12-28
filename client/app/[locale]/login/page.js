@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { FaEye, FaEyeSlash, FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
 
 export default function LoginPage() {
-    const router = useRouter();
+    const router = useRouter(); 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showToast, setShowToast] = useState(false);
@@ -82,39 +82,6 @@ export default function LoginPage() {
         }
     };
 
-    // Add a new function to handle admin login
-    const handleAdminLogin = async (event) => {
-        event.preventDefault();
-        try {
-            const result = await fetch("http://localhost:8080/admin/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    username: email,
-                    password
-                })
-            });
-
-            const data = await result.json();
-            console.log("admin");
-
-            console.log(data);
-
-
-            if (data.success) {
-                // localStorage.setItem('adminToken', data.token);
-                // setToastMessage(data.message);
-                router.push('/admin');
-            } else {
-                handleShowToast(data.message);
-            }
-        } catch (err) {
-            handleShowToast('Error occurred, try again');
-            console.log("Error with /admin/login:", err);
-        }
-    };
 
     return (
         <>
@@ -180,64 +147,7 @@ export default function LoginPage() {
                         </Link>
                     </div>
 
-                    {/* Admin Login Button */}
-                    <div className="py-2">
-                        <button
-                            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                            onClick={() => document.getElementById('admin-login-form').style.display = 'block'}
-                        >
-                            Admin Login
-                        </button>
-                    </div>
-
-                    {/* Admin Login Form */}
-                    <form id="admin-login-form" className="container justify-center flex flex-col gap-y-2" onSubmit={handleAdminLogin} style={{ display: 'none' }}>
-                        <div dir={locale == 'ar' ? 'rtl' : 'ltr'} className="py-2">
-                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-                                {/* {t('email')} */}
-                            </label>
-                            <input
-                                className="shadow-inner border-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"
-                                id="email"
-                                // type="email"
-                                // placeholder={t('emailph')}
-                                value={email}
-                                onChange={(event) => setEmail(event.target.value)}
-                            />
-                        </div>
-
-                        <div dir={locale == 'ar' ? 'rtl' : 'ltr'} className="py-2">
-                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-                                {t('pass')}
-                            </label>
-                            <div className='relative flex'>
-                                <input
-                                    className="shadow-inner border-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"
-                                    id="password"
-                                    type={showPassword ? 'text' : 'password'}
-                                    placeholder={t('passph')}
-                                    value={password}
-                                    onChange={(event) => setPassword(event.target.value)}
-                                />
-                                <button
-                                    type="button"
-                                    className={`text-gray-600 absolute ${locale == 'ar' ? 'left-2' : 'right-2'} top-1/2 transform -translate-y-1/2`}
-                                    onClick={() => setShowPassword(!showPassword)} // Toggle showPassword state
-                                >
-                                    {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="self-center py-2">
-                            <button
-                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                                type="submit"
-                            >
-                                Admin Login
-                            </button>
-                        </div>
-                    </form>
+                
                 </div>
                 <p
                     onClick={HandleLocaleChange}

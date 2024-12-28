@@ -82,3 +82,4 @@ export const markSeen = async (messageId) => {
     `;
     return db.query(query, [messageId]);
 };
+

@@ -63,7 +63,7 @@ export async function middleware(request: NextRequest) {
         }
 
         // Restrict admin users from accessing non-admin routes
-        if (!pathname.includes('/admin')) {
+        if (!pathname.includes('/admin') && sessionData.payload.isAdmin) {
           const adminDashboardUrl = new URL("/en/admin/dashboard", request.url);
           return NextResponse.redirect(adminDashboardUrl);
         }

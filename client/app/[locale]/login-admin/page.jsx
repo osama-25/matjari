@@ -55,7 +55,7 @@ export default function AdminLoginPage() {
                 localStorage.setItem('adminToken', data.token);
                 // setToastMessage(data.message);
                 adminLogin(data.token);
-                router.push('/en/admin/dashboard');
+                router.push('/admin/dashboard');
                 console.log("GOT THIS ###");
 
             } else {

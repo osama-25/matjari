@@ -1,6 +1,7 @@
 'use client';
 import React, { use, useEffect, useState } from "react";
-// import Chats from "../../chat-test/page";
+
+// import Chats from "../../chat-test /page";
 import Chats from "../../global_components/chat";
 import { usePathname } from "next/navigation";
 import SideNav from "../SideNav";

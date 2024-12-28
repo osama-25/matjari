@@ -1,6 +1,6 @@
 // controllers/messageController.js
 
-import { saveMessage, getMessagesByRoom, createRoom, findRoom, getUserRooms , markSeen , isUserAllow} from '../models/messagesModel.js';
+import { saveMessage, getMessagesByRoom, createRoom, findRoom, getUserRooms, markSeen, isUserAllow } from '../models/messagesModel.js';
 
 export const createMessage = async (req, res) => {
     const { content, room, sentByUser, files } = req.body;
@@ -29,19 +29,47 @@ export const createMessage = async (req, res) => {
     }
 };
 
+// export const fetchMessagesByRoom = async (req, res) => {
+//     const room = req.params.room;
+
+
+
+//     try {
+//         const result = await getMessagesByRoom(room);
+//         res.json(result.rows);
+//     } catch (error) {
+//         console.error('Error retrieving messages:', error);
+//         res.status(500).json({ error: 'Failed to retrieve messages' });
+//     }
+// };
 export const fetchMessagesByRoom = async (req, res) => {
     const room = req.params.room;
+    const userId = req.params.userId;
+    console.log("CHK");
+    console.log(room, userId);
 
 
 
     try {
-        const result = await getMessagesByRoom(room);
-        res.json(result.rows);
+
+        const check = await isUserAllow(room, userId);
+        console.log(check);
+
+        if (check == 0) {
+            res.status(400).json({
+                error: "Not allow"
+            })
+        } else {
+            const result = await getMessagesByRoom(room);
+
+            res.json(result.rows);
+        }
     } catch (error) {
         console.error('Error retrieving messages:', error);
         res.status(500).json({ error: 'Failed to retrieve messages' });
     }
 };
+
 
 // 6 / 2    2-6
 export const getRoomsForUser = async (req, res) => {
@@ -102,4 +130,57 @@ export const findOrCreateRoom = async (req, res) => {
     }
 
 
+
 }
+
+
+export const markMessageAsSeen = async (req, res) => {
+    const { messageId } = req.params;
+
+    if (!messageId) {
+        return res.status(400).json({ message: 'Message ID is required' });
+    }
+
+    try {
+        const response = await markSeen(messageId);
+        if (response.rowCount === 0) {
+            throw new Error('Failed to mark message as seen');
+        }
+
+        res.status(200).json({ ok: true, message: 'Message marked as seen' });
+    } catch (error) {
+        console.error('Error marking message as seen:', error);
+        res.status(500).json({ error: 'Failed to mark message as seen' });
+    }
+};
+
+export const hasNewMessages = async (req, res) => {
+    const { userId } = req.params;
+
+    if (!userId) {
+        return res.status(400).json({ message: 'User ID is required' });
+    }
+
+    try {
+        const datarooms = await getUserRooms(userId);
+        const rooms = [];
+        for (const room of datarooms) {
+            const result = await getMessagesByRoom(room.id);
+            const messages = result.rows;
+            for (const message of messages) {
+                if (!message.seen && parseInt(message.sent_by_user) != parseInt(userId)) {
+                    console.log(message);
+                    console.log('me' + userId);
+                    console.log(room);
+                    rooms.push(room.id);
+                    break;
+                }
+            }
+        }
+        res.status(200).json({ hasNewMessages: rooms.length > 0, rooms });
+    } catch (error) {
+        console.error('Error checking for new messages:', error);
+        res.status(500).json({ error: 'Failed to check for new messages' });
+    }
+}
+
