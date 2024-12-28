@@ -20,6 +20,42 @@ export default function Reports() {
         fetchReports();
     }, []);
 
+    const handleStatusChange = async (reportId, newStatus) => {
+        try {
+            const response = await fetch(`http://localhost:8080/admin/update-report-status/${reportId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ status: newStatus }),
+            });
+
+            if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+
+            const updatedReport = await response.json();
+            setReports((prevReports) =>
+                prevReports.map((report) =>
+                    report.id === reportId ? { ...report, status: updatedReport.report.status } : report
+                )
+            );
+        } catch (error) {
+            console.error('Failed to update report status:', error);
+        }
+    };
+
+    const getStatusClass = (status) => {
+        switch (status) {
+            case 'Pending':
+                return 'bg-yellow-200 text-yellow-700';
+            case 'In Progress':
+                return 'bg-blue-200 text-blue-700';
+            case 'Resolved':
+                return 'bg-green-200 text-green-700';
+            default:
+                return '';
+        }
+    };
+
     return (
         <AdminLayout>
             <h1 className="text-3xl font-bold mb-8">Reports</h1>
@@ -45,17 +81,15 @@ export default function Reports() {
                                 <td className="py-3 px-6 text-left">{new Date(report.date).toLocaleDateString()}</td>
                                 <td className="py-3 px-6 text-left">{report.user_id}</td>
                                 <td className="py-3 px-6 text-center">
-                                    <span
-                                        className={`inline-block py-1 px-3 rounded-full text-sm whitespace-nowrap 
-        ${report.status === 'Resolved' ? 'bg-green-200 text-green-600' :
-                                                report.status === 'In Progress' ? 'bg-yellow-200 text-yellow-600' :
-                                                    'bg-red-200 text-red-600'}
-    `}
+                                    <select
+                                        value={report.status}
+                                        onChange={(e) => handleStatusChange(report.id, e.target.value)}
+                                        className={`py-1 px-3 rounded-full text-sm ${getStatusClass(report.status)}`}
                                     >
-                                        {report.status}
-                                    </span>
-
-
+                                        <option value="Pending" className="bg-yellow-200 text-yellow-700">Pending</option>
+                                        <option value="In Progress" className="bg-blue-200 text-blue-700">In Progress</option>
+                                        <option value="Resolved" className="bg-green-200 text-green-700">Resolved</option>
+                                    </select>
                                 </td>
                             </tr>
                         ))}

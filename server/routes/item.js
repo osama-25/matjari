@@ -53,6 +53,21 @@ router.post('/', async (req, res) => {
 });
 
 //fetch item
+
+
+router.get('/fetch-all-items', async (req, res) => {
+    const itemResult = await db.query(
+        `SELECT * FROM listings`,
+    );
+
+
+    if (itemResult.rows.length === 0) {
+        return res.status(404).json({ message: 'Error in the items fetching' });
+    }
+
+    return res.status(200).json(itemResult.rows);
+});
+
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
     try {
@@ -100,7 +115,7 @@ router.get('/:id', async (req, res) => {
 
         if (user.user_name) item.username = user.user_name;
         if (user.phone_number) item.phone_number = user.phone_number;
-        if (user.email) item.email = user.email;    
+        if (user.email) item.email = user.email;
 
         res.status(200).json(item);
     } catch (error) {
@@ -108,6 +123,7 @@ router.get('/:id', async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+
 router.delete('/delete/:id', async (req, res) => {
     const { id } = req.params;
 

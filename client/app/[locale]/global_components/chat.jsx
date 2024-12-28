@@ -3,8 +3,9 @@
 
 import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
-import { getInfo } from '../global_components/dataInfo';
+import { getInfo } from './dataInfo';
 import { FaArrowLeft, FaImage, FaPaperPlane, FaPlay, FaXmark } from 'react-icons/fa6';
+import ReportButton from './report-button'; // Import ReportButton component
 
 
 
@@ -290,7 +291,7 @@ export default function Chats({ CloseChat, roomId }) {
             </div>
 
             {/* Render Messages */}
-            <div dir='ltr' className="flex flex-col overflow-y-auto bg-white rounded-lg shadow-md mb-1 py-2">
+            <div dir='ltr' className="flex flex-col overflow-y-auto bg-white rounded-lg shadow-md mb-1 py-2 flex-1">
                 {AllMessages.map((msg, index) => (
                     <div key={index} className="w-full">
                         <div
@@ -432,6 +433,11 @@ export default function Chats({ CloseChat, roomId }) {
                         <FaPaperPlane size={24} />
                     </button>
                 </div>
+            </div>
+
+            {/* Report Button */}
+            <div className="mt-4">
+                <ReportButton userId={getId} />
             </div>
         </div>
     );

@@ -22,8 +22,19 @@ export async function decrypt(input: string): Promise<any> {
   return payload;
 }
 
+
+export async function adminLogin(token: string) {
+
+  // Create the session
+  const expires = new Date(Date.now() + 1800 * 1000);
+  const session = await encrypt({ isAdmin: true, iat: Math.floor(Date.now() / 1000), exp: Math.floor(Date.now() / 1000) + 1800 });
+
+  (await cookies()).set("Admin session", token, { expires, httpOnly: true });
+
+  return session;
+}
 export async function login(
-  data: { id: string; fname: string;  lname: string; email: string ; password: string; user_name: string},
+data: { id: string; fname: string;  lname: string; email: string ; password: string; user_name: string},
   token: string
 ) {
     // Verify credentials && get the user
@@ -39,25 +50,12 @@ export async function login(
     };
   
     // Create the session
-    const expires = new Date(Date.now() + 1800 * 1000);
+    const expires = new Date(Date.now() + 1800 * 24000);
     const session = await encrypt({ user, expires });
   
-    
-    // console.log("session: " + session);
-    // console.log(typeof(session));
-    // Save the session in a cookie
-    
-    // cookies().set()
-    // cookies().set("Front-end session", session, { expires, httpOnly: true });
-
-
+  
     
     (await
-    // console.log("session: " + session);
-    // console.log(typeof(session));
-    // Save the session in a cookie
-    // cookies().set()
-    // cookies().set("Front-end session", session, { expires, httpOnly: true });
     cookies()).set("Front-end session", token, { expires, httpOnly: true });
 
     return session;
@@ -77,7 +75,8 @@ export async function getSession() {
   if (!session) return null;
   return await decrypt(session);
 }
-var number = 0;
+
+// var number = 0;
 export async function updateSession(request: NextRequest) {
   const session = request.cookies.get("Front-end session")?.value;
   // console.log(session + " N: " + number++);
@@ -118,15 +117,6 @@ export async function updateSession(request: NextRequest) {
     return res;
 
   }
-
-  
-  
-  // return {
-
-  //     user: parsed.user || null, // Extract user information from the parsed session if available
-  //     exp: parsed.exp,
-  //   }
-  // ;
 
   return NextResponse.next();
 }

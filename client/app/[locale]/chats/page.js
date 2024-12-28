@@ -3,7 +3,6 @@ import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import React from "react";
 import SideNav from "./SideNav";
-
 export default function Chats() {
     const t = useTranslations('Chat');
     const pathname = usePathname();
@@ -20,7 +19,10 @@ export default function Chats() {
                     <p className="mt-4 text-gray-400">{t('defaultdesc')}</p>
                 </div>
             </div>
+
+
         </div>
+
 
     );
 }

@@ -56,7 +56,8 @@ const modifyData = async (info) => {
                 email: info.email,
                 user_name: info.user_name,
                 fname: info.fname,
-                lname: info.lname
+                lname: info.lname,
+                phone_number: info.phone_number // Include phone_number in the modification
             })
         });
 

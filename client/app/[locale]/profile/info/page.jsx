@@ -28,6 +28,7 @@ const Info = () => {
         lname: '',
         email: '',
         user_name: '',
+        phone_number: ' ', // Add phone_number to the state
     });
     const [isDisabled, setIsDisabled] = useState(true);
     const [loading, setLoading] = useState(true); // To manage loading state
@@ -84,8 +85,7 @@ const Info = () => {
     function handleOnSave() {
         // const phonepattern = /0[6-7]{1}[5789]{1}[0-9]{3}[0-9]{4}/;
         // if(!phonepattern.test(info.number)){
-            
-        // }
+
         modifyData(info);
         setOriginalInfo(info);
         setIsDisabled(true);
@@ -119,7 +119,8 @@ const Info = () => {
                     fname: user.fname,
                     lname: user.lname,
                     email: user.email,
-                    user_name: user.user_name
+                    user_name: user.user_name,
+                    phone_number: user.phone_number // Add phone_number to the info
                 });
 
             } catch (error) {
@@ -223,13 +224,16 @@ const Info = () => {
                         />
                     </div>
                     <div className="m-2">
-                        <label htmlFor="phonenumber" className="block text-gray-700 text-sm font-bold mb-2">{t('number')}</label>
+                        <label htmlFor="phone_number" className="block text-gray-700 text-sm font-bold mb-2">{t('number')}</label>
                         <input
                             disabled={isDisabled}
                             type="tel"
-                            pattern="0[6-7]{1}[5789]{1}[0-9]{3}[0-9]{4}"
-                            name="phonenumber"
-                            id="phonenumber"
+                            // pattern="0[6-7]{1}[5789]{1}[0-9]{3}[0-9]{4}"
+                            pattern="[0-9]{10,15}"
+                            name="phone_number"
+                            id="phone_number"
+                            value={info.phone_number || ' '}
+                            onChange={handleOnChange}
                             className="shadow-inner border-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"
                         />
                     </div>

@@ -1,8 +1,9 @@
 'use client';
 import React, { use, useState } from "react";
-import Chats from "../../chat-test/page";
-import {  usePathname } from "next/navigation";
+import Chats from "../../global_components/chat";
+import { usePathname } from "next/navigation";
 import SideNav from "../SideNav";
+import Reportpage from '../../global_components/report'
 
 
 const ChatRoom = ({ params }) => {
@@ -26,11 +27,12 @@ const ChatRoom = ({ params }) => {
       </div>
       <div className={`flex-1 p-2 sm:block ${isPressed ? 'block' : 'hidden'}`}>
         <Chats room={2}
-          roomId = {id}
-          CloseChat={toggleOverlay} 
+          roomId={id}
+          CloseChat={toggleOverlay}
 
-          />
+        />
       </div>
+
     </div>
   );
 }

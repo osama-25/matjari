@@ -47,6 +47,32 @@ export default function Users() {
         }
     };
 
+    const unbanUser = async (userId) => {
+        try {
+            const response = await fetch(`http://localhost:8080/admin/unban-user/${userId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                // Update the user's banned status in the UI
+                setUsers(prevUsers =>
+                    prevUsers.map(user =>
+                        user.id === userId ? { ...user, banned: false } : user
+                    )
+                );
+                alert('User has been unbanned successfully');
+            } else {
+                alert('Failed to unban user');
+            }
+        } catch (error) {
+            console.error('Error unbanning user:', error);
+            alert('An error occurred while unbanning the user');
+        }
+    };
+
     return (
         <AdminLayout>
             <h1 className="text-3xl font-bold mb-8">Users</h1>
@@ -85,7 +111,12 @@ export default function Users() {
                                             Ban User
                                         </button>
                                     ) : (
-                                        <span>Banned</span>
+                                        <button
+                                            onClick={() => unbanUser(user.id)}
+                                            className="text-green-500 hover:text-green-700 ml-4"
+                                        >
+                                            Unban User
+                                        </button>
                                     )}
                                 </td>
                             </tr>
