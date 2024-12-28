@@ -45,6 +45,7 @@ const SearchPage = () => {
         fetchUser();
     }, []);
 
+    
     useEffect(() => {
         const fetchFavourited = async () => {
             try {

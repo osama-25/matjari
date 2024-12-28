@@ -2,7 +2,7 @@ import express from 'express';
 import db from '../config/db.js';
 import axios from 'axios';
 const router = express.Router();
-const excludedTags = ['text', 'indoor', 'person', 'outdoor', 'clothing', 'fashion', 'people'];
+const excludedTags = ['text', 'indoor', 'person', 'outdoor', 'clothing', 'fashion', 'people', 'screenshot'];
 const IMAGE_DESCRIPTION_API = 'http://localhost:8080/imageDesc/describe';
 //add Items
 router.post('/', async (req, res) => {
@@ -22,21 +22,20 @@ router.post('/', async (req, res) => {
         const listingId = listingResult.rows[0].id;
 
         // Save photos to the database
-        const photoPromises = photos.map(async (photoUrl) => {
+        for (const photoUrl of photos) {
             // Call the image description API
             const response = await axios.post(IMAGE_DESCRIPTION_API, { image: photoUrl });
             let tags = response.data.data?.tags.slice(0, 10).map(tag => tag.name) || [];
-
+        
             // Filter out unwanted tags
             tags = tags.filter(tag => !excludedTags.includes(tag));
-
+        
             // Save photo URL and tags to the database
-            return db.query(
+            await db.query(
                 `INSERT INTO listing_photos (listing_id, photo_url, tags) VALUES ($1, $2, $3)`,
                 [listingId, photoUrl, JSON.stringify(tags)]
             );
-        });
-        await Promise.all(photoPromises);
+        }
 
         // Save custom details as key-value pairs
         const detailPromises = Object.entries(customDetails).map(([key, value]) =>
@@ -165,29 +164,29 @@ router.post('/update/:listingId', async (req, res) => {
             [listingId, ...photos]
         );
 
-        const photoPromises = photos.map(async (photoUrl) => {
+        for (const photoUrl of photos) {
             // Check if photo already exists
             const existingPhoto = await db.query(
                 'SELECT 1 FROM listing_photos WHERE listing_id = $1 AND photo_url = $2',
                 [listingId, photoUrl]
             );
             if (existingPhoto.rows.length > 0) {
-                return Promise.resolve(); // Skip if photo already exists
+                continue; // Skip if photo already exists
             }
+        
             // Call the image description API
             const response = await axios.post(IMAGE_DESCRIPTION_API, { image: photoUrl });
             let tags = response.data.data?.tags.slice(0, 10).map(tag => tag.name) || [];
-
+        
             // Filter out unwanted tags
             tags = tags.filter(tag => !excludedTags.includes(tag));
-
+        
             // Save new photo URL and tags to the database
-            return db.query(
+            await db.query(
                 `INSERT INTO listing_photos (listing_id, photo_url, tags) VALUES ($1, $2, $3)`,
                 [listingId, photoUrl, JSON.stringify(tags)]
             );
-        });
-        await Promise.all(photoPromises);
+        }
 
         // Delete existing custom details and add new ones
         await db.query(`DELETE FROM listing_details WHERE listing_id = $1`, [listingId]);

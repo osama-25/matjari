@@ -112,6 +112,7 @@ describe('NavBar', () => {
     
     expect(mockPush).not.toHaveBeenCalled();
   });
+  
   test('handles profile button click when logged in', async () => {
     render(<NavBar />);
     const profileButton = screen.getByTitle('profile');

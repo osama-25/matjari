@@ -20,6 +20,7 @@ const customJestConfig = {
   collectCoverageFrom: [
      "app/[locale]/add_listing/**/*.{js,jsx,ts,tsx}",
      "app/[locale]/edit_listing/**/*.{js,jsx,ts,tsx}",
+     "app/[locale]/item/[id]/**/*.{js,jsx,ts,tsx}",
      "app/[locale]/search/**/*.{js,jsx,ts,tsx}",
      "app/[locale]/global_components/loading/**/*.{js,jsx,ts,tsx}",
      "app/[locale]/home/NavBar.js"
