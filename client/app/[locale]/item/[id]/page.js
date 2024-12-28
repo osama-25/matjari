@@ -10,6 +10,7 @@ import { FaTrashCan } from 'react-icons/fa6';
 import Popup from '../../popup';
 import Link from 'next/link';
 
+
 const ProductPage = ({ params }) => {
     const router = useRouter();
     const [Heart, setHeart] = useState(0);
@@ -237,7 +238,7 @@ const ProductPage = ({ params }) => {
                             <FaComment />
                             <span className="hidden lg:block text-lg font-bold">{t('chat')}</span>
                         </button>}
-                        {email !== userEmail && <button onClick={HandleFavouriteClick} className={`h-12 w-12 flex flex-row items-center justify-center bg-white text-red-500 hover:bg-gray-100 rounded-full shadow-md`}>
+                        {email !== userEmail && <button data-testId="favBtn" onClick={HandleFavouriteClick} className={`h-12 w-12 flex flex-row items-center justify-center bg-white text-red-500 hover:bg-gray-100 rounded-full shadow-md`}>
                             {Heart ? <FaHeart size={24} color={'crimson'} /> : <FaRegHeart size={26} />}
                         </button>}
                         {/* Edit button for seller (change hidden to flex to show) */}

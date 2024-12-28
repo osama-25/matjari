@@ -33,11 +33,12 @@ router.get('/:userId', async (req, res) => {
     console.log("User id is: " + userId);
     try {
         const favorites = await db.query(
-            `SELECT l.id, l.title, l.price, l.location, lp.photo_url
+            `SELECT DISTINCT ON (l.id) l.id, l.title, l.price, l.location, lp.photo_url
              FROM favorites f
              JOIN listings l ON f.listing_id = l.id
              LEFT JOIN listing_photos lp ON l.id = lp.listing_id
-             WHERE f.user_id = $1`,
+             WHERE f.user_id = $1
+             ORDER BY l.id`,
             [userId]
         );
 
