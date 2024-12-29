@@ -10,7 +10,6 @@ export const initializeSocket = (server) => {
     });
 
     io.on('connection', (socket) => {
-    
         socket.on("join_room", (roomId) => {
             socket.join(roomId);
         })
