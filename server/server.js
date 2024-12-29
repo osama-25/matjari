@@ -26,7 +26,7 @@ env.config();
 const app = express();
 
 const corsOption = {
-    origin: 'http://localhost:3000', // frontend origin
+    origin: 'https://matjari-psi.vercel.app/', // frontend origin
     credentials: true,
     optionsSuccessStatus: 200
 };
