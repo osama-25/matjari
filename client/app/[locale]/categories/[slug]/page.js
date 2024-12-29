@@ -37,7 +37,7 @@ export default function SubCateg({ params }) {
     useEffect(() => {
         const fetchCat = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/categories/${category}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/${category}`);
                 if (!response.ok) {
                     throw new Error(`Failed to fetch categories: ${response.statusText}`);
                 }
@@ -54,7 +54,7 @@ export default function SubCateg({ params }) {
     useEffect(()=>{
         const fetchItems = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/categories/${category}/${currentPage}/${itemsPerPage}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/${category}/${currentPage}/${itemsPerPage}`);
                 if (!response.ok) {
                     throw new Error(`Failed to fetch items: ${response.statusText}`);
                 }
@@ -88,7 +88,7 @@ export default function SubCateg({ params }) {
     useEffect(() => {
         const fetchFavourited = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/favorites/batch/${user_id}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/batch/${user_id}`);
                 
                 if (!response.ok) {
                     throw new Error('Failed to fetch favourited state');
@@ -123,7 +123,7 @@ export default function SubCateg({ params }) {
 
     const HandleFilter = async (order) => {
         try {
-            const response = await fetch(`http://localhost:8080/categories/filter/${category}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/filter/${category}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

@@ -35,7 +35,7 @@ export default function AdminLoginPage() {
     const handleAdminLogin = async (event) => {
         event.preventDefault();
         try {
-            const result = await fetch("http://localhost:8080/admin/login", {
+            const result = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

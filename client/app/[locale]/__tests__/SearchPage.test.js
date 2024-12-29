@@ -116,7 +116,7 @@ describe('SearchPage', () => {  // Removed async
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8080/imageDesc/search-by-image?page=1&pageSize=5',
+        `${process.env.NEXT_PUBLIC_API_URL}/imageDesc/search-by-image?page=1&pageSize=5`,
         expect.objectContaining({
           method: 'POST',
           body: JSON.stringify({ image: 'http://example.com/image.jpg' })

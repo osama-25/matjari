@@ -10,7 +10,7 @@ const ImageDisplay = () => {
     useEffect(() => {
         async function fetchImage() {
             try {
-                const response = await axios.get("http://localhost:8080/img/images");
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/img/images`);
                 const data = response.data;
                 setImageData(data);
                 console.log(data);

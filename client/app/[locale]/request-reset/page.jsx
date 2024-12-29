@@ -11,7 +11,7 @@ const RequestReset = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:8080/auth/request-password-reset', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/request-password-reset`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

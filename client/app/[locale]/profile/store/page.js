@@ -31,7 +31,7 @@ const Store = () => {
         // Fetch items
         const fetchItems = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/listing/store/${user_id}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/listing/store/${user_id}`);
                 if (!response.ok) {
                     throw new Error(`Failed to fetch items: ${response.statusText}`);
                 }

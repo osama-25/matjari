@@ -15,7 +15,7 @@ const ItemsDisplay = ({ ad }) => {
         // Fetch items
         const fetchItems = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/subcategories/${ad}/1/6`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subcategories/${ad}/1/6`);
                 if (!response.ok) {
                     throw new Error(`Failed to fetch items: ${response.statusText}`);
                 }
@@ -47,7 +47,7 @@ const ItemsDisplay = ({ ad }) => {
         const fetchFavourited = async () => {
             if (!user_id) return;
             try {
-                const response = await fetch(`http://localhost:8080/api/favorites/batch/${user_id}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/batch/${user_id}`);
                 
                 if (!response.ok) {
                     throw new Error('Failed to fetch favourited state');

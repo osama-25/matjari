@@ -49,7 +49,7 @@ const SearchPage = () => {
     useEffect(() => {
         const fetchFavourited = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/favorites/batch/${user_id}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/batch/${user_id}`);
 
                 if (!response.ok) {
                     throw new Error('Failed to fetch favourited state');
@@ -69,7 +69,7 @@ const SearchPage = () => {
 
     const HandleFilter = async (order) => {
         try {
-            const response = await fetch('http://localhost:8080/search/filter', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/search/filter`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -114,12 +114,12 @@ const SearchPage = () => {
             };
 
             if (searchType === 'image') {
-                endpoint = `http://localhost:8080/imageDesc/search-by-image?page=${currentPage}&pageSize=${itemsPerPage}`;
+                endpoint = `${process.env.NEXT_PUBLIC_API_URL}/imageDesc/search-by-image?page=${currentPage}&pageSize=${itemsPerPage}`;
                 if (!imgSrc){ console.log("there's no URL"); return;}
                 options.method = 'POST';
                 options.body = JSON.stringify({ image:imgSrc });
             } else {
-                endpoint = `http://localhost:8080/search?term=${encodeURIComponent(searchTerm)}&page=${currentPage}&pageSize=${itemsPerPage}`;
+                endpoint = `${process.env.NEXT_PUBLIC_API_URL}/search?term=${encodeURIComponent(searchTerm)}&page=${currentPage}&pageSize=${itemsPerPage}`;
                 options.method = 'GET';
             }
 
@@ -177,7 +177,7 @@ const SearchPage = () => {
             <div dir={locale == 'ar' ? 'rtl' : 'ltr'} className="flex relative">
                 <SearchFilter HandleFilter={HandleFilter} formData={filter} setFormData={setFilter} />
                 <div className="flex flex-col justify-between w-full">
-                    <ItemDisplay Items={items} Favourited={[]} HandleFilter={HandleFilter} />
+                    <ItemDisplay Items={items} Favourited={favourited} HandleFilter={HandleFilter} user_id={user_id} />
                     <div className="flex justify-center items-center space-x-2 my-4">
                         {Array.from({ length: Math.ceil(items.length / itemsPerPage) }, (_, index) => (
                             <button

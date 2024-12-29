@@ -6,10 +6,12 @@ import { getInfo, modifyData } from "../../global_components/dataInfo";
 import Loading from "../../global_components/loading";
 import Popup from "../../popup";
 import { useTranslations } from "next-intl";
+import ToastMessage from "../../toast";
+import { FaPen } from "react-icons/fa";
 
 function ProfilePicture({ pic, togglePopup }) {
     return (
-        <div className="relative w-full h-40 flex justify-center items-end">
+        <div className="relative w-fit h-40 flex justify-center items-end">
             {/* Profile Picture as Edit Button */}
             <img
                 src={pic}
@@ -17,10 +19,10 @@ function ProfilePicture({ pic, togglePopup }) {
                 className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-full cursor-pointer object-cover"
                 onClick={togglePopup} // Clicking on the photo triggers the edit popup
             />
+            <FaPen className="absolute bottom-2 right-2" />
         </div>
     );
 }
-
 
 const Info = () => {
     const [info, setInfo] = useState({
@@ -28,7 +30,8 @@ const Info = () => {
         lname: '',
         email: '',
         user_name: '',
-        phone_number: ' ', // Add phone_number to the state
+        phone_number: '', // Add phone_number to the state
+        photo: null
     });
     const [isDisabled, setIsDisabled] = useState(true);
     const [loading, setLoading] = useState(true); // To manage loading state
@@ -36,41 +39,78 @@ const Info = () => {
     const [originalInfo, setOriginalInfo] = useState(null); // To manage errors
     // const [_token, setToken] = useState(null); // To manage errors
     const [isOpen, setIsOpen] = useState(false);
+    const [filename, setFilename] = useState('');
+    const [fileType, setFileType] = useState('');
+    const [imageBase64, setImageBase64] = useState('');
     const [photo, setPhoto] = useState('/Resources/profile-pic.jpg');
     const t = useTranslations('Profile');
+    const [message, setMessage] = useState('');
+    const [showToast, setShowToast] = useState(false);
 
     const togglePopup = () => {
         setIsOpen(!isOpen);
     };
 
-    const changeProfilePic = (e) => {
+    const onChangeProfilePic = (e) => {
         const file = e.target.files[0];
         if (file) {
             const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
             if (!validTypes.includes(file.type)) {
                 alert('Only PNG, JPEG, and JPG files are allowed');
                 e.target.value = ''; // Clear the input
-            }
-            else {
+            } else {
                 setPhoto(URL.createObjectURL(file));
-                // save the photo in the user row in the database
+                setFilename(file.name);
+                setFileType(file.type);
+
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onloadend = () => {
+                    const base64String = reader.result.split(",")[1];
+                    setImageBase64(base64String);
+                };
             }
         }
     }
 
+    const changeProfilePic = async (e) => {
+        // save the photo in the user row in the database
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/azure/upload`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    filename,
+                    fileType,
+                    imageBase64,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            setPhoto(data.imgURL);
+            info.photo = data.imgURL;
+            modifyData(info);
+        } catch (error) {
+            console.error("Error uploading image:", error);
+            alert("Error uploading image");
+        } finally {
+            togglePopup();
+        }
+    }
 
     function handleOnChange(event) {
 
         const { name, value } = event.target;
-        setInfo(
-            preInfo => {
-
-                return {
-                    ...preInfo,
-                    [name]: value,
-                }
-            }
-        )
+        setInfo(preInfo => ({
+            ...preInfo,
+            [name]: value.trim(),
+        }));
     }
 
     function handleOnCancle() {
@@ -83,8 +123,13 @@ const Info = () => {
     }
 
     function handleOnSave() {
-        // const phonepattern = /0[6-7]{1}[5789]{1}[0-9]{3}[0-9]{4}/;
-        // if(!phonepattern.test(info.number)){
+        const phonepattern = /^0[67]{1}[5789]{1}[0-9]{7}$/m;
+        if (info.phone_number != null && !phonepattern.test(info.phone_number)) {
+            setMessage('Invalid phone number');
+            setShowToast(true);
+            return;
+        }
+        console.log('info');
 
         modifyData(info);
         setOriginalInfo(info);
@@ -102,7 +147,6 @@ const Info = () => {
         const fetchInfo = async () => {
             setLoading(true); // Start loading
             // await new Promise(s => setTimeout(s, 3000));
-
             try {
                 const user = await getInfo();
                 if (!user) {
@@ -112,16 +156,15 @@ const Info = () => {
                 }
 
                 setOriginalInfo(user);
-
-
-
                 setInfo({
                     fname: user.fname,
                     lname: user.lname,
                     email: user.email,
                     user_name: user.user_name,
-                    phone_number: user.phone_number // Add phone_number to the info
+                    phone_number: user.phone_number,
+                    photo: user.photo
                 });
+                setPhoto(user.photo || '/Resources/profile-pic.jpg');
 
             } catch (error) {
                 setError(error.message); // Set error state
@@ -163,16 +206,19 @@ const Info = () => {
     return (
         <section className="flex flex-col h-full border rounded border-gray-300 p-4 md:p-6 overflow-y-auto">
             {/* Profile Picture Section */}
-            <ProfilePicture pic={photo} togglePopup={togglePopup} />
+            <div className="flex w-full justify-center">
+                <ProfilePicture pic={photo} togglePopup={togglePopup} />
+            </div>
 
             {/* Profile Info Header */}
             <h1 className="m-2 font-bold">{t('info')}</h1>
+            <ToastMessage text={message} show={showToast} onClose={() => setShowToast(false)} />
 
             {/* Form Section */}
-            <form onSubmit={(e) => { e.preventDefault(); setIsDisabled(true); }}>
+            <form onSubmit={(e) => { e.preventDefault(); }}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="m-2">
-                        <label htmlFor="firstname" className="block text-gray-700 text-sm font-bold mb-2">{t('firstname')}</label>
+                        <label htmlFor="fname" className="block text-gray-700 text-sm font-bold mb-2">{t('firstname')}</label>
                         <input
                             disabled={isDisabled}
                             type="text"
@@ -185,7 +231,7 @@ const Info = () => {
                         />
                     </div>
                     <div className="m-2">
-                        <label htmlFor="lastname" className="block text-gray-700 text-sm font-bold mb-2">{t('lastname')}</label>
+                        <label htmlFor="lname" className="block text-gray-700 text-sm font-bold mb-2">{t('lastname')}</label>
                         <input
                             disabled={isDisabled}
                             type="text"
@@ -198,7 +244,7 @@ const Info = () => {
                         />
                     </div>
                     <div className="m-2">
-                        <label htmlFor="username" className="block text-gray-700 text-sm font-bold mb-2">{t('user')}</label>
+                        <label htmlFor="user_name" className="block text-gray-700 text-sm font-bold mb-2">{t('user')}</label>
                         <input
                             disabled={isDisabled}
                             type="text"
@@ -228,8 +274,6 @@ const Info = () => {
                         <input
                             disabled={isDisabled}
                             type="tel"
-                            // pattern="0[6-7]{1}[5789]{1}[0-9]{3}[0-9]{4}"
-                            pattern="[0-9]{10,15}"
                             name="phone_number"
                             id="phone_number"
                             value={info.phone_number || ' '}
@@ -275,12 +319,28 @@ const Info = () => {
             {/* Popup for Profile Picture */}
             {isOpen && (
                 <Popup title={t('photo')} togglePopup={togglePopup}>
-                    <input
-                        type="file"
-                        accept="image/png, image/jpeg, image/jpg"
-                        onChange={changeProfilePic}
-                        className="mt-4"
-                    />
+                    <div className="flex flex-col items-center">
+                        <label htmlFor="photo" className="cursor-pointer">
+                            <img
+                                src={photo}
+                                alt="Current Profile"
+                                className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-full object-cover mb-2 border-2"
+                            />
+                        </label>
+                        <input
+                            id="photo"
+                            type="file"
+                            accept="image/png, image/jpeg, image/jpg"
+                            onChange={onChangeProfilePic}
+                            className="hidden"
+                        />
+                        <button
+                            onClick={changeProfilePic}
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+                        >
+                            {t('change')}
+                        </button>
+                    </div>
                 </Popup>
             )}
         </section>

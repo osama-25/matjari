@@ -9,7 +9,7 @@ export default function AdminItemsPage() {
     useEffect(() => {
         const fetchItems = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/listing/fetch-all-items');
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/listing/fetch-all-items`);
                 setItems(response.data);
             } catch (error) {
                 console.error('Error fetching items:', error);

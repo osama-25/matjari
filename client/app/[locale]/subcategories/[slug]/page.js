@@ -25,7 +25,7 @@ const SubCategories = ({ params }) => {
     useEffect(() => {
         const fetchItems = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/subcategories/${subcategory}/${currentPage}/${itemsPerPage}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subcategories/${subcategory}/${currentPage}/${itemsPerPage}`);
                 if (!response.ok) {
                     throw new Error(`Failed to fetch items: ${response.statusText}`);
                 }
@@ -58,7 +58,7 @@ const SubCategories = ({ params }) => {
     useEffect(() => {
         const fetchFavourited = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/favorites/batch/${user_id}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/batch/${user_id}`);
                 
                 if (!response.ok) {
                     throw new Error('Failed to fetch favourited state');
@@ -88,7 +88,7 @@ const SubCategories = ({ params }) => {
 
     const HandleFilter = async (order) => {
         try {
-            const response = await fetch(`http://localhost:8080/subcategories/filter/${subcategory}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subcategories/filter/${subcategory}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

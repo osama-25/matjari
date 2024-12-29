@@ -58,7 +58,7 @@ function RegisterPage() {
 
     async function HandleRegisterPage() {
         try {
-            const res = await axios.post("http://localhost:8080/auth/register", { info });
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, { info });
             const data = res.data;
 
             if (data.success) {

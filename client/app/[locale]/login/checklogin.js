@@ -13,7 +13,7 @@ export default async function checkLogin(path, router) {
             // Check login status by sending the JWT token in the Authorization header
             console.log("HIT THIS");
             
-            const res = await axios.get('http://localhost:8080' + path, { 
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}` + path, { 
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
