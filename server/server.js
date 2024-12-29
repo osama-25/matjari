@@ -26,9 +26,21 @@ env.config();
 const app = express();
 
 const corsOption = {
-    origin: 'https://matjari-psi.vercel.app/', // frontend origin
-    credentials: true,
-    optionsSuccessStatus: 200
+  origin: function (origin, callback) {
+    // Allow localhost for local development and the Vercel frontend
+    const allowedOrigins = [
+      'http://localhost:3000',  // Local development
+      'https://matjari-psi.vercel.app', // Vercel production frontend
+    ];
+
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200,
 };
 // //database
 // const pool = new Pool({
