@@ -8,6 +8,7 @@ import { FaArrowLeft, FaCheck, FaImage, FaPaperPlane, FaPlay, FaXmark } from 're
 import { IoCheckmark, IoCheckmarkDone } from 'react-icons/io5';
 
 import ReportButton from './report-button'; // Import ReportButton component
+import { type } from 'os';
 
 
 
@@ -102,11 +103,11 @@ export default function Chats({ CloseChat, roomId, chatName }) {
                 if (existingMessage) {
                     // Update existing message
                     return prevMessages.map((msg) =>
-                        msg.id === data.id ? [...msg, { id: data.id, message: data.content, sentByUser: data.sentByUser, files: data.files, timestamp: data.timestamp, seen: data.seen }] : msg
+                        msg.id === data.id ? [...msg, { id: data.id, message: data.content, sentByUser: data.sentByUser, files: data.files[0].url, timestamp: data.timestamp, seen: data.seen, url: data.files[0].url, type: data.files[0].type }] : msg
                     );
                 }
                 // Add new message
-                return [...prevMessages, { id: data.id, message: data.content, sentByUser: data.sentByUser, files: data.files, timestamp: data.timestamp, seen: data.seen }];
+                return [...prevMessages, { id: data.id, message: data.content, sentByUser: data.sentByUser, files: data.files[0].url, timestamp: data.timestamp, seen: data.seen, url: data.files[0].url, type: data.files[0].type }];
             });
         });
 
