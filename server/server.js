@@ -6,7 +6,7 @@ import authRoutes from "./routes/auth.js";
 import dataRoutes from "./routes/data.js"
 import itemRoutes from "./routes/item.js";
 // import socketRoutes, { initializeSocket } from "./routes/socket.js";
-import { initializeSocket } from './controllers/SocketController.js';
+import { initializeSocket } from './controllers/socketController.js';
 import chatRoutes from './routes/chat.js'
 import env from 'dotenv';
 import verifyToken from './middleware/middleware.js';
