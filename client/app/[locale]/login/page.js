@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { FaEye, FaEyeSlash, FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
 
 export default function LoginPage() {
-    const router = useRouter(); 
+    const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showToast, setShowToast] = useState(false);
@@ -61,7 +61,11 @@ export default function LoginPage() {
 
                 if (data.success) {
 
-                    login(data.user, data.token);
+                    const see = await login(data.token);
+                    console.log("see: ");
+
+                    console.log(see);
+
                     console.log("typeOf" + typeof (data.token));
 
                     console.log("res.token: " + data.token);
@@ -147,7 +151,7 @@ export default function LoginPage() {
                         </Link>
                     </div>
 
-                
+
                 </div>
                 <p
                     onClick={HandleLocaleChange}

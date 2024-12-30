@@ -31,14 +31,14 @@ function RegisterPage() {
         const form = event.currentTarget;
         const mailpattern = /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-zA-Z]{2,4}/i;
         const passpattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/gm;
-        if(!mailpattern.test(info.email)){
+        if (!mailpattern.test(info.email)) {
             event.preventDefault();
             event.stopPropagation();
             setMessage("email not entered correctly!");
             setShowToast(true);
             return;
         }
-        else if(!passpattern.test(info.password) || (info.password != info.confirmPassword)){
+        else if (!passpattern.test(info.password) || (info.password != info.confirmPassword)) {
             event.preventDefault();
             event.stopPropagation();
             setMessage("password not entered correctly!");
@@ -60,12 +60,15 @@ function RegisterPage() {
         try {
             const res = await axios.post("http://localhost:8080/auth/register", { info });
             const data = res.data;
+            console.log("HHH");
 
+            console.log(data);
             if (data.success) {
                 localStorage.setItem("token", res.data.token);
-                router.push('/home'); // Redirect to home if registration is successful
                 setValidated(true);
                 setMessage(data.message);
+                login(data.token);
+                router.push('/home'); // Redirect to home if registration is successful
             } else {
                 setValidated(false);
                 setMessage(data.message);

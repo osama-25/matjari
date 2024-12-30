@@ -67,22 +67,36 @@ export default function Chats({ CloseChat, roomId, chatName }) {
         console.log(AllMessages);
         console.log(new Date().toISOString());
 
-        const newestMessage = AllMessages[AllMessages.length - 1];
-        console.log("NEWEST MESSAGE");
-        console.log(newestMessage);
-        console.log("GET ID");
-        console.log(getId);
-        if (newestMessage && !newestMessage.seen && parseInt(newestMessage.sentByUser) != parseInt(getId)) {
-            console.log("MARKING MESSAGE AS SEEN");
-            newestMessage.seen = true;
-            markMessageAsSeen(newestMessage.id);
-            console.log(newestMessage);
-            setAllMessages((prevMessages) =>
-                prevMessages.map((msg) =>
-                    msg.id === newestMessage.id ? { ...msg, seen: true } : msg
-                )
-            );
-        }
+        // const newestMessage = AllMessages[AllMessages.length - 1];
+        // console.log("NEWEST MESSAGE");
+        // console.log(newestMessage);
+        // console.log("GET ID");
+        // console.log(getId);
+        // if (newestMessage && !newestMessage.seen && parseInt(newestMessage.sentByUser) != parseInt(getId)) {
+        //     console.log("MARKING MESSAGE AS SEEN");
+        //     newestMessage.seen = true;
+        //     markMessageAsSeen(newestMessage.id);
+        //     console.log(newestMessage);
+        //     setAllMessages((prevMessages) =>
+        //         prevMessages.map((msg) =>
+        //             msg.id === newestMessage.id ? { ...msg, seen: true } : msg
+        //         )
+        //     );
+        // }
+        AllMessages.forEach(async (msg) => {
+            if (!msg.seen && parseInt(msg.sentByUser) !== parseInt(getId)) {
+                console.log("MARKING MESSAGE AS SEEN");
+                msg.seen = true;
+                await markMessageAsSeen(msg.id);
+                console.log(msg);
+                setAllMessages((prevMessages) =>
+                    prevMessages.map((message) =>
+                        message.id === msg.id ? { ...message, seen: true } : message
+                    )
+                );
+            }
+        });
+
     }, [AllMessages]);
 
 

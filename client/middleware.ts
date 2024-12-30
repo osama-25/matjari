@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
-import { updateSession } from "./lib";
+// import { updateSession } from "./lib";
 import { cookies } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
 
