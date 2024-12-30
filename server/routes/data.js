@@ -17,7 +17,7 @@ router.get("/get", verifyToken, async (req, res) => {
 
 router.put("/modify", verifyToken, async (req, res) => {
     const id = req.user.id;
-    const { email, user_name, fname, lname, phone_number } = req.body;
+    const { email, user_name, fname, lname, phone_number, photo } = req.body;
 
     console.log("HIHIHIHIHIHIHIHI");
 
@@ -30,8 +30,8 @@ router.put("/modify", verifyToken, async (req, res) => {
 
     try {
         const dbRes = await db.query(
-            "UPDATE users SET email = $1, user_name = $2, fname = $3, lname = $4, phone_number = $5 WHERE id = $6 RETURNING *",
-            [email, user_name, fname, lname, phone_number, id]
+            "UPDATE users SET email = $1, user_name = $2, fname = $3, lname = $4, phone_number = $5, photo = $6 WHERE id = $7 RETURNING *",
+            [email, user_name, fname, lname, phone_number, photo, id]
         );
 
         if (dbRes.rows.length === 0) {

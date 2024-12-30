@@ -49,7 +49,7 @@ const Listing = () => {
     useEffect(() => {
         const fetchCat = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/categories`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`);
                 const data = await response.json();
                 setCategories(data);
             } catch (error) {
@@ -62,7 +62,7 @@ const Listing = () => {
     useEffect(() => {
         const fetchSubCat = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/categories/${formData.category}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/${formData.category}`);
                 const data = await response.json();
                 setSubCategories(data || []);
             } catch (error) {
@@ -97,7 +97,7 @@ const Listing = () => {
 
         for (const photo of photoDataArray) {
             try {
-                const response = await fetch("http://localhost:8080/azure/upload", {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/azure/upload`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -165,7 +165,7 @@ const Listing = () => {
             };
 
             // Send the listing data to the backend
-            const response = await fetch('http://localhost:8080/api/listing', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/listing`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

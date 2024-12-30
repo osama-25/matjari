@@ -50,7 +50,7 @@ const NavBar = () => {
   useEffect(() => {
     const fetchNewMessages = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/chat/newmessages/${userId}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/newmessages/${userId}`);
         const data = await response.json();
         console.log('New messages data:', data);
         if (data.hasNewMessages) {
@@ -90,7 +90,7 @@ const NavBar = () => {
         const fileType = file.type;
         //convert base64 to imageURL
         try {
-          const response = await fetch("http://localhost:8080/azure/upload", {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/azure/upload`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

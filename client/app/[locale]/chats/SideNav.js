@@ -31,7 +31,7 @@ const SideNav = ({ onPress }) => {
                 setUserId(userId);
 
                 // Fetch chat rooms for the user
-                const response = await fetch(`http://localhost:8080/chat/get-rooms/${userId}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/get-rooms/${userId}`);
                 const roomsData = await response.json();
 
                 // Set the fetched chat rooms into state
@@ -50,7 +50,7 @@ const SideNav = ({ onPress }) => {
     useEffect(() => {
         const fetchNewMessages = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/chat/newmessages/${userId}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/newmessages/${userId}`);
                 const data = await response.json();
                 console.log('New messages data:', data);
                 setRoomsWithNewMessages(data.rooms);

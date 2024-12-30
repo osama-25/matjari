@@ -160,7 +160,7 @@ describe('ProductPage', () => {
         fireEvent.click(screen.getByTestId('favBtn'));
 
         await waitFor(() => {
-            expect(fetch).toHaveBeenCalledWith('http://localhost:8080/api/favorites', expect.any(Object));
+            expect(fetch).toHaveBeenCalledWith(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites`, expect.any(Object));
         });
     });
 

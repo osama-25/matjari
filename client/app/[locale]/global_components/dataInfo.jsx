@@ -14,7 +14,7 @@ const getInfo = async () => {
             return;
         }
 
-        const response = await fetch("http://localhost:8080/data/get", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/data/get`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
@@ -46,7 +46,7 @@ const modifyData = async (info) => {
     const token = localStorage.getItem('token');
 
     try {
-        const response = await fetch("http://localhost:8080/data/modify", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/data/modify`, {
             method: "PUT",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -57,7 +57,8 @@ const modifyData = async (info) => {
                 user_name: info.user_name,
                 fname: info.fname,
                 lname: info.lname,
-                phone_number: info.phone_number // Include phone_number in the modification
+                phone_number: info.phone_number,
+                photo: info.photo
             })
         });
 

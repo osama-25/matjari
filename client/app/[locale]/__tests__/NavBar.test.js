@@ -83,7 +83,7 @@ describe('NavBar', () => {
         await waitFor(() => {
           // Verify API call
           expect(fetch).toHaveBeenCalledWith(
-            'http://localhost:8080/azure/upload',
+            `${process.env.NEXT_PUBLIC_API_URL}/azure/upload`,
             expect.objectContaining({
               method: 'POST',
               headers: { 'Content-Type': 'application/json' }

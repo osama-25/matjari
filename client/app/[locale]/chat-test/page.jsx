@@ -9,7 +9,7 @@ import { IoCheckmark, IoCheckmarkDone } from 'react-icons/io5';
 
 
 
-const socket = io.connect("http://localhost:8080");
+const socket = io.connect(`${process.env.NEXT_PUBLIC_API_URL}`);
 
 export default function Chats({ CloseChat, roomId, chatName }) {
     const [message, setMessage] = useState("");
@@ -43,7 +43,7 @@ export default function Chats({ CloseChat, roomId, chatName }) {
         return info.id;
     };
     const markMessageAsSeen = async (messageId) => {
-        const response = await fetch(`http://localhost:8080/chat/mark-seen/${messageId}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/mark-seen/${messageId}`);
         console.log(messageId);
         if (!response.ok) {
             throw new Error('Failed to mark message as seen');
@@ -130,7 +130,7 @@ export default function Chats({ CloseChat, roomId, chatName }) {
             try {
 
                 const userId = await getUserID();
-                const response = await fetch(`http://localhost:8080/chat/messages/${room}/${userId}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/messages/${room}/${userId}`);
                 if (response.ok) {
                     const data = await response.json();
                     console.log("########هنا###########");
@@ -182,7 +182,7 @@ export default function Chats({ CloseChat, roomId, chatName }) {
                 const { file, base64 } = fileObj;
 
                 try {
-                    const response = await fetch("http://localhost:8080/azure/upload", {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/azure/upload`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -241,7 +241,7 @@ export default function Chats({ CloseChat, roomId, chatName }) {
 
 
             try {
-                const response = await fetch("http://localhost:8080/chat/messages", {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/messages`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

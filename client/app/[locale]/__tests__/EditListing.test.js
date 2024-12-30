@@ -50,7 +50,7 @@ describe('EditListing Component', () => {
 
     // Mock categories
     fetch.mockImplementation((url) => {
-      if (url === 'http://localhost:8080/categories') {
+      if (url === `${process.env.NEXT_PUBLIC_API_URL}/categories`) {
         return Promise.resolve({
           ok: true,
           json: () => Promise.resolve([])
@@ -387,7 +387,7 @@ describe('EditListing Component', () => {
     // Mock API calls
     fetch.mockImplementation((url) => {
       // Mock categories endpoint
-      if (url === 'http://localhost:8080/categories') {
+      if (url === `${process.env.NEXT_PUBLIC_API_URL}/categories`) {
         return Promise.resolve({
           ok: true,
           json: () => Promise.resolve([
@@ -397,7 +397,7 @@ describe('EditListing Component', () => {
         });
       }
       // Mock subcategories endpoint for Electronics
-      if (url === 'http://localhost:8080/categories/Electronics') {
+      if (url === `${process.env.NEXT_PUBLIC_API_URL}/categories/Electronics`) {
         return Promise.resolve({
           ok: true,
           json: () => Promise.resolve([

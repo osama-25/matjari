@@ -24,7 +24,7 @@ const ChatRoom = ({ params }) => {
 
 
         // Fetch chat rooms for the user
-        const response = await fetch(`http://localhost:8080/chat/get-rooms/${userId}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/get-rooms/${userId}`);
         const roomsData = await response.json();
 
 

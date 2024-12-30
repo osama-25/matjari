@@ -3,10 +3,14 @@ import React, { useEffect, useState } from "react";
 import FavTopNav from "./TopNav";
 import { HomeItem } from "../Item";
 import { getInfo } from '../global_components/dataInfo';
+import Loading from "../global_components/loading";
+import ErrorPage from "../ErrorPage";
 
 const Profile = () => {
     const [favorites, setFavorites] = useState([]); 
     const [user_id, setUserId] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     
     useEffect(() => {
         const fetchUserInfo = async () => {
@@ -25,23 +29,31 @@ const Profile = () => {
     
     useEffect(() => {
         console.log("Fetching favorites for user_id:", user_id); // Debug log
+        setLoading(true);
         const fetchFavorites = async () => {
             if (!user_id) return;
     
             try {
-                const response = await fetch(`http://localhost:8080/api/favorites/${user_id}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/${user_id}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch favorites');
                 }
                 const data = await response.json();
                 setFavorites(data.favorites);
             } catch (error) {
-                console.error("Error fetching favorites:", error);
+                setError(error.message);
+            } finally {
+                setLoading(false);
             }
         };
     
         fetchFavorites();
     }, [user_id]);
+
+    if (loading) {
+        return <Loading />
+    }
+    if(error) return <ErrorPage message={error} statusCode={400} />;
 
     return (
         <>
