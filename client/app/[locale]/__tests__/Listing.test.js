@@ -93,7 +93,7 @@ describe("Listing Component", () => {
         expect(photos).toHaveLength(4);
         photos.forEach(photo => expect(photo).toBeInTheDocument());
 
-        expect(fetch).toHaveBeenCalledWith("http://localhost:8080/categories");
+        expect(fetch).toHaveBeenCalledWith(`${process.env.NEXT_PUBLIC_API_URL}/categories`);
     });
 
     test("handles category selection and fetches subcategories", async () => {
@@ -125,7 +125,7 @@ describe("Listing Component", () => {
 
         await waitFor(() => {
             expect(fetch).toHaveBeenCalledTimes(2);
-            expect(fetch).toHaveBeenCalledWith("http://localhost:8080/categories/electronics");
+            expect(fetch).toHaveBeenCalledWith(`${process.env.NEXT_PUBLIC_API_URL}/categories/electronics`);
         });
     });
 
@@ -309,7 +309,7 @@ describe("Listing Component", () => {
         
 
         // Verify listing creation API call
-        expect(fetch).toHaveBeenCalledWith('http://localhost:8080/api/listing', {
+        expect(fetch).toHaveBeenCalledWith(`${process.env.NEXT_PUBLIC_API_URL}/api/listing`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

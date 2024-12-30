@@ -8,7 +8,7 @@ export default function Reports() {
     useEffect(() => {
         const fetchReports = async () => {
             try {
-                const response = await fetch('http://localhost:8080/admin/get-reports');
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/get-reports`);
                 if (!response.ok) throw new Error(`Error: ${response.statusText}`);
                 const data = await response.json();
                 setReports(data);
@@ -22,7 +22,7 @@ export default function Reports() {
 
     const handleStatusChange = async (reportId, newStatus) => {
         try {
-            const response = await fetch(`http://localhost:8080/admin/update-report-status/${reportId}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/update-report-status/${reportId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

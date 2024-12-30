@@ -8,10 +8,11 @@ import { FaArrowLeft, FaCheck, FaImage, FaPaperPlane, FaPlay, FaXmark } from 're
 import { IoCheckmark, IoCheckmarkDone } from 'react-icons/io5';
 
 import ReportButton from './report-button'; // Import ReportButton component
+import { type } from 'os';
 
 
 
-const socket = io.connect("http://localhost:8080");
+const socket = io.connect(`${process.env.NEXT_PUBLIC_API_URL}`);
 
 export default function Chats({ CloseChat, roomId, chatName }) {
     const [message, setMessage] = useState("");
@@ -47,7 +48,7 @@ export default function Chats({ CloseChat, roomId, chatName }) {
     };
 
     const markMessageAsSeen = async (messageId) => {
-        const response = await fetch(`http://localhost:8080/chat/mark-seen/${messageId}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/mark-seen/${messageId}`);
         console.log(messageId);
         if (!response.ok) {
             throw new Error('Failed to mark message as seen');
@@ -67,22 +68,19 @@ export default function Chats({ CloseChat, roomId, chatName }) {
         console.log(AllMessages);
         console.log(new Date().toISOString());
 
-        const newestMessage = AllMessages[AllMessages.length - 1];
-        console.log("NEWEST MESSAGE");
-        console.log(newestMessage);
-        console.log("GET ID");
-        console.log(getId);
-        if (newestMessage && !newestMessage.seen && parseInt(newestMessage.sentByUser) != parseInt(getId)) {
+        AllMessages.forEach(async (msg) => {
+            if (!msg.seen && parseInt(msg.sentByUser) !== parseInt(getId)) {
             console.log("MARKING MESSAGE AS SEEN");
-            newestMessage.seen = true;
-            markMessageAsSeen(newestMessage.id);
-            console.log(newestMessage);
+            msg.seen = true;
+            await markMessageAsSeen(msg.id);
+            console.log(msg);
             setAllMessages((prevMessages) =>
-                prevMessages.map((msg) =>
-                    msg.id === newestMessage.id ? { ...msg, seen: true } : msg
+                prevMessages.map((message) =>
+                message.id === msg.id ? { ...message, seen: true } : message
                 )
             );
-        }
+            }
+        });
     }, [AllMessages]);
 
 
@@ -105,11 +103,11 @@ export default function Chats({ CloseChat, roomId, chatName }) {
                 if (existingMessage) {
                     // Update existing message
                     return prevMessages.map((msg) =>
-                        msg.id === data.id ? [...msg, { id: data.id, message: data.content, sentByUser: data.sentByUser, files: data.files, timestamp: data.timestamp, seen: data.seen }] : msg
+                        msg.id === data.id ? [...msg, { id: data.id, message: data.content, sentByUser: data.sentByUser, files: data.files[0].url, timestamp: data.timestamp, seen: data.seen, url: data.files[0].url, type: data.files[0].type }] : msg
                     );
                 }
                 // Add new message
-                return [...prevMessages, { id: data.id, message: data.content, sentByUser: data.sentByUser, files: data.files, timestamp: data.timestamp, seen: data.seen }];
+                return [...prevMessages, { id: data.id, message: data.content, sentByUser: data.sentByUser, files: data.files[0].url, timestamp: data.timestamp, seen: data.seen, url: data.files[0].url, type: data.files[0].type }];
             });
         });
 
@@ -134,7 +132,7 @@ export default function Chats({ CloseChat, roomId, chatName }) {
             try {
 
                 const userId = await getUserID();
-                const response = await fetch(`http://localhost:8080/chat/messages/${room}/${userId}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/messages/${room}/${userId}`);
                 if (response.ok) {
                     const data = await response.json();
                     console.log("########هنا###########");
@@ -187,7 +185,7 @@ export default function Chats({ CloseChat, roomId, chatName }) {
                 const { file, base64 } = fileObj;
 
                 try {
-                    const response = await fetch("http://localhost:8080/azure/upload", {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/azure/upload`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -246,7 +244,7 @@ export default function Chats({ CloseChat, roomId, chatName }) {
 
 
             try {
-                const response = await fetch("http://localhost:8080/chat/messages", {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/messages`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -355,7 +353,7 @@ export default function Chats({ CloseChat, roomId, chatName }) {
     return (
         <div className="flex flex-col h-full p-1 md:p-4">
             {/* Chat Header */}
-            <div className="flex items-center bg-white rounded-lg shadow-md p-2 mb-2">
+            <div className="flex items-center justify-between bg-white rounded-lg shadow-md p-2 mb-2">
                 {/* Back Button for Smaller Screens */}
                 <button
                     className="md:hidden bg-gray-300 text-gray-700 w-10 h-10 rounded-full flex items-center justify-center shadow-md"
@@ -363,18 +361,14 @@ export default function Chats({ CloseChat, roomId, chatName }) {
                 >
                     <FaArrowLeft size={20} />
                 </button>
-
                 {/* Chat Info */}
                 <div className="flex items-center space-x-3 p-2">
                     <h2 className="text-lg font-semibold text-gray-800">
                         {chatName}
                     </h2>
                 </div>
-
-
-
-                {/* Spacer for alignment */}
-                <div className="hidden md:block w-10"></div>
+                {/* Report Button */}
+                <ReportButton userId={getId} />
             </div>
 
             {/* Render Messages */}
@@ -531,12 +525,6 @@ export default function Chats({ CloseChat, roomId, chatName }) {
                     </button>
                 </div>
             </div>
-
-            {/* Report Button */}
-            <div className="mt-4">
-                <ReportButton userId={getId} />
-            </div>
         </div>
     );
-
 }

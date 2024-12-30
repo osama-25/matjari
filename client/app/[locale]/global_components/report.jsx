@@ -13,7 +13,7 @@ const Report = ({ isOpen, onClose, userId }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:8080/admin/submit-report', { description, errorType, userId });
+            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/admin/submit-report`, { description, errorType, userId });
             console.log("Report submitted:", { description, errorType, userId });
             // Clear form after submission
             setDescription("");
@@ -27,8 +27,8 @@ const Report = ({ isOpen, onClose, userId }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-blue-600 bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white shadow-lg rounded-lg p-8 max-w-lg mx-auto">
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 z-10 flex items-center justify-center">
+            <div className="bg-white shadow-lg rounded-lg p-8 max-w-lg w-full">
                 <h2 className="text-3xl font-bold text-blue-800 mb-6">Report an Issue</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-6">

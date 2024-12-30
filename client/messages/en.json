@@ -55,7 +55,8 @@
                 "edit": "Edit",
                 "save": "Save",
                 "cancel": "Cancel",
-                "photo": "Change profile photo"
+                "photo": "Change profile photo",
+                "change": "Change"
         },
         "Login": {
                 "email": "Email Address",

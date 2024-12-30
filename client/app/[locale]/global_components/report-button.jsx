@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import ReportModal from "./report"; // Updated import path
+import { FaCircleExclamation } from "react-icons/fa6";
 
 const ReportButton = ({ userId }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -13,9 +14,9 @@ const ReportButton = ({ userId }) => {
         <>
             <button
                 onClick={openModal}
-                className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+                className="bg-red-600 text-white p-2 rounded-full hover:bg-red-700"
             >
-                Report an Issue
+                <FaCircleExclamation size={24} />
             </button>
             {isModalOpen && (
                 <ReportModal isOpen={isModalOpen} onClose={closeModal}

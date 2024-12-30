@@ -8,7 +8,7 @@ export default function Users() {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await fetch('http://localhost:8080/admin/get-users'); // Adjust if using a different API route
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/get-users`); // Adjust if using a different API route
                 const data = await response.json();
                 console.log(data);
 
@@ -23,7 +23,7 @@ export default function Users() {
 
     const banUser = async (userId) => {
         try {
-            const response = await fetch(`http://localhost:8080/admin/ban-user/${userId}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/ban-user/${userId}`, {
                 method: 'POST', // Use 'PUT' or 'DELETE' if your API requires it
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ export default function Users() {
 
     const unbanUser = async (userId) => {
         try {
-            const response = await fetch(`http://localhost:8080/admin/unban-user/${userId}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/unban-user/${userId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

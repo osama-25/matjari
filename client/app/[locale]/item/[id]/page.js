@@ -15,7 +15,7 @@ const ProductPage = ({ params }) => {
     const router = useRouter();
     const [Heart, setHeart] = useState(0);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [photo, setPhoto] = useState('/Resources/profile-pic.jpg');
+    const [userPhoto, setUserPhoto] = useState('/Resources/profile-pic.jpg');
     const [edit, setEdit] = useState(false);
     const [item, setItem] = useState(null);
     const itemID = use(params).id;
@@ -28,7 +28,7 @@ const ProductPage = ({ params }) => {
     useEffect(() => {
         const fetchItem = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/listing/${itemID}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/listing/${itemID}`);
 
                 if (!response.ok) {
                     throw new Error(`Failed to fetch item: ${response.statusText}`);
@@ -52,6 +52,7 @@ const ProductPage = ({ params }) => {
                 if (info) {
                     setUserId(info.id);
                     setUserEmail(info.email);
+                    setUserPhoto(info.photo || '/Resources/profile-pic.jpg');
                 }
             } catch (error) {
                 //setError(error.message);
@@ -63,7 +64,7 @@ const ProductPage = ({ params }) => {
     useEffect(() => {
         const fetchFavourited = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/favorites/${itemID}/${user_id}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/${itemID}/${user_id}`);
 
                 if (!response.ok) {
                     throw new Error('Failed to fetch favourited state');
@@ -83,7 +84,7 @@ const ProductPage = ({ params }) => {
 
     const HandleDelete = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/listing/delete/${itemID}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/listing/delete/${itemID}`, {
                 method: 'DELETE', // Explicitly set the method to DELETE
             });
             if (!response.ok) {
@@ -135,7 +136,7 @@ const ProductPage = ({ params }) => {
             console.log("#current_user_id", current_user_id);
             console.log("#item_user_id", item_user_id);
 
-            const response = await fetch('http://localhost:8080/chat/find-or-create-room', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/find-or-create-room`, {
                 method: 'POST',  // Corrected: use 'POST' as a string, not an array
                 headers: {
                     'Content-Type': 'application/json', // Inform server that you are sending JSON data
@@ -172,7 +173,7 @@ const ProductPage = ({ params }) => {
         // change the item favourite status in the database
         if (user_id) { 
             try {
-                const response = await fetch('http://localhost:8080/api/favorites', {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -254,9 +255,9 @@ const ProductPage = ({ params }) => {
             {/* Seller Info */}
             <div className="flex items-center w-full bg-white p-8 rounded-lg gap-x-6">
                 <img
-                    src={photo}
+                    src={userPhoto}
                     alt="Profile"
-                    className="lg:w-24 lg:h-24 w-16 h-16 rounded-full border-2 border-gray-200"
+                    className="lg:w-24 lg:h-24 w-16 h-16 rounded-full object-cover border-2 border-gray-200"
                 />
                 <div className='flex flex-col'>
                     <h1 className="font-bold text-md">{username}</h1>

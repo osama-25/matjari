@@ -4,13 +4,12 @@ import { Server } from 'socket.io';
 export const initializeSocket = (server) => {
     const io = new Server(server, {
         cors: {
-            origin: "http://localhost:3000", // frontend origin
+            origin: ["http://localhost:3000", "https://matjari-psi.vercel.app"], // frontend origins
             methods: ["GET", "POST"]
         }
     });
 
     io.on('connection', (socket) => {
-    
         socket.on("join_room", (roomId) => {
             socket.join(roomId);
         })

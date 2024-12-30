@@ -30,7 +30,7 @@ const ImageUploader = ({ onUploadSuccess }) => {
         }
 
         // try {
-        //     const response = await axios.post("http://localhost:8080/azure/upload", {
+        //     const response = await axios.post("${process.env.NEXT_PUBLIC_API_URL}/azure/upload", {
         //         filename,
         //         fileType,
         //         imageBase64,
@@ -42,7 +42,7 @@ const ImageUploader = ({ onUploadSuccess }) => {
         //     alert("Error uploading image");
         // }
         try {
-            const response = await fetch("http://localhost:8080/azure/upload", {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/azure/upload`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
