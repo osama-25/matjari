@@ -6,10 +6,12 @@ const router = express.Router();
 router.get('/', async (req, res) => {
     const { term, page, pageSize } = req.query;
     console.log("Search route: "+term);
+    console.log("Pages: "+pageSize);
     try {
         // Default values if not provided
         const parsedPage = parseInt(page) || 1;
         const parsedPageSize = parseInt(pageSize) || 10;
+        console.log("PageSize: "+parsedPageSize);
         //console.log("Search route: "+term);
         // Validate page and pageSize
         if (isNaN(parsedPage) || parsedPage < 1 || isNaN(parsedPageSize) || parsedPageSize < 1) {
@@ -30,8 +32,9 @@ router.get('/', async (req, res) => {
             [`%${term}%`]
         );
         const totalItems = parseInt(countResult.rows[0].total);
+        console.log("Total Items: "+totalItems);
         const totalPages = Math.ceil(totalItems / parsedPageSize);
-
+        console.log("Total Pages: "+totalPages);
         // Fetch items for the current page with limit and offset
         const itemsResult = await db.query(`
             SELECT l.*, 

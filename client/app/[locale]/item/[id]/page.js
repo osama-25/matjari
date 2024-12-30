@@ -137,7 +137,7 @@ const ProductPage = ({ params }) => {
             console.log("#item_user_id", item_user_id);
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/find-or-create-room`, {
-                method: 'POST',  // Corrected: use 'POST' as a string, not an array
+                method: 'POST', 
                 headers: {
                     'Content-Type': 'application/json', // Inform server that you are sending JSON data
                 },
