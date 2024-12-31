@@ -74,7 +74,6 @@ const NavBar = () => {
       console.log('Search term: ', searchTerm);
       // Navigate to search results page
       router.push(`/search?term=${encodeURIComponent(searchTerm)}&page=1&pageSize=10`);
-      setSearchTerm('');
     } catch (err) {
       console.error('Search error:', err);
     }
@@ -260,14 +259,18 @@ const NavBar = () => {
           </button>
         </div>
         <nav className="flex flex-col pt-10 items-center text-2xl font-semibold h-full space-y-6">
-          <Link href="/chats" className="text-gray-700 hover:text-blue-500">
+          <Link href="/chats" className="relative w-full flex justify-center items-center text-gray-700 hover:text-blue-500">
             {t('chat')}
+            {newMessages && <span className="inline-block w-2 h-2 bg-red-600 rounded-full ml-2"></span>}
           </Link>
           <Link href="/favourites" className="text-gray-700 hover:text-blue-500">
             {t('fav')}
           </Link>
           <Link href={'/profile'} className="text-gray-700 hover:text-blue-500">
             {t('profile')}
+          </Link>
+          <Link href='/add_listing' className="text-gray-700 hover:text-yellow-500">
+            {t('addlisting')}
           </Link>
           <button
             onClick={HandleFlagPress}

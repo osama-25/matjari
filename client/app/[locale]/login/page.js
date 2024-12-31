@@ -7,9 +7,10 @@ import { login } from '../../../lib';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { FaEye, FaEyeSlash, FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
+import Loading from '../global_components/loading';
 
 export default function LoginPage() {
-    const router = useRouter(); 
+    const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showToast, setShowToast] = useState(false);
@@ -20,6 +21,8 @@ export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const searchParams = useSearchParams();
     const redirect = searchParams.get('redirectTo') || '/home';
+    const [loading, setLoading] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     const HandleLocaleChange = () => {
         const currentLocale = pathname.split("/")[1]; // Get the current locale (e.g., "en" or "ar")
@@ -41,9 +44,8 @@ export default function LoginPage() {
             handleShowToast('Incorrect input!');
         }
         else {
-
+            setLoading(true);
             try {
-
                 const ress = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
                     method: "POST",
                     headers: {
@@ -68,6 +70,7 @@ export default function LoginPage() {
                     // 
                     localStorage.setItem('token', data.token);
                     setToastMessage(data.message);
+                    setIsAuthenticated(true);
                     router.push(redirect);
 
                     // router.push('/home');
@@ -78,10 +81,15 @@ export default function LoginPage() {
             } catch (err) {
                 handleShowToast('Error occured try again');
                 console.log("Error with /auth/login:", err);
+            } finally {
+                setLoading(false);
             }
         }
     };
 
+    if(loading) return <Loading />
+
+    if (isAuthenticated) return null;
 
     return (
         <>
@@ -129,7 +137,7 @@ export default function LoginPage() {
 
                         <div className="self-center py-2">
                             <button
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
                                 type="submit"
                             >
                                 {t('login')}
@@ -147,7 +155,7 @@ export default function LoginPage() {
                         </Link>
                     </div>
 
-                
+
                 </div>
                 <p
                     onClick={HandleLocaleChange}

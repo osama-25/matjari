@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { FaComments, FaHeart, FaSearch, FaUser } from 'react-icons/fa';
+import { FaComments, FaHeart, FaPlus, FaSearch, FaUser } from 'react-icons/fa';
 import { FaBars, FaXmark } from 'react-icons/fa6';
 
 const flags = [
@@ -58,6 +58,13 @@ const ChatTopNav = () => {
               <Link href="/profile" className="text-gray-700 p-2 rounded-md hover:bg-gray-300 hover:shadow-inner" title='profile'>
                 <FaUser />
               </Link>
+              <Link
+                href='/add_listing'
+                className="text-white p-3 rounded-md bg-yellow-400 hover:bg-yellow-500 hover:shadow-inner"
+                title="place item for sale"
+              >
+                <FaPlus size={18} />
+              </Link>
               <button onClick={HandleFlagPress} className="p-2 rounded-md hover:bg-gray-200">
                 <img src={flags[flagIndex]} className="w-8 h-5 rounded-sm" />
               </button>
@@ -96,6 +103,9 @@ const ChatTopNav = () => {
           </Link>
           <Link href="/profile" className="text-gray-700 hover:text-blue-500">
             {t('profile')}
+          </Link>
+          <Link href='/add_listing' className="text-gray-700 hover:text-yellow-500">
+            {t('addlisting')}
           </Link>
           <button
             onClick={HandleFlagPress}

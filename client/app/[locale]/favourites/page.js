@@ -66,7 +66,7 @@ const Profile = () => {
                             id={item.id} 
                             name={item.title} 
                             image={item.photo_url || '/default-image.jpg'} // Fallback to a default image
-                            price={`$${item.price}`} 
+                            price={`${item.price}`} 
                             chatid={item.id} 
                             desc={item.description || "No description available"} 
                             heart={true} // Always true for favorite items

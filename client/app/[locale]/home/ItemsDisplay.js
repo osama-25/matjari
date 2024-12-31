@@ -65,16 +65,8 @@ const ItemsDisplay = ({ ad }) => {
 
     return (
         <div className="flex flex-col px-6 py-2">
-            {/* Header Section - Sticky */}
-            <div className="flex justify-end top-0 z-10 py-2">
-                <button className="flex items-center">
-                    <b>{t('seemore')}</b>
-                    <FaArrowRight className="w-auto h-auto p-2" />
-                </button>
-            </div>
-
             {/* Scrollable Items Section */}
-            <div className="grid grid-cols-3 sm:flex sm:space-x-10 overflow-y-auto mt-2 no-scrollbar">
+            <div className="grid grid-cols-2 sm:flex sm:space-x-10 overflow-y-auto mt-2 no-scrollbar">
                 {items.map(item => (
                     <Item
                         key={item.id}

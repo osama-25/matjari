@@ -50,7 +50,7 @@ export const HomeItem = ({ name, image, id, price, heart, hideFav }) => {
                         href={`/item/${id}`}
                         className="break-words sm:w-3/4 overflow-hidden w-full"
                     >
-                        <p className="text-sm md:text-xl hover:underline cursor-pointer">{name}</p>
+                        <p className="text-xs sm:text-sm md:text-xl hover:underline cursor-pointer line-clamp-4">{name}</p>
                     </Link>
                     <span className="text-sm md:text-2xl font-bold">{price} JD</span>
                 </div>
@@ -75,11 +75,11 @@ export const Item = ({ id, name, image, price, heart, hideFav }) => {
 
     return (
         <div className="flex flex-col rounded-md gap-2 m-2 max-w-60">
-            <Link href={`/item/${id}`} className="w-24 h-24 sm:w-32 sm:h-32 md:w-52 md:h-52 lg:w-60 lg:h-60 rounded-lg bg-gray-100 p-2 cursor-pointer">
+            <Link href={`/item/${id}`} className="w-32 h-32 md:w-52 md:h-52 lg:w-60 lg:h-60 rounded-lg bg-gray-100 p-2 cursor-pointer">
                 <img src={image} alt={name} className="object-contain w-full h-full rounded-lg" />
             </Link>
             <Link href={`/item/${id}`} className="break-words w-full sm:w-3/4 overflow-hidden p-1">
-                <p className="text-sm hover:underline cursor-pointer">{name}</p>
+                <p className="text-xs sm:text-sm hover:underline cursor-pointer line-clamp-4">{name}</p>
             </Link>
             <div className="flex w-full justify-between items-center p-1">
                 <span className="text-sm font-bold">{price}</span>

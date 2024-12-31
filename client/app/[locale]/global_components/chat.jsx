@@ -9,12 +9,13 @@ import { IoCheckmark, IoCheckmarkDone } from 'react-icons/io5';
 
 import ReportButton from './report-button'; // Import ReportButton component
 import { type } from 'os';
+import Link from 'next/link';
 
 
 
 const socket = io.connect(`${process.env.NEXT_PUBLIC_API_URL}`);
 
-export default function Chats({ CloseChat, roomId, chatName }) {
+export default function Chats({ CloseChat, roomId, chatName, otherId }) {
     const [message, setMessage] = useState("");
     const [AllMessages, setAllMessages] = useState([]);
     const [files, setFiles] = useState([]);
@@ -26,8 +27,6 @@ export default function Chats({ CloseChat, roomId, chatName }) {
     const [modalContent, setModalContent] = useState(null); // To store the modal content
     const [isModalOpen, setIsModalOpen] = useState(false); // To track modal visibility
     const [hideSend, setHideSend] = useState(0);
-    const [fetching, setFetching] = useState(false);
-    const [flag, setFlag] = useState(false);
 
     const openModal = (content) => {
         setModalContent(content);
@@ -70,24 +69,18 @@ export default function Chats({ CloseChat, roomId, chatName }) {
 
         AllMessages.forEach(async (msg) => {
             if (!msg.seen && parseInt(msg.sentByUser) !== parseInt(getId)) {
-            console.log("MARKING MESSAGE AS SEEN");
-            msg.seen = true;
-            await markMessageAsSeen(msg.id);
-            console.log(msg);
-            setAllMessages((prevMessages) =>
-                prevMessages.map((message) =>
-                message.id === msg.id ? { ...message, seen: true } : message
-                )
-            );
+                console.log("MARKING MESSAGE AS SEEN");
+                msg.seen = true;
+                await markMessageAsSeen(msg.id);
+                console.log(msg);
+                setAllMessages((prevMessages) =>
+                    prevMessages.map((message) =>
+                        message.id === msg.id ? { ...message, seen: true } : message
+                    )
+                );
             }
         });
     }, [AllMessages]);
-
-
-    // useEffect(() => {
-
-    // }, [files])
-
 
     useEffect(() => {
         if (!room) return;
@@ -356,16 +349,16 @@ export default function Chats({ CloseChat, roomId, chatName }) {
             <div className="flex items-center justify-between bg-white rounded-lg shadow-md p-2 mb-2">
                 {/* Back Button for Smaller Screens */}
                 <button
-                    className="md:hidden bg-gray-300 text-gray-700 w-10 h-10 rounded-full flex items-center justify-center shadow-md"
+                    className="md:hidden bg-gray-300 text-gray-700 hover:bg-gray-400 w-10 h-10 rounded-full flex items-center justify-center shadow-md"
                     onClick={() => CloseChat()}
                 >
                     <FaArrowLeft size={20} />
                 </button>
                 {/* Chat Info */}
                 <div className="flex items-center space-x-3 p-2">
-                    <h2 className="text-lg font-semibold text-gray-800">
+                    <Link href={`/user/${otherId}`} className="text-lg font-semibold hover:underline text-gray-800">
                         {chatName}
-                    </h2>
+                    </Link>
                 </div>
                 {/* Report Button */}
                 <ReportButton userId={getId} />
@@ -431,7 +424,7 @@ export default function Chats({ CloseChat, roomId, chatName }) {
                         onClick={closeModal}
                     >
                         <div
-                            className="relative bg-white rounded-lg max-w-3xl w-fit"
+                            className="relative bg-white rounded-lg max-w-full w-full md:max-w-3xl md:w-fit mx-4"
                             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal content
                         >
                             {modalContent?.type === "image" && (

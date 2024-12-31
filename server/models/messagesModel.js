@@ -59,7 +59,7 @@ export const getUserRooms = async (userId) => {
 
 
     try {
-        const query = `SELECT r.user1_id , r.user2_id,r.id, r.room_id, u.user_name
+        const query = `SELECT r.user1_id , r.user2_id, r.id, r.room_id, u.user_name
             FROM rooms r , users u
             WHERE (r.user1_id = u.id or r.user2_id = u.id) 
             and  (r.user1_id = $1 or r.user2_id = $1) 
