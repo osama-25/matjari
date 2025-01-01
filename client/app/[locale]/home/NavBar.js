@@ -107,6 +107,7 @@ const NavBar = () => {
 
           const result = await response.json();
           if (result.imgURL) {
+            localStorage.removeItem('searchImageUrl');
             localStorage.setItem('searchImageUrl', result.imgURL);
             console.log('Search image URL:', result.imgURL);
             router.push(`/search?type=image`);

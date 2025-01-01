@@ -13,6 +13,7 @@ const SearchPage = () => {
     const searchParams = useSearchParams();
     const searchTerm = searchParams.get('term') || '';
     const searchType = searchParams.get('type');
+    //const timestamp = searchParams.get('ts');
     const [imgSrc, setImgSrc] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(5);
@@ -174,24 +175,26 @@ const SearchPage = () => {
     const isFilterEmpty = () => {
         return Object.values(filter).every(value => value === '');
     };
-
+    
+    const storedImageUrl = localStorage.getItem('searchImageUrl');
     useEffect(() => {
-        console.log('Search type:', searchType);
-        if (searchType === 'image') {
-            const storedImageUrl = localStorage.getItem('searchImageUrl');
-            console.log('Stored image URL:', storedImageUrl);
-            if (storedImageUrl) {
-                setImgSrc(storedImageUrl);
-                localStorage.removeItem('searchImageUrl');
-                console.log('Removed image URL from localStorage');
-            }
+        if (searchType === 'image' && storedImageUrl) {
+            setImgSrc(storedImageUrl);
         }
+    }, [searchType, storedImageUrl]);
+
+    
+    useEffect(() => {
+        if ((!searchTerm && searchType !== 'image') || (searchType === 'image' && !imgSrc)) {
+            return;
+        }
+        
         if (isFilterEmpty() && order == '') {
             fetchSearchResults();
         } else {
             HandleFilter();
         }
-    }, [searchTerm, imgSrc, currentPage, searchParams, searchType]);
+    }, [searchTerm, imgSrc, currentPage, searchParams, searchType, order]);
 
     if (isLoading) {
         return <Loading />;
