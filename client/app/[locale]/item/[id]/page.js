@@ -47,6 +47,27 @@ const ProductPage = ({ params }) => {
     }, [itemID]);
 
     useEffect(() => {
+        const AddToLastSeen = () => {
+            console.log('adding')
+            const maxItems = 6; // Maximum number of items to store
+            const key = "latestSeenItems";
+
+            let latestSeen = JSON.parse(localStorage.getItem(key)) || [];
+
+            latestSeen = latestSeen.filter((i) => i.id != itemID);
+
+            latestSeen.unshift({ id: itemID, title: item.title, image: item.photos[0], price: item.price });
+
+            latestSeen = latestSeen.slice(0, maxItems);
+
+            localStorage.setItem(key, JSON.stringify(latestSeen));
+        }
+        if (item) {
+            AddToLastSeen();
+        }
+    }, [item]);
+
+    useEffect(() => {
         const fetchUser = async () => {
             try {
                 const info = await getInfo();
@@ -128,50 +149,51 @@ const ProductPage = ({ params }) => {
 
     const handleButtonClick = async () => {
         if (user_id) { // Check if user is logged in
-        try {
-            
-            const current_user_id = user_id;
-            const item_user_id = item.user_id;
+            try {
 
-            console.log("#current_user_id", current_user_id);
-            console.log("#item_user_id", item_user_id);
+                const current_user_id = user_id;
+                const item_user_id = item.user_id;
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/find-or-create-room`, {
-                method: 'POST', 
-                headers: {
-                    'Content-Type': 'application/json', // Inform server that you are sending JSON data
-                },
-                body: JSON.stringify({
-                    userId1: current_user_id,
-                    userId2: item_user_id,
-                })
-            });
+                console.log("#current_user_id", current_user_id);
+                console.log("#item_user_id", item_user_id);
 
-            if (!response.ok) {
-                throw new Error('Failed to create or find room');
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/find-or-create-room`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json', // Inform server that you are sending JSON data
+                    },
+                    body: JSON.stringify({
+                        userId1: current_user_id,
+                        userId2: item_user_id,
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create or find room');
+                }
+
+                const data = await response.json();
+                console.log("+_+");
+                console.log(data);
+
+
+
+                // Assuming you want to navigate after the data is returned
+                console.log(data.room.id);
+                router.push(`/chats/${data.room.id}`); // You can use the room_id from the response data
+                // router.push(`/chats/2`); // You can use the room_id from the response data
+            } catch (error) {
+                console.error('Error:', error);
             }
-
-            const data = await response.json();
-            console.log("+_+");
-            console.log(data);
-
-
-
-            // Assuming you want to navigate after the data is returned
-            console.log(data.room.id);
-            router.push(`/chats/${data.room.id}`); // You can use the room_id from the response data
-            // router.push(`/chats/2`); // You can use the room_id from the response data
-        } catch (error) {
-            console.error('Error:', error);
-        }}
-        else{
+        }
+        else {
             router.push("/login");
         }
     }
 
     const HandleFavouriteClick = async () => {
         // change the item favourite status in the database
-        if (user_id) { 
+        if (user_id) {
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites`, {
                     method: 'POST',
@@ -218,14 +240,18 @@ const ProductPage = ({ params }) => {
                         ))}
                     </div>
                     {/* Left Arrow */}
-                    <button onClick={prevImage} className="lg:hidden absolute top-1/2 -left-4 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
-                        <FaArrowLeft />
-                    </button>
+                    {photos.length > 1 &&
+                        <button onClick={prevImage} className="lg:hidden absolute top-1/2 -left-4 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
+                            <FaArrowLeft />
+                        </button>
+                    }
 
                     {/* Right Arrow */}
-                    <button onClick={nextImage} className="lg:hidden absolute top-1/2 -right-4 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
-                        <FaArrowRight />
-                    </button>
+                    {photos.length > 1 &&
+                        <button onClick={nextImage} className="lg:hidden absolute top-1/2 -right-4 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
+                            <FaArrowRight />
+                        </button>
+                    }
                 </div>
             </div>
             <div className="flex flex-col md:flex-row w-full bg-white p-8 rounded-lg gap-y-4 gap-x-16">
@@ -253,23 +279,24 @@ const ProductPage = ({ params }) => {
                 </div>
             </div>
             {/* Seller Info */}
-            <Link href={`/user/${item.user_id}`} className="flex items-center w-full bg-white p-8 rounded-lg gap-x-6">
+            <div className="flex items-center w-full bg-white p-8 rounded-lg gap-x-6">
                 <img
+                    onClick={() => router.push(`/user/${item.user_id}`)}
                     src={userPhoto}
                     alt="Profile"
                     className="lg:w-24 lg:h-24 w-16 h-16 rounded-full cursor-pointer object-cover border-2 border-gray-200"
                 />
                 <div className='flex flex-col'>
-                    <h1 className="font-bold text-md hover:underline">{username}</h1>
+                    <h1 onClick={() => router.push(`/user/${item.user_id}`)} className="font-bold text-md hover:underline cursor-pointer">{username}</h1>
                     {phone_number != null && <h2 className='text-md'>{phone_number}</h2>}
                 </div>
-            </Link>
+            </div>
             {/* Additional Details */}
             <div className="col-span-2 h-fit flex flex-col w-full bg-white p-8 rounded-lg gap-y-4 gap-x-16">
                 <h1 className="font-bold text-xl mb-4">{t('details')}</h1>
                 <ul className="grid md:grid-cols-2 gap-y-2 list-disc list-inside">
                     <li><strong>Location:</strong> {location}</li>
-                    <li><strong>Delivery:</strong> {delivery=="Yes" ? "Yes" : "No"}</li>
+                    <li><strong>Delivery:</strong> {delivery == "Yes" ? "Yes" : "No"}</li>
                     <li><strong>Condition:</strong> {condition}</li>
                     {customDetails.map((detail, index) => (
                         <li key={index}>

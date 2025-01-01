@@ -1,32 +1,13 @@
 'use client';
 import React, { useEffect, useState } from "react";
-import { FaArrowRight } from "react-icons/fa";
-import { HomeItem, Item } from "../Item";
+import { Item } from "../Item";
 import { useTranslations } from "next-intl";
 import { getInfo } from "../global_components/dataInfo";
 
-const ItemsDisplay = ({ ad }) => {
+const ItemsDisplay = ({ items }) => {
     const t = useTranslations('Home');
-    const [items, setItems] = useState([]);
     const [user_id, setUserId] = useState(null);
     const [favourited, setFavourited] = useState([]);
-
-    useEffect(() => {
-        // Fetch items
-        const fetchItems = async () => {
-            try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subcategories/${ad}/1/6`);
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch items: ${response.statusText}`);
-                }
-                const data = await response.json();
-                setItems(data.items);
-            } catch (error) {
-                console.error("Error fetching items:", error.message);
-            }
-        };
-        fetchItems();
-    }, [ad]);
 
     useEffect(() => {
         // Fetch user information

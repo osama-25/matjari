@@ -103,10 +103,8 @@ const SearchPage = () => {
             if (data.items && data.items.length > 0) {
                 setItems(data.items);
                 setTotalPages(data.totalPages);
-                setisItemsReturned(true);
             } else {
                 setItems([]);
-                setisItemsReturned(false);
             }
         } catch (error) {
             setError(error.message);
@@ -225,8 +223,8 @@ const SearchPage = () => {
                 </div>
             </div>
         ) : (
-            <div className="flex justify-center items-center h-96">
-                <h1 className="text-2xl">No items found matching this {searchType === 'image' ? 'photo' : 'term:'} {searchTerm}</h1>
+            <div className="flex flex-col items-center justify-center h-full text-center">
+                <h1 className="text-2xl font-bold text-gray-600">No items found matching this {searchType === 'image' ? 'photo' : 'term:'} {searchTerm}</h1>
             </div>
         )
     )

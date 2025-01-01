@@ -23,19 +23,22 @@ const ItemDisplay = ({ Items, Favourited, user_id, HandleFilter, setOrder, order
                     <option value="">Most Relevant</option>
                     <option value="lowtohigh">Price: Low to high</option>
                     <option value="hightolow">Price: high to low</option>
-                    {/* <option value="mostrecent">Most Recent</option> */}
                 </select>
             </span>
-            <div className="flex flex-col gap-y-5">
-                {Items.map((item, index) => (
-                    <HomeItem
-                        key={index}
-                        id={item.id} name={item.title} image={item.image}
-                        price={item.price} heart={Favourited.includes(item.id)}
-                        hideFav={item.user_id === user_id}
-                    />
-                ))}
-            </div>
+            {Items.length > 0 ?
+                <div className="flex flex-col gap-y-5">
+                    {Items.map((item, index) => (
+                        <HomeItem
+                            key={index}
+                            id={item.id} name={item.title} image={item.image}
+                            price={item.price} heart={Favourited.includes(item.id)}
+                            hideFav={item.user_id === user_id}
+                        />
+                    ))}
+                </div> :
+                <div className="flex flex-col items-center justify-center h-full text-center">
+                    <h1 className="text-xl font-bold text-gray-600">No Items Found</h1>
+                </div>}
         </div>
     );
 }

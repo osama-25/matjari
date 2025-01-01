@@ -67,7 +67,7 @@ export const fetchItemById = async (id) => {
     if (user.user_name) item.username = user.user_name;
     if (user.phone_number) item.phone_number = user.phone_number;
     if (user.email) item.email = user.email;
-    if (user.photo) item.photo = user.photo;
+    if (user.photo) item.userPhoto = user.photo;
 
     return item;
 };

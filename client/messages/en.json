@@ -34,7 +34,8 @@
                 "chat": "Chat",
                 "fav": "Favourites",
                 "profile": "Profile",
-                "addlisting": "Add listing"
+                "addlisting": "Add listing",
+                "recent": "Recently viewed"
         },
         "Chat": {
                 "default": "Chat",
