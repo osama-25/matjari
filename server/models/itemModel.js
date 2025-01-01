@@ -61,12 +61,13 @@ export const fetchItemById = async (id) => {
         description: value,
     }));
 
-    const userInfo = await db.query('SELECT user_name, phone_number, email FROM users WHERE id = $1', [item.user_id]);
+    const userInfo = await db.query('SELECT user_name, phone_number, email, photo FROM users WHERE id = $1', [item.user_id]);
     const user = userInfo.rows[0] || {};
 
     if (user.user_name) item.username = user.user_name;
     if (user.phone_number) item.phone_number = user.phone_number;
     if (user.email) item.email = user.email;
+    if (user.photo) item.photo = user.photo;
 
     return item;
 };
