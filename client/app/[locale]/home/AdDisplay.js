@@ -39,7 +39,7 @@ const AdDisplay = () => {
   };
 
   return (
-    <div className="relative overflow-hidden mx-4 my-2 rounded-md">
+    <div className="relative overflow-hidden mx-4 my-2 rounded-2xl">
       {/* Image Container */}
       <div
         className="flex transition-transform duration-500"

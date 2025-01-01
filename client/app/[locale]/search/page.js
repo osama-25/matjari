@@ -29,6 +29,8 @@ const SearchPage = () => {
         delivery: '',
         condition: ''
     });
+    const [totalPages, setTotalPages] = useState(0);
+    const [order, setOrder] = useState('');
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -45,7 +47,7 @@ const SearchPage = () => {
         fetchUser();
     }, []);
 
-    
+
     useEffect(() => {
         const fetchFavourited = async () => {
             try {
@@ -67,22 +69,44 @@ const SearchPage = () => {
         }
     }, [user_id]);
 
-    const HandleFilter = async (order) => {
+    const HandleFilter = async () => {
+        if (!searchTerm && searchType !== 'image') {
+            console.log('No search term provided');
+            return;
+        }
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/search/filter`, {
+            let endpoint;
+            const options = {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ ...filter, searchTerm, order })
-            });
+                    'Content-Type': 'application/json',
+                }
+            };
+            console.log(order);
+            console.log(searchType);
+            if (searchType == 'image') {
+                endpoint = `${process.env.NEXT_PUBLIC_API_URL}/imageDesc/search-by-image/filter/${currentPage}/${itemsPerPage}`;
+                options.body = JSON.stringify({ ...filter, image: imgSrc, order });
+            }
+            else {
+                endpoint = `${process.env.NEXT_PUBLIC_API_URL}/search/filter/${currentPage}/${itemsPerPage}`;
+                options.body = JSON.stringify({ ...filter, searchTerm, order });
+            }
 
+            const response = await fetch(endpoint, options);
             if (!response.ok) {
                 throw new Error('Failed to fetch filter results');
             }
 
             const data = await response.json();
-            setItems(data.items);
+            if (data.items && data.items.length > 0) {
+                setItems(data.items);
+                setTotalPages(data.totalPages);
+                setisItemsReturned(true);
+            } else {
+                setItems([]);
+                setisItemsReturned(false);
+            }
         } catch (error) {
             setError(error.message);
         }
@@ -91,9 +115,6 @@ const SearchPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isItemsReturned, setisItemsReturned] = useState(false);
 
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     const fetchSearchResults = async () => {
@@ -115,9 +136,9 @@ const SearchPage = () => {
 
             if (searchType === 'image') {
                 endpoint = `${process.env.NEXT_PUBLIC_API_URL}/imageDesc/search-by-image?page=${currentPage}&pageSize=${itemsPerPage}`;
-                if (!imgSrc){ console.log("there's no URL"); return;}
+                if (!imgSrc) { console.log("there's no URL"); return; }
                 options.method = 'POST';
-                options.body = JSON.stringify({ image:imgSrc });
+                options.body = JSON.stringify({ image: imgSrc });
             } else {
                 endpoint = `${process.env.NEXT_PUBLIC_API_URL}/search?term=${encodeURIComponent(searchTerm)}&page=${currentPage}&pageSize=${itemsPerPage}`;
                 options.method = 'GET';
@@ -135,6 +156,7 @@ const SearchPage = () => {
             const data = await response.json();
             if (data.items && data.items.length > 0) {
                 setItems(data.items);
+                setTotalPages(data.totalPages);
                 console.log('Items:', data.items);
                 setisItemsReturned(true);
             } else {
@@ -149,6 +171,9 @@ const SearchPage = () => {
         }
     };
 
+    const isFilterEmpty = () => {
+        return Object.values(filter).every(value => value === '');
+    };
 
     useEffect(() => {
         console.log('Search type:', searchType);
@@ -161,14 +186,16 @@ const SearchPage = () => {
                 console.log('Removed image URL from localStorage');
             }
         }
-        fetchSearchResults();
-    }, [searchTerm, imgSrc, currentPage,searchParams, searchType]);
+        if (isFilterEmpty() && order == '') {
+            fetchSearchResults();
+        } else {
+            HandleFilter();
+        }
+    }, [searchTerm, imgSrc, currentPage, searchParams, searchType]);
 
     if (isLoading) {
-        return <Loading>Creating Listing....</Loading>;
+        return <Loading />;
     }
-
-
 
     if (error) return <ErrorPage message={error} statusCode={404} />;
 
@@ -177,15 +204,15 @@ const SearchPage = () => {
             <div dir={locale == 'ar' ? 'rtl' : 'ltr'} className="flex relative">
                 <SearchFilter HandleFilter={HandleFilter} formData={filter} setFormData={setFilter} />
                 <div className="flex flex-col justify-between w-full">
-                    <ItemDisplay Items={items} Favourited={favourited} HandleFilter={HandleFilter} user_id={user_id} />
+                    <ItemDisplay Items={items} Favourited={favourited} HandleFilter={HandleFilter} user_id={user_id} setOrder={setOrder} order={order} />
                     <div className="flex justify-center items-center space-x-2 my-4">
-                        {Array.from({ length: Math.ceil(items.length / itemsPerPage) }, (_, index) => (
+                        {Array.from({ length: totalPages }, (_, index) => (
                             <button
                                 key={index + 1}
                                 onClick={() => paginate(index + 1)}
                                 className={`px-3 py-1 rounded-md ${currentPage === index + 1
-                                        ? 'bg-blue-600 text-white font-semibold'
-                                        : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                                    ? 'bg-blue-600 text-white font-semibold'
+                                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
                                     }`}
                             >
                                 {index + 1}
@@ -195,7 +222,7 @@ const SearchPage = () => {
                 </div>
             </div>
         ) : (
-            <div className="flex justify-center items-center h-96"> 
+            <div className="flex justify-center items-center h-96">
                 <h1 className="text-2xl">No items found matching this {searchType === 'image' ? 'photo' : 'term:'} {searchTerm}</h1>
             </div>
         )

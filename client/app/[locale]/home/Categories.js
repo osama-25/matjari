@@ -11,7 +11,7 @@ export const CategoryDisplay = ({ text, bg, img, link }) => {
     const pathname = usePathname();
     return (
         <div className="w-full px-4 py-2">
-            <div className={`w-full flex flex-col sm:flex-row justify-between items-center ${bg} rounded-md`}>
+            <div className={`w-full flex flex-col sm:flex-row justify-between items-center ${bg} rounded-2xl`}>
                 <div dir={pathname.split('/')[1] == 'ar' ? 'rtl' : 'ltr'} className="flex flex-col w-full sm:w-2/5 justify-center md:items-center gap-6 p-10">
                     <p className="text-white md:text-center text-2xl sm:w-full md:text-3xl font-bold">{text}</p>
                     <Link

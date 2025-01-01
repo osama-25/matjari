@@ -21,6 +21,12 @@ const SubCategories = ({ params }) => {
         delivery: '',
         condition: ''
     });
+    const [totalPages, setTotalPages] = useState(0);
+    const [order, setOrder] = useState('');
+
+    const isFilterEmpty = () => {
+        return Object.values(filter).every(value => value === '');
+    };
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -32,12 +38,18 @@ const SubCategories = ({ params }) => {
                 const data = await response.json();
                 console.log(data);
                 setItems(data.items);
+                setTotalPages(data.totalPages);
             } catch (error) {
                 console.log(error);
                 setError(error.message);
             }
         }
-        fetchItems();
+        if (isFilterEmpty() && order == '') {
+            fetchItems();
+        }
+        else {
+            HandleFilter();
+        }
     }, [currentPage]);
 
     useEffect(() => {
@@ -59,7 +71,7 @@ const SubCategories = ({ params }) => {
         const fetchFavourited = async () => {
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/batch/${user_id}`);
-                
+
                 if (!response.ok) {
                     throw new Error('Failed to fetch favourited state');
                 }
@@ -80,15 +92,11 @@ const SubCategories = ({ params }) => {
         return <ErrorPage message={error} statusCode={404} />;
     }
 
-    // Paginate items
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-    const HandleFilter = async (order) => {
+    const HandleFilter = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subcategories/filter/${subcategory}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subcategories/filter/${subcategory}/${currentPage}/${itemsPerPage}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -102,6 +110,7 @@ const SubCategories = ({ params }) => {
 
             const data = await response.json();
             setItems(data.items);
+            setTotalPages(data.totalPages);
         } catch (error) {
             setError(error.message);
         }
@@ -111,9 +120,9 @@ const SubCategories = ({ params }) => {
         <div className="flex">
             <SearchFilter HandleFilter={HandleFilter} formData={filter} setFormData={setFilter} />
             <div className="flex flex-col justify-between w-full">
-                <ItemDisplay Items={currentItems} Favourited={favourited} user_id={user_id} HandleFilter={HandleFilter}/>
+                <ItemDisplay Items={items} Favourited={favourited} user_id={user_id} HandleFilter={HandleFilter} order={order} setOrder={setOrder} />
                 <div className="flex justify-center items-center space-x-2 my-4">
-                    {Array.from({ length: Math.ceil(items.length / itemsPerPage) }, (_, index) => (
+                    {Array.from({ length: totalPages }, (_, index) => (
                         <button
                             key={index + 1}
                             onClick={() => paginate(index + 1)}

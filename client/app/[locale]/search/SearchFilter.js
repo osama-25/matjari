@@ -21,6 +21,7 @@ const SearchFilter = ({ HandleFilter, formData, setFormData }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log('calling handlefilter')
         HandleFilter(formData);
         // Perform search or filter action with formData
     };

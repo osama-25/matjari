@@ -52,7 +52,7 @@ export default function AddPhoto({ image, onUpload, onDelete, id, size = 'small'
   };
 
   return (
-    <div className={`flex items-center justify-center border-2 border-gray-200 rounded-md relative group ${size == 'large'? 'w-full h-24 md:w-full md:h-52' : 'w-24 h-24 md:w-26 md:h-26 lg:w-36 lg:h-36'}`}>
+    <div className={`flex items-center justify-center border-2 border-gray-200 rounded-md relative group ${size == 'large'? 'w-full h-36 md:w-full md:h-52' : 'w-24 h-24 md:w-26 md:h-26 lg:w-36 lg:h-36'}`}>
       {image ? (
         <div className="w-full h-full relative">
           <img

@@ -69,7 +69,8 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.post('/filter', async (req, res) => {
+router.post('/filter/:page/:pageSize', async (req, res) => {
+    const { page, pageSize } = req.params;
     const { searchTerm, minPrice, maxPrice, location, delivery, condition, order } = req.body;
 
     let query = `SELECT COUNT(*) AS total FROM listings WHERE title ILIKE $1`;
@@ -101,8 +102,8 @@ router.post('/filter', async (req, res) => {
     }
 
     try {
-        const parsedPage = parseInt(req.query.page) || 1;
-        const parsedPageSize = parseInt(req.query.pageSize) || 10;
+        const parsedPage = parseInt(page) || 1;
+        const parsedPageSize = parseInt(pageSize) || 5;
 
         const countResult = await db.query(query, queryParams);
         const totalItems = countResult.rows[0].total;

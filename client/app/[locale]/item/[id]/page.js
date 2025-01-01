@@ -36,6 +36,7 @@ const ProductPage = ({ params }) => {
 
                 const data = await response.json();
                 setItem(data);
+                setUserPhoto(data.userPhoto || '/Resources/profile-pic.jpg');
             } catch (error) {
                 //console.error("Error fetching item:", error);
                 setError(error.message); // Set error state
@@ -52,7 +53,6 @@ const ProductPage = ({ params }) => {
                 if (info) {
                     setUserId(info.id);
                     setUserEmail(info.email);
-                    setUserPhoto(info.photo || '/Resources/profile-pic.jpg');
                 }
             } catch (error) {
                 //setError(error.message);
@@ -253,17 +253,17 @@ const ProductPage = ({ params }) => {
                 </div>
             </div>
             {/* Seller Info */}
-            <div className="flex items-center w-full bg-white p-8 rounded-lg gap-x-6">
+            <Link href={`/user/${item.user_id}`} className="flex items-center w-full bg-white p-8 rounded-lg gap-x-6">
                 <img
                     src={userPhoto}
                     alt="Profile"
-                    className="lg:w-24 lg:h-24 w-16 h-16 rounded-full object-cover border-2 border-gray-200"
+                    className="lg:w-24 lg:h-24 w-16 h-16 rounded-full cursor-pointer object-cover border-2 border-gray-200"
                 />
                 <div className='flex flex-col'>
-                    <h1 className="font-bold text-md">{username}</h1>
+                    <h1 className="font-bold text-md hover:underline">{username}</h1>
                     {phone_number != null && <h2 className='text-md'>{phone_number}</h2>}
                 </div>
-            </div>
+            </Link>
             {/* Additional Details */}
             <div className="col-span-2 h-fit flex flex-col w-full bg-white p-8 rounded-lg gap-y-4 gap-x-16">
                 <h1 className="font-bold text-xl mb-4">{t('details')}</h1>

@@ -18,7 +18,7 @@ import imageDescriptionRoutes from './routes/imageDesc.js';
 import searchRoutes from './routes/search.js';
 import favoriteRoutes from './routes/favorites.js'
 import adminRoutes from './routes/admin.js';
-
+import userRoutes from './routes/user.js';
 
 
 env.config();
@@ -65,7 +65,7 @@ app.use('/data', verifyToken, dataRoutes);
 app.use('/api/listing', itemRoutes);
 app.use('/categories', categoriesRoutes);
 app.use('/subcategories', subcategoriesRoutes);
-
+app.use('/user', userRoutes);
 
 // app.use('/socket', socketRoutes);
 app.use('/chat', chatRoutes);
