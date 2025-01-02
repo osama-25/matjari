@@ -117,7 +117,7 @@ const SubCategories = ({ params }) => {
     };
 
     return (
-        <div className="flex">
+        <div className="flex h-full">
             <SearchFilter HandleFilter={HandleFilter} formData={filter} setFormData={setFilter} />
             <div className="flex flex-col justify-between w-full">
                 <ItemDisplay Items={items} Favourited={favourited} user_id={user_id} HandleFilter={HandleFilter} order={order} setOrder={setOrder} />

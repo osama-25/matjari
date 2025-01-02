@@ -75,7 +75,7 @@ export const Item = ({ id, name, image, price, heart, hideFav }) => {
 
     return (
         <div className="flex flex-col rounded-md gap-2 m-2 max-w-60">
-            <Link href={`/item/${id}`} className="w-32 h-32 md:w-52 md:h-52 lg:w-60 lg:h-60 rounded-lg bg-gray-100 p-2 cursor-pointer">
+            <Link href={`/item/${id}`} className="w-32 h-32 md:w-52 md:h-52 lg:w-60 lg:h-60 rounded-2xl bg-white border p-2 cursor-pointer">
                 <img src={image} alt={name} className="object-contain w-full h-full rounded-lg" />
             </Link>
             <Link href={`/item/${id}`} className="break-words w-full sm:w-3/4 overflow-hidden p-1">

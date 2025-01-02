@@ -145,10 +145,10 @@ export default function SubCateg({ params }) {
             <div>
                 <CategoryAd img={ad.img} text={t(ad.text)} />
             </div>
-            <div className="p-5">
+            <div>
                 <CategoryDisplay categories={categories} />
                 <ItemDisplay Items={items} Favourited={favourited} user_id={user_id} HandleFilter={HandleFilter} order={order} setOrder={setOrder} />
-                <div className="flex justify-center items-center space-x-2 mt-4">
+                <div className="flex justify-center items-center space-x-2 my-4">
                     {Array.from({ length: totalPages }, (_, index) => (
                         <button
                             key={index + 1}

@@ -37,14 +37,14 @@ const SubCategory = ({ img, name }) => {
 
 const CategoryDisplay = ({ categories }) => {
     return (
-        <>
+        <div className="p-5">
             <p className="text-3xl mb-4">Shop by category</p>
             <div className="w-full grid grid-cols-3 md:grid-cols-6 gap-6 justify-center">
                 {categories.map((cat, index) => (
                     <SubCategory img={cat.image} name={cat.name} key={index} parent={cat.parent_cat} />
                 ))}
             </div>
-        </>
+        </div>
     )
 }
 export default CategoryDisplay

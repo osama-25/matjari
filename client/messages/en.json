@@ -208,7 +208,10 @@
                 "chat": "Chat",
                 "delete": "Delete Listing",
                 "yes": "Yes",
-                "no": "No"
+                "no": "No",
+                "fav": "Add to favourites",
+                "edit": "Edit Listing",
+                "more": "You may also like"
         },
         "ads": {
                 "electronics-ad": "Explore the latest in electronics.",

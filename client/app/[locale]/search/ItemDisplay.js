@@ -15,7 +15,7 @@ const ItemDisplay = ({ Items, Favourited, user_id, HandleFilter, setOrder, order
     }, [order])
 
     return (
-        <div className={`flex flex-col overflow-x-auto px-6 py-2 w-full gap-y-4`}>
+        <div className='flex flex-col overflow-x-auto px-4 sm:px-6 py-2 w-full h-full gap-y-4'>
             <span className="flex justify-between items-center mt-4">
                 <h1 className="md:hidden"></h1>
                 <h1 className="text-3xl font-bold p-2 md:inline hidden">Results</h1>
