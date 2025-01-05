@@ -122,7 +122,7 @@ const ProductPage = ({ params }) => {
         if (user_id) {
             fetchFavourited();
         }
-    }, [itemID, user_id, Heart]);
+    }, [itemID, user_id]);
 
     const HandleDelete = async () => {
         try {
