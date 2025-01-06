@@ -5,13 +5,13 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
     const { term, page, pageSize } = req.query;
-    console.log("Search route: "+term);
-    console.log("Pages: "+pageSize);
+    console.log("Search route: " + term);
+    console.log("Pages: " + pageSize);
     try {
         // Default values if not provided
         const parsedPage = parseInt(page) || 1;
         const parsedPageSize = parseInt(pageSize) || 10;
-        console.log("PageSize: "+parsedPageSize);
+        console.log("PageSize: " + parsedPageSize);
         //console.log("Search route: "+term);
         // Validate page and pageSize
         if (isNaN(parsedPage) || parsedPage < 1 || isNaN(parsedPageSize) || parsedPageSize < 1) {
@@ -32,9 +32,9 @@ router.get('/', async (req, res) => {
             [`%${term}%`]
         );
         const totalItems = parseInt(countResult.rows[0].total);
-        console.log("Total Items: "+totalItems);
+        console.log("Total Items: " + totalItems);
         const totalPages = Math.ceil(totalItems / parsedPageSize);
-        console.log("Total Pages: "+totalPages);
+        console.log("Total Pages: " + totalPages);
         // Fetch items for the current page with limit and offset
         const itemsResult = await db.query(`
             SELECT l.*, 
@@ -142,6 +142,43 @@ router.post('/filter/:page/:pageSize', async (req, res) => {
         });
     } catch (error) {
         console.error("Error fetching items:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+
+
+router.get('/suggestions', async (req, res) => {
+    const { term } = req.query;
+    console.log("Suggestions route: " + term);
+    if (!term) {
+        return res.json({ suggestions: [] });
+    }
+
+    try {
+        const result = await db.query(
+            `SELECT title FROM (
+                    SELECT DISTINCT title, LENGTH(title) as len, 1 as priority
+                    FROM listings 
+                    WHERE title ILIKE $1
+                    UNION ALL
+                    SELECT DISTINCT title, LENGTH(title) as len, 2 as priority
+                    FROM listings 
+                    WHERE title ILIKE $2 AND title NOT ILIKE $1
+                ) as combined_results 
+                ORDER BY priority ASC, len ASC
+                LIMIT 5;
+                `,
+            [`${term}%`, `%${term}%`]
+        );
+        if (result.rows.length == 0) {
+            console.log("No suggestions found");
+        } else {
+            console.log("Suggestions: ", result.rows.map(row => row.title));
+        }
+        res.json({ suggestions: result.rows.map(row => row.title) });
+    } catch (error) {
+        console.error("Error fetching suggestions:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
