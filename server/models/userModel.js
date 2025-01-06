@@ -7,7 +7,7 @@ export const createUser = async ({ firstName, lastName, email, password, userNam
         const query = `
             INSERT INTO users (fname, lname, email, password, user_name)
             VALUES ($1, $2, $3, $4, $5)
-            RETURNING id;
+            RETURNING *;
         `;
         const values = [firstName, lastName, email, hash, userName];
         const result = await db.query(query, values);

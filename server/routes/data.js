@@ -5,13 +5,19 @@ const router = express.Router();
 
 router.get("/get", verifyToken, async (req, res) => {
 
-    const id = req.user.id;
-    const dbRes = await db.query("select * from users where id = $1", [id]);
-    // console.log(dbRes.rows[0]);
-    const data = dbRes.rows[0];
+    const id = parseInt(req.user.id, 10); // Ensure id is an integer
+    if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+    }
 
-    res.status(201).json({ user: data });
-
+    try {
+        const dbRes = await db.query("select * from users where id = $1", [id]);
+        const data = dbRes.rows[0];
+        res.status(201).json({ user: data });
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
 
 

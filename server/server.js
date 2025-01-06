@@ -76,10 +76,10 @@ app.use('/img', images);
 app.use('/admin', adminRoutes);
 
 app.use('/imageDesc', imageDescriptionRoutes);
-app.use('/search',searchRoutes);
-app.use('/api/favorites',favoriteRoutes);
+app.use('/search', searchRoutes);
+app.use('/api/favorites', favoriteRoutes);
 app.use('/', (req, res) => {
-    res.send("<h1>This is the backend server</h1>");
+  res.send("<h1>This is the backend server</h1>");
 });
 
 
@@ -89,5 +89,5 @@ initializeSocket(server);
 
 // Start the server
 server.listen(8080, () => {
-    console.log("Server started on port 8080");
+  console.log("Server started on port 8080");
 });

@@ -1,5 +1,4 @@
 "use client";
-import axios from 'axios';
 import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import ToastMessage from '../toast';
@@ -7,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { FaEyeSlash } from 'react-icons/fa6';
 import { FaEye } from 'react-icons/fa';
-
+import { login } from '../../../lib';
 function RegisterPage() {
     const t = useTranslations('Register');
     const pathname = usePathname();
@@ -55,26 +54,27 @@ function RegisterPage() {
         }
         HandleRegisterPage();
     };
-
     async function HandleRegisterPage() {
         try {
-            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, { info });
-            const data = res.data;
-            console.log("HHH");
-
-            console.log(data);
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ info })
+            });
+            const data = await res.json();
             if (data.success) {
-                localStorage.setItem("token", res.data.token);
-                setValidated(true);
                 setMessage(data.message);
+                localStorage.setItem("token", data.token);
                 login(data.token);
                 router.push('/home'); // Redirect to home if registration is successful
             } else {
-                setValidated(false);
                 setMessage(data.message);
+                setShowToast(true);
             }
         } catch (err) {
-            setMessage("Error occured try again");
+            setMessage("Error occurred, try again");
             setShowToast(true);
         }
     }

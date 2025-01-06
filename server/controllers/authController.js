@@ -54,9 +54,13 @@ export const resetPassword = async (req, res) => {
 export const register = async (req, res) => {
     const { firstName, lastName, email, password, confirmPassword, userName } = req.body.info;
 
+    console.log("hit register");
+
     try {
         // Check if email is already registered
         const existingUser = await getUserByEmail(email);
+        console.log("hit register-1");
+
         if (existingUser) {
             return res.status(400).json({ success: false, message: "Email already registered" });
         }
@@ -67,12 +71,13 @@ export const register = async (req, res) => {
         }
 
         // Create the user
-        const userId = await createUser({ firstName, lastName, email, password, userName });
-
+        const user = await createUser({ firstName, lastName, email, password, userName });
+        const userId = user.id;
+        console.log("hit register-2");
         // Generate a token for the registered user
         const token = generateToken({ id: userId, email });
-
-        res.status(201).json({ success: true, token, message: "User registered successfully" });
+        console.log("hit register-3");
+        res.status(200).json({ success: true, token, message: "User registered successfully" ,user});
     } catch (error) {
         console.error("Error during registration:", error);
         res.status(500).json({ success: false, message: "Error registering user" });

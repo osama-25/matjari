@@ -4,7 +4,7 @@ export default async function verifyToken(req, res, next) {
     const authHeader = req.header('Authorization');
     const token = authHeader && authHeader.split(' ')[1]; // becase the authHeader is 'Bearer token' so we cut the [0] index
 
-    // console.log("token: : " + token);
+    console.log("token: : " + token);
 
     if (!token) return res.status(401).json({ error: 'Access denied' });
     try {

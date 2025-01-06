@@ -8,6 +8,7 @@ passport.use(new LocalStrategy({
     passwordField: 'password'
 }, async (email, password, done) => {
     try {
+
         const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
 
         if (result.rowCount === 0) {

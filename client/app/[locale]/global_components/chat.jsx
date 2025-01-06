@@ -4,17 +4,14 @@
 import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import { getInfo } from './dataInfo';
-import { FaArrowLeft, FaCheck, FaImage, FaPaperPlane, FaPlay, FaXmark } from 'react-icons/fa6';
-import { IoCheckmark, IoCheckmarkDone } from 'react-icons/io5';
-
+import { FaArrowLeft, FaImage, FaPaperPlane, FaPlay, FaXmark } from 'react-icons/fa6';
 import ReportButton from './report-button'; // Import ReportButton component
-import { type } from 'os';
 
 
 
-const socket = io.connect(`${process.env.NEXT_PUBLIC_API_URL}`);
+const socket = io.connect("http://localhost:8080");
 
-export default function Chats({ CloseChat, roomId, chatName }) {
+export default function Chats({ CloseChat, roomId }) {
     const [message, setMessage] = useState("");
     const [AllMessages, setAllMessages] = useState([]);
     const [files, setFiles] = useState([]);
@@ -26,8 +23,6 @@ export default function Chats({ CloseChat, roomId, chatName }) {
     const [modalContent, setModalContent] = useState(null); // To store the modal content
     const [isModalOpen, setIsModalOpen] = useState(false); // To track modal visibility
     const [hideSend, setHideSend] = useState(0);
-    const [fetching, setFetching] = useState(false);
-    const [flag, setFlag] = useState(false);
 
     const openModal = (content) => {
         setModalContent(content);
@@ -46,19 +41,6 @@ export default function Chats({ CloseChat, roomId, chatName }) {
         return info.id;
 
     };
-
-    const markMessageAsSeen = async (messageId) => {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/mark-seen/${messageId}`);
-        console.log(messageId);
-        if (!response.ok) {
-            throw new Error('Failed to mark message as seen');
-        } else {
-            socket.emit("mark_message_seen", { messageId, room });
-        }
-
-        return response.json();
-    };
-
     useEffect(() => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -66,64 +48,27 @@ export default function Chats({ CloseChat, roomId, chatName }) {
 
         console.log("ALLMESSAGES");
         console.log(AllMessages);
-        console.log(new Date().toISOString());
 
-        AllMessages.forEach(async (msg) => {
-            if (!msg.seen && parseInt(msg.sentByUser) !== parseInt(getId)) {
-            console.log("MARKING MESSAGE AS SEEN");
-            msg.seen = true;
-            await markMessageAsSeen(msg.id);
-            console.log(msg);
-            setAllMessages((prevMessages) =>
-                prevMessages.map((message) =>
-                message.id === msg.id ? { ...message, seen: true } : message
-                )
-            );
-            }
-        });
     }, [AllMessages]);
 
+    useEffect(() => {
 
-    // useEffect(() => {
-
-    // }, [files])
-
+    }, [files])
 
     useEffect(() => {
-        if (!room) return;
+        if (room) {
+            socket.emit("join_room", room);
+        }
 
-        // Join the chat room
-        socket.emit("join_room", room);
-
-        // Listener for receiving new messages
         socket.on("receive_message", (data) => {
-            setAllMessages((prevMessages) => {
-                // Check if the message already exists
-                const existingMessage = prevMessages.find((msg) => msg.id === data.id);
-                if (existingMessage) {
-                    // Update existing message
-                    return prevMessages.map((msg) =>
-                        msg.id === data.id ? [...msg, { id: data.id, message: data.content, sentByUser: data.sentByUser, files: data.files[0].url, timestamp: data.timestamp, seen: data.seen, url: data.files[0].url, type: data.files[0].type }] : msg
-                    );
-                }
-                // Add new message
-                return [...prevMessages, { id: data.id, message: data.content, sentByUser: data.sentByUser, files: data.files[0].url, timestamp: data.timestamp, seen: data.seen, url: data.files[0].url, type: data.files[0].type }];
-            });
+            setAllMessages((prevMessages) => [
+                ...prevMessages,
+                { message: data.content, sentByUser: getId, files: data.files }
+            ]);
         });
 
-        // Listener for marking messages as seen
-        socket.on("message_seen", ({ messageId }) => {
-            setAllMessages((prevMessages) =>
-                prevMessages.map((msg) =>
-                    msg.id === messageId ? { ...msg, seen: true } : msg
-                )
-            );
-        });
-
-        // Cleanup on room change or component unmount
         return () => {
             socket.off("receive_message");
-            socket.off("message_seen");
         };
     }, [room]);
 
@@ -132,7 +77,7 @@ export default function Chats({ CloseChat, roomId, chatName }) {
             try {
 
                 const userId = await getUserID();
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/messages/${room}/${userId}`);
+                const response = await fetch(`http://localhost:8080/chat/messages/${room}/${userId}`);
                 if (response.ok) {
                     const data = await response.json();
                     console.log("########هنا###########");
@@ -146,8 +91,6 @@ export default function Chats({ CloseChat, roomId, chatName }) {
                         sentByUser: msg.sent_by_user,
                         url: msg.blob_data,
                         type: msg.blob_type,
-                        seen: msg.seen,
-                        timestamp: msg.timestamp,
 
                         files: msg.blob_data,
 
@@ -185,7 +128,7 @@ export default function Chats({ CloseChat, roomId, chatName }) {
                 const { file, base64 } = fileObj;
 
                 try {
-                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/azure/upload`, {
+                    const response = await fetch("http://localhost:8080/azure/upload", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -223,19 +166,16 @@ export default function Chats({ CloseChat, roomId, chatName }) {
                 room,
                 sentByUser: getId,
                 files: uploadedFiles,
-                type: uploadedFiles.filetype,
-                seen: false,
-                timestamp: new Date().toISOString(),
+                type: uploadedFiles.filetype
+
             };
 
             setAllMessages((prevMessages) => [...prevMessages, {
                 content: message,
                 room: roomId,
-                sentByUser: getId,
+                sentByUser: true,
                 files: uploadedFiles,
-                type: uploadedFiles.filetype,
-                seen: false,
-                timestamp: new Date().toISOString(),
+                type: uploadedFiles.filetype
             }]);
 
             setRefresh(!refresh);
@@ -244,17 +184,13 @@ export default function Chats({ CloseChat, roomId, chatName }) {
 
 
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/messages`, {
+                const response = await fetch("http://localhost:8080/chat/messages", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(messageData),
                 });
-                const data = await response.json();
-                messageData.id = data.id;
-                console.log("Message Data:");
-                console.log(messageData);
 
                 if (response.ok) {
                     socket.emit("sent_message", messageData);
@@ -325,35 +261,11 @@ export default function Chats({ CloseChat, roomId, chatName }) {
             console.error("Error converting files to base64:", error);
         }
     };
-    const handleKeyDown = (e) => {
-        // Check if the pressed key is 'Enter'
-        if (e.key === 'Enter') {
-            sendMessage();
-        }
-    };
-    useEffect(() => {
-
-    }, [AllMessages]);
-
-    useEffect(() => {
-        const markseen = () => {
-            AllMessages.map(async (msg) => {
-                if (!msg.seen && msg.sentByUser != getId) {
-                    await markMessageAsSeen(msg.id);
-                    msg.seen = true;
-                }
-            });
-        }
-        if (getId) {
-            markseen();
-        }
-    }, [getId])
-
 
     return (
         <div className="flex flex-col h-full p-1 md:p-4">
             {/* Chat Header */}
-            <div className="flex items-center justify-between bg-white rounded-lg shadow-md p-2 mb-2">
+            <div className="flex items-center bg-white rounded-lg shadow-md p-2 mb-2">
                 {/* Back Button for Smaller Screens */}
                 <button
                     className="md:hidden bg-gray-300 text-gray-700 w-10 h-10 rounded-full flex items-center justify-center shadow-md"
@@ -361,19 +273,25 @@ export default function Chats({ CloseChat, roomId, chatName }) {
                 >
                     <FaArrowLeft size={20} />
                 </button>
+
                 {/* Chat Info */}
-                <div className="flex items-center space-x-3 p-2">
+                <div className="flex items-center space-x-3">
+                    <img
+                        src="/Resources/profile-pic.jpg" // Replace with dynamic photo URL
+                        alt="Chat Avatar"
+                        className="w-12 h-12 rounded-full object-cover"
+                    />
                     <h2 className="text-lg font-semibold text-gray-800">
-                        {chatName}
+                        Chat Name {/* Replace with dynamic chat name */}
                     </h2>
                 </div>
-                {/* Report Button */}
-                <ReportButton userId={getId} />
+
+                {/* Spacer for alignment */}
+                <div className="hidden md:block w-10"></div>
             </div>
 
             {/* Render Messages */}
-            <div dir='ltr' className="flex flex-col overflow-y-auto bg-white rounded-lg shadow-md mb-1 py-2 flex-grow flex-1">
-
+            <div dir='ltr' className="flex flex-col overflow-y-auto bg-white rounded-lg shadow-md mb-1 py-2 flex-1">
                 {AllMessages.map((msg, index) => (
                     <div key={index} className="w-full">
                         <div
@@ -411,14 +329,6 @@ export default function Chats({ CloseChat, roomId, chatName }) {
                                 </div>
                             )}
                             {msg.message && <p className="px-4">{msg.message}</p>}
-                            <div className="flex justify-between items-center px-3">
-                                <span className="text-xs text-gray-400">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                {parseInt(msg.sentByUser) === parseInt(getId) && (msg.seen ? (
-                                    <IoCheckmarkDone size={16} className='mx-2 text-blue-500' />
-                                ) : (
-                                    <IoCheckmark size={16} color="gray" className='mx-2' />
-                                ))}
-                            </div>
                         </div>
                     </div>
                 ))}
@@ -513,7 +423,6 @@ export default function Chats({ CloseChat, roomId, chatName }) {
                         className="w-full h-14 pl-4 pr-12 border border-gray-300 rounded-full focus:outline-none shadow-md"
                         placeholder="Type a message..."
                         onChange={(event) => setMessage(event.target.value)}
-                        onKeyDown={handleKeyDown}
                         value={message}
                     />
                     <button
@@ -525,6 +434,12 @@ export default function Chats({ CloseChat, roomId, chatName }) {
                     </button>
                 </div>
             </div>
+
+            {/* Report Button */}
+            <div className="mt-4">
+                <ReportButton userId={getId} />
+            </div>
         </div>
     );
+
 }
