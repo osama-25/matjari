@@ -1,80 +1,11 @@
 import express from 'express';
-import db from '../config/db.js';
-import { console } from 'inspector';
+import { handleFavorite, getFavorites, getFavoriteListingIds, checkIfFavorited } from '../controllers/favoritesController.js';
+
 const router = express.Router();
 
-router.post('/', async (req, res) => {
-    const { userId, listingId } = req.body;
-
-    try {
-        // Check if the listing is already favorited
-        const existingFavorite = await db.query(
-            'SELECT * FROM favorites WHERE user_id = $1 AND listing_id = $2',
-            [userId, listingId]
-        );
-
-        if (existingFavorite.rows.length > 0) {
-            // If it exists, remove it (unfavorite)
-            await db.query('DELETE FROM favorites WHERE user_id = $1 AND listing_id = $2', [userId, listingId]);
-            return res.status(200).json({ message: 'Listing unfavorited successfully' });
-        }
-
-        // Otherwise, add it as a favorite
-        await db.query('INSERT INTO favorites (user_id, listing_id) VALUES ($1, $2)', [userId, listingId]);
-        res.status(200).json({ message: 'Listing favorited successfully' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error handling favorite action' });
-    }
-});
-
-router.get('/:userId', async (req, res) => {
-    const { userId } = req.params;
-    console.log("User id is: " + userId);
-    try {
-        const favorites = await db.query(
-            `SELECT DISTINCT ON (l.id) l.id, l.title, l.price, l.location, lp.photo_url
-             FROM favorites f
-             JOIN listings l ON f.listing_id = l.id
-             LEFT JOIN listing_photos lp ON l.id = lp.listing_id
-             WHERE f.user_id = $1
-             ORDER BY l.id`,
-            [userId]
-        );
-
-        res.status(200).json({ favorites: favorites.rows });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error retrieving favorites' });
-    }
-});
-
-router.get('/batch/:userId', async (req, res) => {
-    const { userId } = req.params;
-    try {
-        const favorites = await db.query('SELECT listing_id FROM favorites WHERE user_id = $1', [userId]);
-        const favoriteListingIds = favorites.rows.map(row => row.listing_id);
-        res.status(200).json({ favorites: favoriteListingIds });
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ message: 'Error retrieving favorites' });
-    }
-});
-
-
-router.get('/:listingId/:userId', async (req, res) => {
-    const { listingId, userId } = req.params;
-    try {
-        const isFavorited = await db.query(
-            `SELECT * FROM favorites
-            WHERE user_id = $1 AND listing_id = $2`,
-            [userId, listingId]
-        );
-
-        res.status(200).json({ favourited: isFavorited.rowCount > 0 });
-    } catch (error) {
-        res.status(500).json({ message: 'Error retrieving favorites' });
-    }
-})
+router.post('/', handleFavorite);
+router.get('/:userId', getFavorites);
+router.get('/batch/:userId', getFavoriteListingIds);
+router.get('/:listingId/:userId', checkIfFavorited);
 
 export default router;

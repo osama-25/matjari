@@ -6,12 +6,14 @@ import io from 'socket.io-client';
 import { getInfo } from './dataInfo';
 import { FaArrowLeft, FaImage, FaPaperPlane, FaPlay, FaXmark } from 'react-icons/fa6';
 import ReportButton from './report-button'; // Import ReportButton component
+import { type } from 'os';
+import Link from 'next/link';
 
 
 
 const socket = io.connect("http://localhost:8080");
 
-export default function Chats({ CloseChat, roomId }) {
+export default function Chats({ CloseChat, roomId, chatName, otherId }) {
     const [message, setMessage] = useState("");
     const [AllMessages, setAllMessages] = useState([]);
     const [files, setFiles] = useState([]);
@@ -48,12 +50,22 @@ export default function Chats({ CloseChat, roomId }) {
 
         console.log("ALLMESSAGES");
         console.log(AllMessages);
+        console.log(new Date().toISOString());
 
+        AllMessages.forEach(async (msg) => {
+            if (!msg.seen && parseInt(msg.sentByUser) !== parseInt(getId)) {
+                console.log("MARKING MESSAGE AS SEEN");
+                msg.seen = true;
+                await markMessageAsSeen(msg.id);
+                console.log(msg);
+                setAllMessages((prevMessages) =>
+                    prevMessages.map((message) =>
+                        message.id === msg.id ? { ...message, seen: true } : message
+                    )
+                );
+            }
+        });
     }, [AllMessages]);
-
-    useEffect(() => {
-
-    }, [files])
 
     useEffect(() => {
         if (room) {
@@ -268,22 +280,17 @@ export default function Chats({ CloseChat, roomId }) {
             <div className="flex items-center bg-white rounded-lg shadow-md p-2 mb-2">
                 {/* Back Button for Smaller Screens */}
                 <button
-                    className="md:hidden bg-gray-300 text-gray-700 w-10 h-10 rounded-full flex items-center justify-center shadow-md"
+                    className="md:hidden bg-gray-300 text-gray-700 hover:bg-gray-400 w-10 h-10 rounded-full flex items-center justify-center shadow-md"
                     onClick={() => CloseChat()}
                 >
                     <FaArrowLeft size={20} />
                 </button>
 
                 {/* Chat Info */}
-                <div className="flex items-center space-x-3">
-                    <img
-                        src="/Resources/profile-pic.jpg" // Replace with dynamic photo URL
-                        alt="Chat Avatar"
-                        className="w-12 h-12 rounded-full object-cover"
-                    />
-                    <h2 className="text-lg font-semibold text-gray-800">
-                        Chat Name {/* Replace with dynamic chat name */}
-                    </h2>
+                <div className="flex items-center space-x-3 p-2">
+                    <Link href={`/user/${otherId}`} className="text-lg font-semibold hover:underline text-gray-800">
+                        {chatName}
+                    </Link>
                 </div>
 
                 {/* Spacer for alignment */}
@@ -341,7 +348,7 @@ export default function Chats({ CloseChat, roomId }) {
                         onClick={closeModal}
                     >
                         <div
-                            className="relative bg-white rounded-lg max-w-3xl w-fit"
+                            className="relative bg-white rounded-lg max-w-full w-full md:max-w-3xl md:w-fit mx-4"
                             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal content
                         >
                             {modalContent?.type === "image" && (

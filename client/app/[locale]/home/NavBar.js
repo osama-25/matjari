@@ -2,11 +2,12 @@
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useCallback, useRef } from "react";
 import { FaComments, FaHeart, FaPlus, FaSearch, FaUser } from "react-icons/fa";
 import { FaBars, FaCamera, FaX, FaXmark } from "react-icons/fa6";
 import { IoCamera, IoCameraOutline } from "react-icons/io5";
 import { getInfo } from "../global_components/dataInfo";
+import debounce from 'lodash/debounce';
 
 const flags = [
   "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Flag_of_the_United_Kingdom_%281-2%29.svg/1200px-Flag_of_the_United_Kingdom_%281-2%29.svg.png",
@@ -22,6 +23,50 @@ const NavBar = () => {
   const router = useRouter();
   const [userId, setUserId] = useState(null);
   const [newMessages, setNewMessages] = useState(false);
+
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const debouncedFetchSuggestions = useCallback(
+    debounce(async (term) => {
+        if (!term.trim()) {
+            setSuggestions([]);
+            setShowSuggestions(false);
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/search/suggestions?term=${encodeURIComponent(term)}`
+            );
+            if (!response.ok) {
+                throw new Error('Failed to fetch suggestions');
+            }
+            const data = await response.json();
+            setSuggestions(data.suggestions || []);
+            console.log('Suggestions:', data.suggestions);
+            setShowSuggestions(true);
+        } catch (error) {
+            console.error('Error fetching suggestions:', error);
+            setSuggestions([]);
+            setShowSuggestions(false);
+        }
+    }, 300),
+    []
+);
+
+  const handleSearchInput = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    debouncedFetchSuggestions(value);
+    setShowSuggestions(true);
+  };
+
+  
+  const handleSuggestionClick = (suggestion) => {
+      setSearchTerm(suggestion);
+      setShowSuggestions(false);
+      router.push(`/search?term=${encodeURIComponent(suggestion)}&page=1&pageSize=10`);
+  };
 
   const HandleFlagPress = () => {
     const currentLocale = pathname.split("/")[1];
@@ -74,7 +119,6 @@ const NavBar = () => {
       console.log('Search term: ', searchTerm);
       // Navigate to search results page
       router.push(`/search?term=${encodeURIComponent(searchTerm)}&page=1&pageSize=10`);
-      setSearchTerm('');
     } catch (err) {
       console.error('Search error:', err);
     }
@@ -108,6 +152,7 @@ const NavBar = () => {
 
           const result = await response.json();
           if (result.imgURL) {
+            localStorage.removeItem('searchImageUrl');
             localStorage.setItem('searchImageUrl', result.imgURL);
             console.log('Search image URL:', result.imgURL);
             router.push(`/search?type=image`);
@@ -157,37 +202,58 @@ const NavBar = () => {
                 </Link>
               </section>
               <form onSubmit={handleSearchSubmit} className="flex-1 flex items-center justify-center p-4 w-full md:w-auto">
-                <label htmlFor="search-image" className="flex items-center px-4 py-2 bg-gray-800 text-white rounded-l-md focus:outline-none cursor-pointer">
-                  <input
-                    data-testid="imgInput"
-                    type="file"
-                    accept="image/png, image/jpeg, image/jpg"
-                    className="hidden"
-                    id="search-image"
-                    onChange={handleImageSearch}
-                  />
-                  <IoCamera size={24} className="text-white" />
-                </label>
-                <div className="w-full flex focus-within:outline rounded-md">
-                  <input
-                    dir={pathname.split("/")[1] === 'ar' ? 'rtl' : 'ltr'}
-                    data-testid="searchInput"
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    className="w-full py-2 px-4 border text-black focus:outline-none"
-                    placeholder={t('searchph')}
-                  />
-                  <button
-                    data-testid="searchBtn"
-                    type="submit"
-                    onClick={performSearch}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-r-md focus:outline-none"
-                  >
-                    <p className="hidden sm:block">{t("search")}</p>
-                    <FaSearch className="block sm:hidden" />
-                  </button>
+                <div className="relative w-full max-w-2xl"> {/* Add container with relative positioning */}
+                  <div className="flex w-full">
+                    <label htmlFor="search-image" className="flex items-center px-4 py-2 bg-gray-800 text-white rounded-l-md focus:outline-none cursor-pointer">
+                      <input
+                        data-testid="imgInput"
+                        type="file"
+                        accept="image/png, image/jpeg, image/jpg"
+                        className="hidden"
+                        id="search-image"
+                        onChange={handleImageSearch}
+                      />
+                      <IoCamera size={24} className="text-white" />
+                    </label>
+                    <div className="flex-1">
+                      <input
+                        dir={pathname.split("/")[1] === 'ar' ? 'rtl' : 'ltr'}
+                        data-testid="searchInput"
+                        type="text"
+                        value={searchTerm}
+                        onChange={handleSearchInput}
+                        onKeyDown={handleKeyDown}
+                        className="w-full py-2 px-4 border text-black focus:outline-none"
+                        placeholder={t('searchph')}
+                        onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                      />
+                    </div>
+                    <button
+                      data-testid="searchBtn"
+                      type="submit"
+                      onClick={performSearch}
+                      className="px-4 py-2 bg-blue-500 text-white rounded-r-md focus:outline-none"
+                    >
+                      <p className="hidden sm:block">{t("search")}</p>
+                      <FaSearch className="block sm:hidden" />
+                    </button>
+                  </div>
+
+                  {/* Suggestions Dropdown */}
+                  {showSuggestions && suggestions.length > 0 && (
+                    <div className="absolute left-0 right-0 bg-white border border-gray-300 rounded-b-md shadow-lg z-50 mt-1">
+                      {suggestions.map((suggestion, index) => (
+                        <div
+                          key={index}
+                          className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                          onClick={() => handleSuggestionClick(suggestion)}
+                          onMouseDown={(e) => e.preventDefault()}
+                        >
+                          {suggestion}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </form>
               <div className="flex md:hidden items-center">
@@ -260,14 +326,18 @@ const NavBar = () => {
           </button>
         </div>
         <nav className="flex flex-col pt-10 items-center text-2xl font-semibold h-full space-y-6">
-          <Link href="/chats" className="text-gray-700 hover:text-blue-500">
+          <Link href="/chats" className="relative w-full flex justify-center items-center text-gray-700 hover:text-blue-500">
             {t('chat')}
+            {newMessages && <span className="inline-block w-2 h-2 bg-red-600 rounded-full ml-2"></span>}
           </Link>
           <Link href="/favourites" className="text-gray-700 hover:text-blue-500">
             {t('fav')}
           </Link>
           <Link href={'/profile'} className="text-gray-700 hover:text-blue-500">
             {t('profile')}
+          </Link>
+          <Link href='/add_listing' className="text-gray-700 hover:text-yellow-500">
+            {t('addlisting')}
           </Link>
           <button
             onClick={HandleFlagPress}

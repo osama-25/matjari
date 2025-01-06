@@ -3,8 +3,8 @@ import db from '../config/db.js';
 
 export const router = express.Router();
 
-router.post("/filter/:subcategory", async (req, res) => {
-    const { subcategory } = req.params;
+router.post("/filter/:subcategory/:page/:pageSize", async (req, res) => {
+    const { subcategory, page, pageSize } = req.params;
     const { minPrice, maxPrice, location, delivery, condition, order } = req.body;
 
     try {
@@ -46,8 +46,8 @@ router.post("/filter/:subcategory", async (req, res) => {
             query += ` AND condition = $${queryParams.length}`;
         }
 
-        const parsedPage = parseInt(req.query.page) || 1;
-        const parsedPageSize = parseInt(req.query.pageSize) || 10;
+        const parsedPage = parseInt(page) || 1;
+        const parsedPageSize = parseInt(pageSize) || 10;
 
         const countResult = await db.query(query, queryParams);
         const totalItems = countResult.rows[0].total;

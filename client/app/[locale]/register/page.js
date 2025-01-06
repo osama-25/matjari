@@ -6,7 +6,8 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { FaEyeSlash } from 'react-icons/fa6';
 import { FaEye } from 'react-icons/fa';
-import { login } from '../../../lib';
+import Loading from '../global_components/loading';
+
 function RegisterPage() {
     const t = useTranslations('Register');
     const pathname = usePathname();
@@ -24,6 +25,8 @@ function RegisterPage() {
         password: '',
         confirmPassword: ''
     });
+    const [loading, setLoading] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -55,6 +58,7 @@ function RegisterPage() {
         HandleRegisterPage();
     };
     async function HandleRegisterPage() {
+        setLoading(true);
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
                 method: 'POST',
@@ -69,6 +73,9 @@ function RegisterPage() {
                 localStorage.setItem("token", data.token);
                 login(data.token);
                 router.push('/home'); // Redirect to home if registration is successful
+                setValidated(true);
+                setIsAuthenticated(true);
+                setMessage(data.message);
             } else {
                 setMessage(data.message);
                 setShowToast(true);
@@ -76,6 +83,8 @@ function RegisterPage() {
         } catch (err) {
             setMessage("Error occurred, try again");
             setShowToast(true);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -87,6 +96,10 @@ function RegisterPage() {
         const pathWithoutLocale = pathname.replace(/^\/(en|ar)/, "");
         router.push(`/${newLocale}${pathWithoutLocale}`);
     }
+
+    if(loading) return <Loading />;
+
+    if(isAuthenticated) return null;
 
     return (
         <div className="relative flex justify-center items-center p-6 sm:p-8 md:p-12 md:bg-gray-100">
@@ -230,7 +243,7 @@ function RegisterPage() {
                     {/* Submit Button */}
                     <div className="self-center py-2">
                         <button
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
                             type="submit"
                         >
                             {t('create')}

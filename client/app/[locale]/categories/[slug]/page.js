@@ -33,6 +33,8 @@ export default function SubCateg({ params }) {
     const t = useTranslations('ads');
     const [user_id, setUserId] = useState(null);
     const [favourited, setFavourited] = useState([]);
+    const [totalPages, setTotalPages] = useState(0);
+    const [order, setOrder] = useState('');
 
     useEffect(() => {
         const fetchCat = async () => {
@@ -61,6 +63,7 @@ export default function SubCateg({ params }) {
                 const data = await response.json();
                 console.log(data);
                 setItems(data.items);
+                setTotalPages(data.totalPages);
             } catch (error) {
                 console.log(error);
                 setError(error.message);
@@ -116,12 +119,7 @@ export default function SubCateg({ params }) {
         return <Loading />;
     }
 
-    // Paginate items
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
-
-    const HandleFilter = async (order) => {
+    const HandleFilter = async () => {
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/filter/${category}`, {
                 method: 'POST',
@@ -147,11 +145,11 @@ export default function SubCateg({ params }) {
             <div>
                 <CategoryAd img={ad.img} text={t(ad.text)} />
             </div>
-            <div className="p-5">
+            <div>
                 <CategoryDisplay categories={categories} />
-                <ItemDisplay Items={currentItems} Favourited={favourited} user_id={user_id} HandleFilter={HandleFilter} />
-                <div className="flex justify-center items-center space-x-2 mt-4">
-                    {Array.from({ length: Math.ceil(items.length / itemsPerPage) }, (_, index) => (
+                <ItemDisplay Items={items} Favourited={favourited} user_id={user_id} HandleFilter={HandleFilter} order={order} setOrder={setOrder} />
+                <div className="flex justify-center items-center space-x-2 my-4">
+                    {Array.from({ length: totalPages }, (_, index) => (
                         <button
                             key={index + 1}
                             onClick={() => paginate(index + 1)}
