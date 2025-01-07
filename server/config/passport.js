@@ -39,7 +39,7 @@ passport.use(
         {
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: "http://localhost:8080/auth/google",
+            callbackURL: `${process.env.Backend_URL}/auth/google`,
             userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
             scope: ['profile', 'email'] // إضافة النطاقات المطلوبة هنا
 

@@ -88,6 +88,10 @@ function RegisterPage() {
         }
     }
 
+    const handleGoogleLogin = () => {
+        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
+    };
+
     const HandleLocaleChange = () => {
         const currentLocale = pathname.split("/")[1]; // Get the current locale (e.g., "en" or "ar")
         const newLocale = currentLocale === "en" ? "ar" : "en"; // Toggle the locale
@@ -250,6 +254,17 @@ function RegisterPage() {
                         </button>
                     </div>
                 </form>
+
+                {/* Google Login Button */}
+                <div className="py-2">
+                    <button
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                        onClick={handleGoogleLogin}
+                    >
+                        Register With Google
+                    </button>
+                </div>
+
                 {/* Login Button */}
                 <div dir={locale == 'ar' ? 'rtl' : 'ltr'} className="py-2">
                     <p className='inline'>{t('oldacc')} </p>

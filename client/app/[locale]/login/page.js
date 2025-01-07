@@ -91,7 +91,35 @@ export default function LoginPage() {
         }
     };
 
-    if(loading) return <Loading />
+    const handleGoogleLogin = () => {
+        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
+    };
+
+    const NO_handleGoogleLogin = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`, {
+                credentials: 'include', // Include cookies if required
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                localStorage.setItem('token', data.token);
+                setToastMessage(data.message);
+                setIsAuthenticated(true);
+                router.push(redirect);
+            } else {
+                handleShowToast(data.message);
+            }
+        } catch (err) {
+            handleShowToast('Error occurred, try again');
+            console.log("Error with /auth/google:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading) return <Loading />
 
     if (isAuthenticated) return null;
 
@@ -159,7 +187,15 @@ export default function LoginPage() {
                         </Link>
                     </div>
 
-
+                    {/* Google Login Button */}
+                    <div className="py-2">
+                        <button
+                            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                            onClick={handleGoogleLogin}
+                        >
+                            Login With Google
+                        </button>
+                    </div>
                 </div>
                 <p
                     onClick={HandleLocaleChange}
@@ -169,5 +205,4 @@ export default function LoginPage() {
             </div>
         </>
     );
-
 }

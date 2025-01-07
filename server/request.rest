@@ -12,7 +12,7 @@ Content-Type: application/json
 
 ###
 GET http://localhost:8080/data/get
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJlbWFpbCI6ImZhaXNsYWJkdTI3N0BnbWFpbC5jb20ifSwiaWF0IjoxNzM2MTk3MDM2LCJleHAiOjE3MzYyODM0MzZ9.m5OoCk7CtatieCJZLij02jNAp66eKQfS7JwQLspCNGs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJlbWFpbCI6ImZhaXNsYWJkdTI3N0BnbWFpbC5jb20ifSwiaWF0IjoxNzM2Mjc5MzY0LCJleHAiOjE3MzYzNjU3NjR9.zcnQUkx3cfV3TYUSG9F9MhCAvje8ePxrT5XPY-v9oZc
 
 
 ###   
