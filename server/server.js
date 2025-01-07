@@ -3,7 +3,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import http from 'http';
 import session from 'express-session'; // Import express-session
-import passport from './config/passport.js'; // Import passport
+import passport from './middleware/passport.js'; // Import passport
 import authRoutes from "./routes/auth.js";
 import dataRoutes from "./routes/data.js"
 import itemRoutes from "./routes/item.js";
@@ -33,7 +33,7 @@ const corsOption = {
     const allowedOrigins = [
       'http://localhost:3000',  // Local development
       'https://matjari-psi.vercel.app', // Vercel production frontend
-      
+
     ];
 
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {

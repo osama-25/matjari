@@ -82,31 +82,6 @@ export const updateReportStatus = async (reportId, status) => {
     }
 };
 
-// export const getAdminByUserAndPass = async (username, password) => {
-//     try {
-//         const query = 'SELECT * FROM admins WHERE username = $1 AND password = $2';
-//         const values = [username, password];
-//         const result = await db.query(query, values);
-//         console.log(result.rows);
-
-//         return result.rows.length > 0;
-//     } catch (error) {
-//         console.error('Error fetching admin:', error);
-//         throw error;
-//     }
-// };
-// // export const createAdmin = async (username, password) => {
-//     try {
-//         const hashedPassword = await bcrypt.hash(password, 10); // Ensure the number of rounds is an integer
-//         const query = 'INSERT INTO admins (username, password) VALUES ($1, $2) RETURNING id';
-//         const values = [username, hashedPassword];
-//         const result = await db.query(query, values);
-//         return result.rows[0].id;
-//     } catch (error) {
-//         console.error('Error creating admin:', error);
-//         throw error;
-//     }
-// };
 
 export const verifyAdminPassword = async (username, password) => {
     try {
