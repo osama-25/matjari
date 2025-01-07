@@ -2,7 +2,8 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import bcrypt from 'bcrypt';
 import db from './db.js';
-
+import GoogleStrategy from 'passport-google-oauth2';
+import { createUser } from '../models/userModel.js';
 passport.use(new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password'
@@ -31,6 +32,46 @@ passport.use(new LocalStrategy({
         return done(err);
     }
 }));
+
+passport.use(
+    "google",
+    new GoogleStrategy(
+        {
+            clientID: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            callbackURL: "http://localhost:8080/auth/google",
+            userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
+            scope: ['profile', 'email'] // إضافة النطاقات المطلوبة هنا
+
+        },
+        async (accessToken, refreshToken, profile, done) => {
+            try {
+                const email = profile.emails[0].value;
+                const photo = profile.photos[0].value;
+                const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+
+                if (result.rowCount > 0) {
+                    // User exists, log them in
+                    return done(null, result.rows[0]);
+                } else {
+                    // User does not exist, create a new user
+                    const newUser = {
+                        firstName: profile.name.givenName,
+                        lastName: profile.name.familyName,
+                        email: email,
+                        password: "google", // No password for Google-authenticated users
+                        userName: profile.displayName,
+                        photo: photo
+                    };
+                    const user = await createUser(newUser);
+                    return done(null, user);
+                }
+            } catch (err) {
+                return done(err, null);
+            }
+        }
+    )
+);
 
 // Serialize and deserialize user
 passport.serializeUser((user, done) => {

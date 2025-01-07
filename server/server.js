@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import http from 'http';
+import session from 'express-session'; // Import express-session
+import passport from './config/passport.js'; // Import passport
 import authRoutes from "./routes/auth.js";
 import dataRoutes from "./routes/data.js"
 import itemRoutes from "./routes/item.js";
@@ -31,6 +33,7 @@ const corsOption = {
     const allowedOrigins = [
       'http://localhost:3000',  // Local development
       'https://matjari-psi.vercel.app', // Vercel production frontend
+      
     ];
 
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
@@ -58,6 +61,17 @@ app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
+// Add express-session middleware
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false
+}));
+
+// Initialize passport and session
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Routes
 app.use('/auth', authRoutes);
 app.use('/data', verifyToken, dataRoutes);
@@ -78,9 +92,9 @@ app.use('/admin', adminRoutes);
 app.use('/imageDesc', imageDescriptionRoutes);
 app.use('/search', searchRoutes);
 app.use('/api/favorites', favoriteRoutes);
-app.use('/', (req, res) => {
-  res.send("<h1>This is the backend server</h1>");
-});
+// app.use('/', (req, res) => {
+//   res.send("<h1>This is the backend server</h1>");
+// });
 
 
 // Create the HTTP server and initialize Socket.IO

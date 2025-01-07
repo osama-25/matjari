@@ -77,7 +77,7 @@ export const register = async (req, res) => {
         // Generate a token for the registered user
         const token = generateToken({ id: userId, email });
         console.log("hit register-3");
-        res.status(200).json({ success: true, token, message: "User registered successfully" ,user});
+        res.status(200).json({ success: true, token, message: "User registered successfully", user });
     } catch (error) {
         console.error("Error during registration:", error);
         res.status(500).json({ success: false, message: "Error registering user" });
@@ -101,3 +101,23 @@ export const login = (req, res, next) => {
         res.status(200).json({ success: true, token, message: "Login successful!", user });
     })(req, res, next);
 };
+
+export const googleLogin = async (req, res, next) => {
+    passport.authenticate('google', { scope: ['profile', 'email'] }, (err, user, info) => {
+        if (err) {
+            return res.status(500).json({ success: false, message: "Authentication error" });
+        }
+
+        if (!user) {
+            return res.status(401).json({ success: false, message: info?.message || "Google authentication failed" });
+        }
+
+        // Generate a token for the logged-in user
+        const token = generateToken({ id: user.id, email: user.email });
+
+        // Redirect to the frontend with the token in the query string
+        const frontendRedirectUrl = `${process.env.FRONTEND_URL}/home?token=${token}`;
+        return res.redirect(frontendRedirectUrl);
+    })(req, res, next);
+};
+
