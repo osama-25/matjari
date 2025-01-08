@@ -23,7 +23,8 @@ const customJestConfig = {
      "app/[locale]/item/[id]/**/*.{js,jsx,ts,tsx}",
      "app/[locale]/search/**/*.{js,jsx,ts,tsx}",
      "app/[locale]/global_components/loading/**/*.{js,jsx,ts,tsx}",
-     "app/[locale]/home/NavBar.js"
+     "app/[locale]/home/NavBar.js",
+     "app/[locale]/login/**/*.{js,jsx,ts,tsx}",
   ],
   coveragePathIgnorePatterns: [
     'node_modules',
