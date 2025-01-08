@@ -34,7 +34,7 @@ const RequestReset = () => {
     };
 
     return (
-        <div className="flex items-center justify-center h-full">
+        <div className="flex items-center justify-center h-full w-full">
             <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
                 <h2 className="text-2xl font-semibold text-center text-gray-700 mb-6">Password Reset</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">

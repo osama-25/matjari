@@ -35,7 +35,8 @@
                 "fav": "Favourites",
                 "profile": "Profile",
                 "addlisting": "Add listing",
-                "recent": "Recently viewed"
+                "recent": "Recently viewed",
+                "home": "Home"
         },
         "Chat": {
                 "default": "Chat",
@@ -66,10 +67,13 @@
                 "login": "Login",
                 "emailph": "enter email",
                 "passph": "enter password",
-                "newacc": "Create a new account"
+                "newacc": "Create a new account",
+                "google": "Sign in with google",
+                "forgot": "Forgot your password?"
         },
         "Register": {
                 "firstname": "First Name",
+                "google": "Sign in with google",
                 "firstnameph": "enter first name",
                 "lastname": "Last Name",
                 "lastnameph": "enter last name",

@@ -10,7 +10,7 @@ export default function Footer() {
     const locale = pathname.split("/")[1];
 
     return (
-        <footer dir={locale == 'ar'? 'rtl':'ltr'} className="bg-gray-200 py-8 px-4">
+        <footer dir={locale == 'ar' ? 'rtl' : 'ltr'} className="bg-gray-200 py-8 px-4">
             <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
 
                 {/* About Section */}
@@ -25,6 +25,7 @@ export default function Footer() {
                 <div>
                     <h2 className="text-xl font-semibold mb-2">{t('quicklinks')}</h2>
                     <ul className="space-y-2">
+                        <li><Link href="/">{t('home')}</Link></li>
                         <li><Link href="">{t('faq')}</Link></li>
                         <li><Link href="">{t('terms&conditions')}</Link></li>
                     </ul>
