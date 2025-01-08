@@ -52,7 +52,7 @@ describe('LoginPage', () => {
     expect(screen.getByPlaceholderText('emailph')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('passph')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'login' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Login With Google' })).toBeInTheDocument();
+    expect(screen.getByTestId('google-login-button')).toBeInTheDocument();
     expect(screen.getByText('newacc')).toBeInTheDocument();
   });
 
