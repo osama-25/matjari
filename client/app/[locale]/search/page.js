@@ -13,7 +13,6 @@ const SearchPage = () => {
     const searchParams = useSearchParams();
     const searchTerm = searchParams.get('term') || '';
     const searchType = searchParams.get('type');
-    //const timestamp = searchParams.get('ts');
     const [imgSrc, setImgSrc] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(5);

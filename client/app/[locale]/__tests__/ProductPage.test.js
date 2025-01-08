@@ -68,6 +68,7 @@ describe('ProductPage', () => {
         fetch.mockClear();
         mockPush.mockClear();
         getInfo.mockClear();
+        localStorage.clear();
     });
 
     test('renders product details correctly', async () => {
@@ -85,10 +86,21 @@ describe('ProductPage', () => {
                     json: () => Promise.resolve({ favourited: false })
                 });
             }
+            if (url.includes('/subcategories/')) {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve({ items: [] })
+                });
+            }
             return Promise.reject(new Error('Not found'));
         });
 
         render(<ProductPage params={Promise.resolve({ id: '11', locale: 'en' })} />);
+        
+        // Wait for loading to complete
+        await waitFor(() => {
+            expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+        });
 
         await waitFor(() => {
             expect(screen.getByText(mockItem.title)).toBeInTheDocument();
@@ -117,10 +129,20 @@ describe('ProductPage', () => {
                     json: () => Promise.resolve({ room: { id: 1 } })
                 });
             }
+            if (url.includes('/subcategories/')) {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve({ items: [] })
+                });
+            }
             return Promise.reject(new Error('Not found'));
         });
 
         render(<ProductPage params={{ id: '1'} } />);
+
+        await waitFor(() => {
+            expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+        });
 
         await waitFor(() => {
             expect(screen.getByText(mockItem.title)).toBeInTheDocument();
@@ -148,11 +170,21 @@ describe('ProductPage', () => {
                     json: () => Promise.resolve({ favourited: false })
                 });
             }
+            if (url.includes('/subcategories/')) {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve({ items: [] })
+                });
+            }
             return Promise.reject(new Error('Not found'));
         });
 
         render(<ProductPage params={{ id: '1'} } />);
-
+        // Wait for loading to complete
+        await waitFor(() => {
+            expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+        });
+        
         await waitFor(() => {
             expect(screen.getByText(mockItem.title)).toBeInTheDocument();
         });
