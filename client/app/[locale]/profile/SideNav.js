@@ -35,9 +35,6 @@ const SideNav = () => {
             <Button text={t('store')} link={'/profile/store'} icon={<IoBagHandleOutline />} />
             <Button text={t('changepass')} link={'/profile/change_password'} icon={<IoKeyOutline />} />
             <Button text={t('logout')} link={'/login'} icon={<IoExitOutline />} onClick={handleLogout} />
-            <Button text={t('deleteacc')} link={'/profile/delete_account'} icon={<IoCloseCircleOutline />} />
-            {/* <Button> <logout>logout</logout></Button> */}
-
         </nav>
     );
 }

@@ -83,7 +83,7 @@ export const getFilteredResults = async (tags, filters, pageSize, offset, order)
         queryParams.push(condition);
         query += ` AND l.condition = $${queryParams.length}`;
     }
-
+    console.log(query);
     const countResult = await db.query(query, queryParams);
     const totalItems = countResult.rows[0].total;
     const totalPages = Math.ceil(totalItems / pageSize);
@@ -128,7 +128,7 @@ export const getFilteredResults = async (tags, filters, pageSize, offset, order)
 
     filterQuery += ` matching_tags_count DESC LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
     queryParams.push(pageSize, offset);
-
+    console.log(filterQuery);
     const itemsResult = await db.query(filterQuery, queryParams);
 
     return {

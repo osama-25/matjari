@@ -34,7 +34,7 @@ export const CategoryDisplay = ({ text, bg, img, link }) => {
 
 const CategoryItem = ({ name, image, link }) => (
     <a href={link} className="flex flex-col items-center hover:underline">
-        <div className="w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center mb-2 bg-gray-200">
+        <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-full flex items-center justify-center mb-2 bg-gray-200">
             <img src={image} alt={name} className="w-9/12" />
         </div>
         <p className="text-center text-sm">{name}</p>
@@ -60,7 +60,7 @@ const Categories = () => {
     const locale = pathname.split("/")[1];
 
     return (
-        <div dir={locale == 'ar' ? 'rtl' : 'ltr'} className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 p-4">
+        <div dir={locale == 'ar' ? 'rtl' : 'ltr'} className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-4 p-4">
             {categories.map(category => (
                 <CategoryItem key={category.id} name={category.name} image={category.image} link={category.link} />
             ))}

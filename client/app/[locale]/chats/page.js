@@ -14,7 +14,7 @@ export default function Chats() {
     }
 
     return (
-        <div dir={locale == 'ar' ? 'rtl' : 'ltr'} className="flex h-[90%]">
+        <div dir={locale == 'ar' ? 'rtl' : 'ltr'} className="flex h-[91%]">
             <div className={`flex-initial w-full sm:w-1/5 h-full absolute sm:relative sm:block ${isPressed ? 'hidden' : 'block'}`}>
                 <SideNav onPress={toggleOverlay} />
             </div>

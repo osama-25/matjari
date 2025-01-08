@@ -47,7 +47,7 @@ const ItemsDisplay = ({ items }) => {
     return (
         <div className="flex flex-col px-6 py-2">
             {/* Scrollable Items Section */}
-            <div className="grid grid-cols-2 sm:flex sm:space-x-10 overflow-y-auto mt-2 no-scrollbar">
+            <div className="flex sm:space-x-10 overflow-y-auto mt-2 no-scrollbar">
                 {items.map(item => (
                     <Item
                         key={item.id}

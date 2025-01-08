@@ -2,7 +2,7 @@
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useState,useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { FaComments, FaHeart, FaPlus, FaSearch, FaUser } from "react-icons/fa";
 import { FaBars, FaCamera, FaX, FaXmark } from "react-icons/fa6";
 import { IoCamera, IoCameraOutline } from "react-icons/io5";
@@ -28,31 +28,31 @@ const NavBar = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const debouncedFetchSuggestions = useCallback(
     debounce(async (term) => {
-        if (!term.trim()) {
-            setSuggestions([]);
-            setShowSuggestions(false);
-            return;
-        }
+      if (!term.trim()) {
+        setSuggestions([]);
+        setShowSuggestions(false);
+        return;
+      }
 
-        try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/search/suggestions?term=${encodeURIComponent(term)}`
-            );
-            if (!response.ok) {
-                throw new Error('Failed to fetch suggestions');
-            }
-            const data = await response.json();
-            setSuggestions(data.suggestions || []);
-            console.log('Suggestions:', data.suggestions);
-            setShowSuggestions(true);
-        } catch (error) {
-            console.error('Error fetching suggestions:', error);
-            setSuggestions([]);
-            setShowSuggestions(false);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/search/suggestions?term=${encodeURIComponent(term)}`
+        );
+        if (!response.ok) {
+          throw new Error('Failed to fetch suggestions');
         }
+        const data = await response.json();
+        setSuggestions(data.suggestions || []);
+        console.log('Suggestions:', data.suggestions);
+        setShowSuggestions(true);
+      } catch (error) {
+        console.error('Error fetching suggestions:', error);
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
     }, 300),
     []
-);
+  );
 
   const handleSearchInput = (e) => {
     const value = e.target.value;
@@ -61,11 +61,11 @@ const NavBar = () => {
     setShowSuggestions(true);
   };
 
-  
+
   const handleSuggestionClick = (suggestion) => {
-      setSearchTerm(suggestion);
-      setShowSuggestions(false);
-      router.push(`/search?term=${encodeURIComponent(suggestion)}&page=1&pageSize=10`);
+    setSearchTerm(suggestion);
+    setShowSuggestions(false);
+    router.push(`/search?term=${encodeURIComponent(suggestion)}&page=1&pageSize=10`);
   };
 
   const HandleFlagPress = () => {
@@ -125,6 +125,7 @@ const NavBar = () => {
   };
 
   const handleImageSearch = (e) => {
+    e.stopPropagation();
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -185,7 +186,7 @@ const NavBar = () => {
     <>
       <header>
         <nav className="bg-white shadow-lg">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="flex flex-row justify-between h-auto">
               <section className="flex items-center justify-between w-auto">
                 <Link href="/home">
@@ -202,9 +203,12 @@ const NavBar = () => {
                 </Link>
               </section>
               <form onSubmit={handleSearchSubmit} className="flex-1 flex items-center justify-center p-4 w-full md:w-auto">
-                <div className="relative w-full max-w-2xl"> {/* Add container with relative positioning */}
-                  <div className="flex w-full">
-                    <label htmlFor="search-image" className="flex items-center px-4 py-2 bg-gray-800 text-white rounded-l-md focus:outline-none cursor-pointer">
+                <div className="relative w-full max-w-3xl flex items-center">
+                  {/* Search Bar */}
+                  <div className="w-full relative z-auto">
+                    <div className="flex items-center border-2 border-gray-600 focus:border-black relative z-auto rounded-full bg-white">
+                      {/* Camera Icon */}
+                      <label htmlFor="search-image" className="flex items-center p-3 rounded-full hover:bg-gray-100 cursor-pointer">
                       <input
                         data-testid="imgInput"
                         type="file"
@@ -213,47 +217,45 @@ const NavBar = () => {
                         id="search-image"
                         onChange={handleImageSearch}
                       />
-                      <IoCamera size={24} className="text-white" />
-                    </label>
-                    <div className="flex-1">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path fillRule="evenodd" clipRule="evenodd" d="M12 8C9.23858 8 7 10.2386 7 13C7 15.7614 9.23858 18 12 18C14.7614 18 17 15.7614 17 13C17 10.2386 14.7614 8 12 8ZM9 13C9 11.3431 10.3431 10 12 10C13.6569 10 15 11.3431 15 13C15 14.6569 13.6569 16 12 16C10.3431 16 9 14.6569 9 13Z" fill="#191919"></path>
+                          <path fillRule="evenodd" clipRule="evenodd" d="M9.44152 2C8.15023 2 7.00381 2.82629 6.59547 4.05132L6.27924 5H3C1.34315 5 0 6.34315 0 8V19C0 20.6569 1.34314 22 3 22H21C22.6569 22 24 20.6569 24 19V8C24 6.34315 22.6569 5 21 5H17.7208L17.4045 4.05132C16.9962 2.82629 15.8498 2 14.5585 2H9.44152ZM8.49284 4.68377C8.62895 4.27543 9.01109 4 9.44152 4H14.5585C14.9889 4 15.3711 4.27543 15.5072 4.68377L16.0513 6.31623C16.1874 6.72457 16.5696 7 17 7H21C21.5523 7 22 7.44772 22 8V19C22 19.5523 21.5523 20 21 20H3C2.44772 20 2 19.5523 2 19V8C2 7.44772 2.44772 7 3 7H7C7.43043 7 7.81257 6.72457 7.94868 6.31623L8.49284 4.68377Z" fill="#191919"></path>
+                        </svg>
+                      </label>
+                      {/* Search Input */}
                       <input
-                        dir={pathname.split("/")[1] === 'ar' ? 'rtl' : 'ltr'}
+                        dir={pathname.split("/")[1] === "ar" ? "rtl" : "ltr"}
                         data-testid="searchInput"
                         type="text"
                         value={searchTerm}
                         onChange={handleSearchInput}
                         onKeyDown={handleKeyDown}
-                        className="w-full py-2 px-4 border text-black focus:outline-none"
-                        placeholder={t('searchph')}
+                        className="w-full p-1 bg-white focus:outline-none rounded-full text-black"
+                        placeholder={t("searchph")}
+                        onFocus={() => setShowSuggestions(true)}
                         onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                       />
+                      {/* Search Icon */}
+                      <span className="flex items-center p-3 text-gray-400">
+                        <FaSearch size={16} color="black" />
+                      </span>
                     </div>
-                    <button
-                      data-testid="searchBtn"
-                      type="submit"
-                      onClick={performSearch}
-                      className="px-4 py-2 bg-blue-500 text-white rounded-r-md focus:outline-none"
-                    >
-                      <p className="hidden sm:block">{t("search")}</p>
-                      <FaSearch className="block sm:hidden" />
-                    </button>
+                    
+                    {/* Suggestions Dropdown */}
+                    {showSuggestions && suggestions.length > 0 && (
+                      <div className="absolute top-0 left-0 right-0 mt-12 bg-white rounded-xl shadow-lg z-50">
+                        {suggestions.map((suggestion, index) => (
+                          <div
+                            key={index}
+                            className="px-4 py-3 rounded-xl hover:bg-gray-100 cursor-pointer"
+                            onClick={() => handleSuggestionClick(suggestion)}
+                          >
+                            <span className="text-black font-medium truncate block">{suggestion}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-
-                  {/* Suggestions Dropdown */}
-                  {showSuggestions && suggestions.length > 0 && (
-                    <div className="absolute left-0 right-0 bg-white border border-gray-300 rounded-b-md shadow-lg z-50 mt-1">
-                      {suggestions.map((suggestion, index) => (
-                        <div
-                          key={index}
-                          className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                          onClick={() => handleSuggestionClick(suggestion)}
-                          onMouseDown={(e) => e.preventDefault()}
-                        >
-                          {suggestion}
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </div>
               </form>
               <div className="flex md:hidden items-center">

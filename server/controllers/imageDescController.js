@@ -9,7 +9,6 @@ dotenv.config();
 const ApiKey = process.env.APIKEY;
 const AzureEndpoint = `${process.env.AZUREENDPOINT}/vision/v3.2/analyze?visualFeatures=Tags,Description`;
 
-
 const getImageDescription = async (imageUrl) => {
     if (!imageUrl) {
         throw new Error('Image URL is required');

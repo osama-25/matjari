@@ -8,10 +8,11 @@ import { FaArrowLeft, FaImage, FaPaperPlane, FaPlay, FaXmark } from 'react-icons
 import ReportButton from './report-button'; // Import ReportButton component
 import { type } from 'os';
 import Link from 'next/link';
+import { IoCheckmark, IoCheckmarkDone } from 'react-icons/io5';
 
 
 
-const socket = io.connect("http://localhost:8080");
+const socket = io.connect(`${process.env.NEXT_PUBLIC_API_URL}`);
 
 export default function Chats({ CloseChat, roomId, chatName, otherId }) {
     const [message, setMessage] = useState("");
@@ -43,6 +44,18 @@ export default function Chats({ CloseChat, roomId, chatName, otherId }) {
         return info.id;
 
     };
+
+    const markMessageAsSeen = async (messageId) => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/mark-seen/${messageId}`);
+        console.log(messageId);
+        if (!response.ok) {
+            throw new Error('Failed to mark message as seen');
+        } else {
+            socket.emit("mark_message_seen", { messageId, room });
+        }
+        return response.json();
+    };
+
     useEffect(() => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -73,14 +86,31 @@ export default function Chats({ CloseChat, roomId, chatName, otherId }) {
         }
 
         socket.on("receive_message", (data) => {
-            setAllMessages((prevMessages) => [
-                ...prevMessages,
-                { message: data.content, sentByUser: getId, files: data.files }
-            ]);
+            setAllMessages((prevMessages) => {
+                // Check if the message already exists
+                const existingMessage = prevMessages.find((msg) => msg.id === data.id);
+                if (existingMessage) {
+                    // Update existing message
+                    return prevMessages.map((msg) =>
+                        msg.id === data.id ? [...msg, { id: data.id, message: data.content, sentByUser: data.sentByUser, files: data.files[0].url, timestamp: data.timestamp, seen: data.seen, url: data.files[0].url, type: data.files[0].type }] : msg
+                    );
+                }
+                // Add new message
+                return [...prevMessages, { id: data.id, message: data.content, sentByUser: data.sentByUser, files: data.files[0].url, timestamp: data.timestamp, seen: data.seen, url: data.files[0].url, type: data.files[0].type }];
+            });
+        });
+
+        socket.on("message_seen", ({ messageId }) => {
+            setAllMessages((prevMessages) =>
+                prevMessages.map((msg) =>
+                    msg.id === messageId ? { ...msg, seen: true } : msg
+                )
+            );
         });
 
         return () => {
             socket.off("receive_message");
+            socket.off("message_seen");
         };
     }, [room]);
 
@@ -89,7 +119,7 @@ export default function Chats({ CloseChat, roomId, chatName, otherId }) {
             try {
 
                 const userId = await getUserID();
-                const response = await fetch(`http://localhost:8080/chat/messages/${room}/${userId}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/messages/${room}/${userId}`);
                 if (response.ok) {
                     const data = await response.json();
                     console.log("########هنا###########");
@@ -103,7 +133,8 @@ export default function Chats({ CloseChat, roomId, chatName, otherId }) {
                         sentByUser: msg.sent_by_user,
                         url: msg.blob_data,
                         type: msg.blob_type,
-
+                        seen: msg.seen,
+                        timestamp: msg.timestamp,
                         files: msg.blob_data,
 
                     })));
@@ -140,7 +171,7 @@ export default function Chats({ CloseChat, roomId, chatName, otherId }) {
                 const { file, base64 } = fileObj;
 
                 try {
-                    const response = await fetch("http://localhost:8080/azure/upload", {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/azure/upload`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -178,16 +209,19 @@ export default function Chats({ CloseChat, roomId, chatName, otherId }) {
                 room,
                 sentByUser: getId,
                 files: uploadedFiles,
-                type: uploadedFiles.filetype
-
+                type: uploadedFiles.filetype,
+                seen: false,
+                timestamp: new Date().toISOString()
             };
 
             setAllMessages((prevMessages) => [...prevMessages, {
                 content: message,
                 room: roomId,
-                sentByUser: true,
+                sentByUser: getId,
                 files: uploadedFiles,
-                type: uploadedFiles.filetype
+                type: uploadedFiles.filetype,
+                seen: false,
+                timestamp: new Date().toISOString()
             }]);
 
             setRefresh(!refresh);
@@ -196,13 +230,17 @@ export default function Chats({ CloseChat, roomId, chatName, otherId }) {
 
 
             try {
-                const response = await fetch("http://localhost:8080/chat/messages", {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/messages`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(messageData),
                 });
+                const data = await response.json();
+                messageData.id = data.id;
+                console.log("Message Data:");
+                console.log(messageData);
 
                 if (response.ok) {
                     socket.emit("sent_message", messageData);
@@ -274,10 +312,31 @@ export default function Chats({ CloseChat, roomId, chatName, otherId }) {
         }
     };
 
+    const handleKeyDown = (e) => {
+        // Check if the pressed key is 'Enter'
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    };
+
+    useEffect(() => {
+        const markseen = () => {
+            AllMessages.map(async (msg) => {
+                if (!msg.seen && msg.sentByUser != getId) {
+                    await markMessageAsSeen(msg.id);
+                    msg.seen = true;
+                }
+            });
+        }
+        if (getId) {
+            markseen();
+        }
+    }, [getId])
+
     return (
         <div className="flex flex-col h-full p-1 md:p-4">
             {/* Chat Header */}
-            <div className="flex items-center bg-white rounded-lg shadow-md p-2 mb-2">
+            <div className="flex items-center justify-between bg-white rounded-lg shadow-md p-2 mb-2">
                 {/* Back Button for Smaller Screens */}
                 <button
                     className="md:hidden bg-gray-300 text-gray-700 hover:bg-gray-400 w-10 h-10 rounded-full flex items-center justify-center shadow-md"
@@ -292,53 +351,86 @@ export default function Chats({ CloseChat, roomId, chatName, otherId }) {
                         {chatName}
                     </Link>
                 </div>
-
-                {/* Spacer for alignment */}
-                <div className="hidden md:block w-10"></div>
+                {/* Report Button */}
+                <ReportButton userId={getId} />
             </div>
 
             {/* Render Messages */}
-            <div dir='ltr' className="flex flex-col overflow-y-auto bg-white rounded-lg shadow-md mb-1 py-2 flex-1">
-                {AllMessages.map((msg, index) => (
-                    <div key={index} className="w-full">
-                        <div
-                            className={`py-2 my-0.5 mx-4 w-fit max-w-xs h-fit rounded-xl ${parseInt(msg.sentByUser) === parseInt(getId)
-                                ? "bg-gray-600 place-self-end rounded-tr-sm text-white"
-                                : "bg-gray-300 place-self-start rounded-tl-sm"
-                                }`}
-                        >
-                            {/* Display files */}
-                            {msg.files && (
-                                <div className="px-2 relative">
-                                    {msg.type?.startsWith("image") && (
-                                        <img
-                                            src={msg.files}
-                                            alt="Image"
-                                            className="w-full max-w-60 h-full max-h-72 object-cover rounded-md cursor-pointer"
-                                            onClick={() => openModal({ type: "image", src: msg.files })}
-                                        />
-                                    )}
-                                    {msg.type?.startsWith("video") && (
-                                        <div
-                                            onClick={() =>
-                                                openModal({ type: "video", src: msg.files })
-                                            }
-                                            className="cursor-pointer relative w-full max-w-48 h-full max-h-80 rounded-md overflow-hidden">
-                                            <video
-                                                src={msg.files}
-                                                className="w-full h-full object-cover rounded-md"
-                                            />
-                                            <button className="absolute inset-0 place-self-center flex items-center justify-center bg-black bg-opacity-50 w-10 h-10 rounded-full">
-                                                <FaPlay size={16} color='white' />
-                                            </button>
-                                        </div>
-                                    )}
+            <div dir='ltr' className="flex flex-col overflow-y-auto bg-white rounded-lg shadow-md mb-1 py-2 flex-grow flex-1">
+                {AllMessages.map((msg, index) => {
+                    const currentDate = new Date(msg.timestamp);
+                    const previousDate = index > 0 ? new Date(AllMessages[index - 1].timestamp) : null;
+
+                    // Check if the day is different from the previous message
+                    const isNewDay =
+                        !previousDate ||
+                        currentDate.toDateString() !== previousDate.toDateString();
+
+                    return (
+                        <div key={index} className="w-full">
+                            {/* Day separator */}
+                            {isNewDay && (
+                                <div className="flex justify-center my-4">
+                                    <span className="px-3 py-1 text-xs text-gray-600 bg-gray-200 rounded-full">
+                                        {currentDate.toLocaleDateString(undefined, {
+                                            weekday: "long",
+                                            year: "numeric",
+                                            month: "short",
+                                            day: "numeric",
+                                        })}
+                                    </span>
                                 </div>
                             )}
-                            {msg.message && <p className="px-4">{msg.message}</p>}
+
+                            {/* Message container */}
+                            <div
+                                className={`py-2 my-0.5 mx-4 w-fit max-w-xs h-fit rounded-xl ${parseInt(msg.sentByUser) === parseInt(getId)
+                                    ? "bg-gray-600 place-self-end rounded-tr-sm text-white"
+                                    : "bg-gray-300 place-self-start rounded-tl-sm"
+                                    }`}
+                            >
+                                {/* Display files */}
+                                {msg.files && (
+                                    <div className="px-2 relative">
+                                        {msg.type?.startsWith("image") && (
+                                            <img
+                                                src={msg.files}
+                                                alt="Image"
+                                                className="w-full max-w-60 h-full max-h-72 object-cover rounded-md cursor-pointer"
+                                                onClick={() => openModal({ type: "image", src: msg.files })}
+                                            />
+                                        )}
+                                        {msg.type?.startsWith("video") && (
+                                            <div
+                                                onClick={() =>
+                                                    openModal({ type: "video", src: msg.files })
+                                                }
+                                                className="cursor-pointer relative w-full max-w-48 h-full max-h-80 rounded-md overflow-hidden">
+                                                <video
+                                                    src={msg.files}
+                                                    className="w-full h-full object-cover rounded-md"
+                                                />
+                                                <button className="absolute inset-0 place-self-center flex items-center justify-center bg-black bg-opacity-50 w-10 h-10 rounded-full">
+                                                    <FaPlay size={16} color='white' />
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                                {msg.message && <p className="px-4">{msg.message}</p>}
+                                <div className="flex justify-between items-center px-3">
+                                    <span className="text-xs text-gray-400">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                    {parseInt(msg.sentByUser) === parseInt(getId) && (msg.seen ? (
+                                        <IoCheckmarkDone size={16} className='mx-2 text-blue-500' />
+                                    ) : (
+                                        <IoCheckmark size={16} color="gray" className='mx-2' />
+                                    ))}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
+
                 <div ref={messagesEndRef} />
 
                 {/* Modal for Image/Video */}
@@ -441,12 +533,6 @@ export default function Chats({ CloseChat, roomId, chatName, otherId }) {
                     </button>
                 </div>
             </div>
-
-            {/* Report Button */}
-            <div className="mt-4">
-                <ReportButton userId={getId} />
-            </div>
         </div>
     );
-
 }

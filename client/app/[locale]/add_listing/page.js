@@ -9,6 +9,7 @@ import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import ErrorPage from "../ErrorPage";
 import Loading from '@/app/[locale]/global_components/loading';
+import { FaArrowLeft } from "react-icons/fa6";
 
 const Listing = () => {
 
@@ -230,20 +231,26 @@ const Listing = () => {
     }
 
     return (
-        <div className="flex justify-center items-center p-6 min-h-screen">
+        <div className="flex justify-center items-center sm:p-6 min-h-screen">
+            <button
+                onClick={() => router.push('/')}
+                className="absolute top-5 left-5 p-2 sm:p-8 text-lg cursor-pointer"
+            >
+                <FaArrowLeft size={26} />
+            </button>
             <form
                 data-testid="form"
                 dir={locale === 'ar' ? 'rtl' : 'ltr'}
-                className="w-full flex flex-col justify-center items-center gap-6 bg-white rounded-lg max-w-6xl p-6"
+                className="w-full flex flex-col justify-center items-center gap-6 bg-white rounded-lg max-w-6xl p-4 sm:p-6"
                 onSubmit={handleSubmit}
             >
                 <p
                     data-testid="Languagebtn"
                     onClick={HandleLocaleChange}
-                    className={`absolute ${locale == 'ar' ? 'left-0' : 'right-0'} top-0 p-8 text-lg cursor-pointer`}>
+                    className={`absolute ${locale == 'ar' ? 'left-0' : 'right-0'} top-0 p-6 sm:p-8 text-lg cursor-pointer`}>
                     {locale == 'ar' ? 'EN' : 'عربي'}
                 </p>
-                <h1 className="text-4xl font-bold mb-6">{t('addtitle')}</h1>
+                <h1 className="text-3xl font-bold my-6">{t('addtitle')}</h1>
                 <div className="w-full flex flex-col-reverse sm:flex-row">
                     {/* Left Column */}
                     <div className="space-y-2 p-4 w-full">

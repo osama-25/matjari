@@ -81,7 +81,16 @@ export const filterItems = async (req, res) => {
 
         const offset = (parsedPage - 1) * parsedPageSize;
 
-        let filterQuery = query.replace('SELECT COUNT(*) AS total FROM listings WHERE title ILIKE $1', '');
+        let filterQuery = `
+        SELECT l.*, 
+               (SELECT photo_url 
+                FROM listing_photos lp 
+                WHERE lp.listing_id = l.id  
+                LIMIT 1) as image
+        FROM listings l 
+        WHERE l.title ILIKE $1`;
+        
+        filterQuery += query.replace('SELECT COUNT(*) AS total FROM listings WHERE title ILIKE $1', '');
 
         if (order === 'lowtohigh') {
             filterQuery += ` ORDER BY price ASC`;

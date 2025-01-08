@@ -69,7 +69,7 @@ const SideNav = ({ onPress }) => {
     }
 
     return (
-        <nav className="h-full w-full text-white flex flex-col px-2 py-8 rounded-md shadow-md">
+        <nav className="h-full w-full flex flex-col px-2 py-8 rounded-md shadow-md">
             {chatRooms.length > 0 ? (
                 chatRooms.map((room) => (
                     <Button 

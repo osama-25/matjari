@@ -2,7 +2,7 @@ import db from '../config/db.js';
 import axios from 'axios';
 
 const excludedTags = ['text', 'indoor', 'person', 'outdoor', 'clothing', 'fashion', 'people', 'screenshot'];
-const IMAGE_DESCRIPTION_API = 'http://localhost:8080/imageDesc/describe';
+const IMAGE_DESCRIPTION_API = `${process.env.Backend_URL}/imageDesc/describe`;
 
 export const addItem = async (itemData) => {
     const { category, subCategory, title, description, condition, delivery, price, location, photos, customDetails, userID } = itemData;

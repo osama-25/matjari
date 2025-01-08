@@ -26,6 +26,7 @@ export const getTotalItemsCount = async (term) => {
 export const fetchFilteredItems = async (query, queryParams, pageSize, offset) => {
     const filterQuery = query + ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
     queryParams.push(pageSize, offset);
+    console.log(filterQuery);
 
     const result = await db.query(filterQuery, queryParams);
     return result.rows;

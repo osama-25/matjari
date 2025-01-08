@@ -43,7 +43,7 @@ const ChatRoom = ({ params }) => {
   }
 
   return (
-    <div dir={locale == 'ar' ? 'rtl' : 'ltr'} className="flex h-[90%]">
+    <div dir={locale == 'ar' ? 'rtl' : 'ltr'} className="flex h-[92%]">
       <div className={`flex-initial w-full sm:w-1/5 h-full absolute sm:relative sm:block ${isPressed ? 'hidden' : 'block'}`}>
         <SideNav onPress={toggleOverlay} />
       </div>

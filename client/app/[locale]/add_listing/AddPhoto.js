@@ -59,12 +59,12 @@ export default function AddPhoto({ image, onUpload, onDelete, id, size = 'small'
             data-testid="photoUploaded"
             src={image}
             alt="Uploaded"
-            className="w-full h-full object-cover rounded-md"
+            className="w-full h-full object-contain rounded-md"
           />
           <button
             data-testid="deletePhoto"
             onClick={handleImageRemove}
-            className="absolute top-1 right-1 rounded-full p-1 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute top-1 right-1 rounded-full p-1 text-red-500 hover:text-red-700 sm:opacity-0 group-hover:opacity-100 transition-opacity"
             type='button'
           >
             <IoCloseCircle size={24} />
