@@ -31,9 +31,17 @@ function RegisterPage() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const form = event.currentTarget;
+        const usernamepattern = /^[a-z_\d]+$/i;
         const mailpattern = /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-zA-Z]{2,4}/i;
         const passpattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/gm;
-        if (!mailpattern.test(info.email)) {
+        if(!usernamepattern.test(info.userName) || !usernamepattern.test(info.firstName) || !usernamepattern.test(info.lastName)){
+            event.preventDefault();
+            event.stopPropagation();
+            setMessage("username not entered correctly!");
+            setShowToast(true);
+            return;
+        }
+        else if (!mailpattern.test(info.email)) {
             event.preventDefault();
             event.stopPropagation();
             setMessage("email not entered correctly!");
@@ -240,7 +248,7 @@ function RegisterPage() {
                                 {t('confirmpass')}
                             </label>
                             <input
-                                className="shadow-inner border-2 rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-gray-400"
+                                className="shadow-inner border-2 rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-gray-400"
                                 id="confirmPassword"
                                 type={showPassword ? 'text' : 'password'}
                                 placeholder={t('confirmpassph')}

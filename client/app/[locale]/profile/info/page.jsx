@@ -124,7 +124,14 @@ const Info = () => {
 
     function handleOnSave() {
         const phonepattern = /^0[67]{1}[5789]{1}[0-9]{7}$/m;
-        if (info.phone_number != null && !phonepattern.test(info.phone_number)) {
+        const usernamepattern = /^[a-z_\d]+$/i;
+
+        if (!usernamepattern.test(info.firstName) || !usernamepattern.test(info.lastName)) {
+            setMessage("username not entered correctly!");
+            setShowToast(true);
+            return;
+        }
+        else if (info.phone_number != null && !phonepattern.test(info.phone_number)) {
             setMessage('Invalid phone number');
             setShowToast(true);
             return;
@@ -226,7 +233,7 @@ const Info = () => {
                             id="fname"
                             value={info.fname}
                             onChange={handleOnChange}
-                            className="shadow-inner border-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"
+                            className="shadow-inner border-2 rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"
                             required
                         />
                     </div>
@@ -239,7 +246,7 @@ const Info = () => {
                             id="lname"
                             value={info.lname}
                             onChange={handleOnChange}
-                            className="shadow-inner border-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"
+                            className="shadow-inner border-2 rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"
                             required
                         />
                     </div>
@@ -252,7 +259,7 @@ const Info = () => {
                             id="user_name"
                             value={info.user_name}
                             onChange={handleOnChange}
-                            className="shadow-inner border-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"
+                            className="shadow-inner border-2 rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"
                             required
                         />
                     </div>
@@ -266,7 +273,7 @@ const Info = () => {
                             id="email"
                             value={info.email}
                             onChange={handleOnChange}
-                            className="shadow-inner border-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"
+                            className="shadow-inner border-2 rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"
                         />
                     </div>
                     <div className="m-2">
@@ -278,7 +285,7 @@ const Info = () => {
                             id="phone_number"
                             value={info.phone_number || ' '}
                             onChange={handleOnChange}
-                            className="shadow-inner border-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"
+                            className="shadow-inner border-2 rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-400"
                         />
                     </div>
                 </div>
@@ -287,14 +294,14 @@ const Info = () => {
                 {!isDisabled && (
                     <div className="flex w-full items-center justify-center mt-4 gap-x-4">
                         <button
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full"
                             type="submit"
                             onClick={handleOnSave}
                         >
                             {t('save')}
                         </button>
                         <button
-                            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                            className="bg-red-500 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full"
                             type="button"
                             onClick={() => setIsDisabled(true)}
                         >
@@ -309,7 +316,7 @@ const Info = () => {
                 <div className="flex items-center justify-center mt-4">
                     <button
                         onClick={handleOnEdit}
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full"
                     >
                         {t('edit')}
                     </button>

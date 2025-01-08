@@ -186,8 +186,9 @@ export default function LoginPage() {
                                     </button>
                                 </div>
                                 <button
+                                    type='button'
                                     className="place-self-end text-blue-500 hover:text-blue-700 font-semibold text-sm"
-                                    onClick={() => setShowResetForm(true)} // Toggle to reset form
+                                    onClick={() => setShowResetForm(true)}
                                 >
                                     {t('forgot')}
                                 </button>
