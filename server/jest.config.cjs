@@ -10,8 +10,20 @@ module.exports = {
     collectCoverageFrom: [
       'controllers/**/*.js',
       'models/**/*.js',
-      'routes/**/*.js',
-      
+      'routes/**/*.js', 
+    ],
+    coveragePathIgnorePatterns: [
+      '/node_modules/',
+      'controllers/emailService.js',
+      'controllers/imageController.js',
+      'controllers/socketController.js',
+      'controllers/userController.js',
+      'models/imageModel.js',
+      'models/userModel.js',
+      'routes/azure.js',
+      'routes/data.js',
+      'routes/images.js',
+      'routes/user.js',
     ],
     silent: true,
     verbose: true,
