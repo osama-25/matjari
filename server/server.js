@@ -12,6 +12,8 @@ import { initializeSocket } from './controllers/socketController.js';
 import chatRoutes from './routes/chat.js'
 import env from 'dotenv';
 import verifyToken from './middleware/middleware.js';
+import azure from './routes/azure.js';
+import images from './routes/images.js';
 import categoriesRoutes from './routes/categories.js';
 import subcategoriesRoutes from './routes/subcategory.js';
 import imageDescriptionRoutes from './routes/imageDesc.js';
@@ -81,6 +83,8 @@ app.use('/user', userRoutes);
 
 // app.use('/socket', socketRoutes);
 app.use('/chat', chatRoutes);
+app.use('/azure', azure);
+app.use('/img', images);
 
 //localhost8080:
 app.use('/admin', adminRoutes);
