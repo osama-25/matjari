@@ -36,7 +36,7 @@ export const isAdmin = async (req, res, next) => {
     const { username, password } = req.body; 
 
     const secretKey = process.env.JWT_SECRET;
-    
+
     console.log(username, password);
 
     try {
