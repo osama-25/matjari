@@ -22,17 +22,24 @@ const key = new TextEncoder().encode(secretKey);
 //   return payload;
 // }
 
-
 export async function adminLogin(token: string) {
-
+  const cookieStore = await cookies();
+  
   // Create the session
-  const expires = new Date(Date.now() + 1800 * 1000);
-  // const session = await encrypt({ isAdmin: true, iat: Math.floor(Date.now() / 1000), exp: Math.floor(Date.now() / 1000) + 1800 });
+  cookieStore.set("Admin session", token, { httpOnly: true });
 
-  (await cookies()).set("Admin session", token, { expires, httpOnly: true });
+  // Remove front-end session completely
+  cookieStore.delete("Front-end session");
 
-  // return session;
+  // Return the redirect object directly
+  return {
+    redirect: {
+      destination: '/admin',
+      permanent: false,
+    },
+  };
 }
+
 export async function login(
   // data: { id: string; fname: string;  lname: string; email: string ; password: string; user_name: string},
   token: string
@@ -53,10 +60,11 @@ export async function login(
     const expires = new Date(Date.now() + 1800 * 24000);
     // const session = await encrypt({ user, expires });
   
-  
-    
-    (await
-    cookies()).set("Front-end session", token, { expires, httpOnly: true });
+    const cookieStore = await cookies();
+    // Remove admin session completely
+    cookieStore.delete("Admin session");
+
+    cookieStore.set("Front-end session", token, { expires, httpOnly: true });
 
     // return session;
 
@@ -78,53 +86,3 @@ export async function adminLogout() {
     cookies()).set("Admin session", "", { expires: new Date(0) });
 }
 
-// export async function getSession() {
-//   const session = (await cookies()).get("Front-end session")?.value;
-//   if (!session) return null;
-//   return await decrypt(session);
-// }
-
-// var number = 0;
-// export async function updateSession(request: NextRequest) {
-//   const session = request.cookies.get("Front-end session")?.value;
-//   // console.log(session + " N: " + number++);
-//   if (!session) {
-//     // const loginUrl = new URL('/login', request.url); // Construct absolute URL
-//     // return NextResponse.redirect(loginUrl.toString());
-//     return;
-//   } ;
-  
-
-
-//   // Refresh the session so it doesn't expire
-//   const parsed = await decrypt(session);
-//   // console.log(parsed.exp);
-//   // console.log(Date.now());
-//   console.log(`parsed : {}`);
-//   console.log(parsed);
-  
-  
-//   const currentTime =  Date.now() / 1000;
-
-//   // Check if the session token has expired
-//   // console.log("currentTime: " + currentTime );
-//   // console.log("parsed.exp: " + parsed.exp );
-  
-//   if (parsed.exp && parsed.exp <= currentTime) {
-//     // console.log("Session expired. Forcing login.");
-
-//     // const res = NextResponse.redirect('/');
-//     const res = NextResponse.redirect(new URL('/login', request.url).toString());
-
-//     res.cookies.set({
-//       name: "Front-end session",
-//       value: "",
-//       httpOnly: true,
-//       expires: new Date(0), // Immediately expire the cookie
-//     });
-//     return res;
-
-//   }
-
-//   return NextResponse.next();
-// }

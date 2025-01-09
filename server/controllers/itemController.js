@@ -1,4 +1,4 @@
-import { addItem, fetchAllItems, fetchItemById, deleteItemById, updateItem, fetchItemsByUserId } from '../models/itemModel.js';
+import { addItem, fetchItemById, deleteItemById, updateItem, fetchItemsByUserId } from '../models/itemModel.js';
 
 export const createItem = async (req, res) => {
     try {
@@ -7,16 +7,6 @@ export const createItem = async (req, res) => {
     } catch (error) {
         console.error('Error saving listing:', error);
         res.status(500).json({ message: 'Error saving listing' });
-    }
-};
-
-export const getAllItems = async (req, res) => {
-    try {
-        const items = await fetchAllItems();
-        res.status(200).json(items);
-    } catch (error) {
-        console.error('Error fetching items:', error);
-        res.status(500).json({ message: 'Error fetching items' });
     }
 };
 

@@ -4,16 +4,32 @@ import React, { useState, useEffect } from "react";
 import { getInfo } from "../global_components/dataInfo";
 import Loading from "../global_components/loading";
 
-const Button = ({ text, link, onClick, hasNewMessages }) => {
+const Button = ({ text, link, onClick, hasNewMessages, photo }) => {
     return (
-        <Link href={link} className="focus:bg-gray-200 focus:text-blue-600 hover:bg-gray-200 hover:text-blue-600 text-black my-1 rounded">
-            <div onClick={onClick} className="w-full h-12 flex flex-row justify-center items-center gap-2 relative">
-                <span>{text}</span>
-                {hasNewMessages && <span className="inline-block w-2 h-2 bg-red-600 rounded-full ml-2"></span>}
+        <Link 
+            href={link} 
+            className="focus:bg-gray-200 focus:text-blue-600 hover:bg-gray-200 hover:text-blue-600 text-black mb-1 rounded"
+        >
+            <div 
+                onClick={onClick} 
+                className="w-full h-16 flex flex-row justify-start items-center gap-4 relative px-6 border-b border-gray-100"
+            >
+                {photo && (
+                    <img 
+                        src={photo} 
+                        alt={`${text} avatar`} 
+                        className="w-12 h-12 rounded-full object-cover"
+                    />
+                )}
+                <span className="text-lg font-medium flex-1">{text}</span>
+                {hasNewMessages && (
+                    <span className="inline-block w-3 h-3 bg-red-600 rounded-full ml-2"></span>
+                )}
             </div>
         </Link>
     );
 };
+
 
 const SideNav = ({ onPress }) => {
     const [chatRooms, setChatRooms] = useState([]);
@@ -78,6 +94,7 @@ const SideNav = ({ onPress }) => {
                         link={`/chats/${room.id}`}
                         onClick={onPress}
                         hasNewMessages={roomsWithNewMessages.includes(room.id)}
+                        photo={room.photo || '/Resources/profile-pic.jpg'}
                     />
                 ))
             ) : (

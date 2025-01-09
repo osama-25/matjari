@@ -44,12 +44,12 @@ export const unbanUser = async (req, res) => {
 
 export const submitReport = async (req, res) => {
 
-    const { description, errorType, userId } = req.body;
+    const { description, errorType, userId, itemId } = req.body;
 
     console.log("TEST: ", userId);
 
     try {
-        await saveReport({ description, errorType, userId });
+        await saveReport({ description, errorType, userId, itemId });
         res.status(200).json({ message: 'Report submitted successfully' });
     } catch (error) {
         console.error('Error submitting report:', error);

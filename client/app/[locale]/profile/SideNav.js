@@ -2,10 +2,10 @@
 import Link from "next/link";
 import React from "react";
 import { IoBagHandleOutline, IoCloseCircle, IoCloseCircleOutline, IoExitOutline, IoInformation, IoKey, IoKeyOutline } from "react-icons/io5";
-import axios from 'axios';
+
 import { useRouter } from 'next/navigation';
 import { useTranslations } from "next-intl";
-
+import { logout } from "@/lib";
 const Button = ({ icon, text, link, onClick }) => {
     return (
         <div onClick={onClick} className="focus:bg-gray-200 focus:text-blue-600 hover:bg-gray-200 hover:text-blue-600 text-black my-1 rounded cursor-pointer">
@@ -20,10 +20,11 @@ const Button = ({ icon, text, link, onClick }) => {
 const SideNav = () => {
     const t = useTranslations('Profile');
     const router = useRouter();
-    function handleLogout() {
+    async function handleLogout() {
 
         console.log("Faisal hani ahmed");
 
+        await logout();
         localStorage.removeItem("token");
         router.push('/login'); // Redirect to the login page
 
