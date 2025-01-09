@@ -54,8 +54,8 @@ export default function AdminLoginPage() {
             if (data.success) {
                 localStorage.setItem('adminToken', data.token);
                 // setToastMessage(data.message);
-                adminLogin(data.token);
-                router.push('/admin/dashboard');
+                const redirect = await adminLogin(data.token);
+                router.push(redirect.redirect.destination);
                 console.log("GOT THIS ###");
 
             } else {
@@ -69,7 +69,6 @@ export default function AdminLoginPage() {
 
     return (
         <>
-            <h1> FJ:LSDKJFL:DSJK</h1>
             <div className="flex justify-center items-center p-6 md:bg-gray-100 h-screen">
                 <div className="w-96 flex flex-col justify-center items-center bg-white p-6 rounded-lg gap-y-4 md:shadow-lg">
                     <img className="h-16 md:h-20" src="/Resources/logo.jpg" alt="Logo" />
