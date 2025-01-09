@@ -5,7 +5,6 @@ import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import { getInfo } from './dataInfo';
 import { FaArrowLeft, FaImage, FaPaperPlane, FaPlay, FaXmark } from 'react-icons/fa6';
-import ReportButton from './report-button'; // Import ReportButton component
 import { type } from 'os';
 import Link from 'next/link';
 import { IoCheckmark, IoCheckmarkDone } from 'react-icons/io5';
@@ -92,11 +91,11 @@ export default function Chats({ CloseChat, roomId, chatName, otherId }) {
                 if (existingMessage) {
                     // Update existing message
                     return prevMessages.map((msg) =>
-                        msg.id === data.id ? [...msg, { id: data.id, message: data.content, sentByUser: data.sentByUser, files: data.files[0].url, timestamp: data.timestamp, seen: data.seen, url: data.files[0].url, type: data.files[0].type }] : msg
+                        msg.id === data.id ? [...msg, { id: data.id, message: data.content, sentByUser: data.sentByUser, files: data.files[0]? data.files[0].url: null, timestamp: data.timestamp, seen: data.seen, url: data.files[0]? data.files[0].url: null, type: data.files[0]? data.files[0].type: null }] : msg
                     );
                 }
                 // Add new message
-                return [...prevMessages, { id: data.id, message: data.content, sentByUser: data.sentByUser, files: data.files[0].url, timestamp: data.timestamp, seen: data.seen, url: data.files[0].url, type: data.files[0].type }];
+                return [...prevMessages, { id: data.id, message: data.content, sentByUser: data.sentByUser, files: data.files[0]? data.files[0].url: null, timestamp: data.timestamp, seen: data.seen, url: data.files[0]? data.files[0].url: null, type: data.files[0]? data.files[0].type: null }];
             });
         });
 
@@ -351,8 +350,6 @@ export default function Chats({ CloseChat, roomId, chatName, otherId }) {
                         {chatName}
                     </Link>
                 </div>
-                {/* Report Button */}
-                <ReportButton userId={getId} />
             </div>
 
             {/* Render Messages */}
@@ -418,7 +415,7 @@ export default function Chats({ CloseChat, roomId, chatName, otherId }) {
                                     </div>
                                 )}
                                 {msg.message && <p className="px-4">{msg.message}</p>}
-                                <div className="flex justify-between items-center px-3">
+                                <div className="flex justify-between items-center px-3 mt-1">
                                     <span className="text-xs text-gray-400">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                     {parseInt(msg.sentByUser) === parseInt(getId) && (msg.seen ? (
                                         <IoCheckmarkDone size={16} className='mx-2 text-blue-500' />
@@ -522,6 +519,7 @@ export default function Chats({ CloseChat, roomId, chatName, otherId }) {
                         className="w-full h-14 pl-4 pr-12 border border-gray-300 rounded-full focus:outline-none shadow-md"
                         placeholder="Type a message..."
                         onChange={(event) => setMessage(event.target.value)}
+                        onKeyDown={handleKeyDown}
                         value={message}
                     />
                     <button

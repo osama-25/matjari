@@ -15,7 +15,7 @@ export const getAllUsers = async () => {
 export const getReports = async () => {
     try {
         const query = `
-            SELECT id, type, date, user_id, status ,description
+            SELECT id, type, date, user_id, status, description, item_id
             FROM reports 
             ORDER BY date DESC;
         `;
@@ -46,7 +46,7 @@ export const unbanUserById = async (userId) => {
     }
 };
 
-export const saveReport = async ({ description, errorType, userId }) => {
+export const saveReport = async ({ description, errorType, userId, itemId }) => {
     try {
         console.log("#_##_#");
         console.log(userId);
@@ -57,11 +57,11 @@ export const saveReport = async ({ description, errorType, userId }) => {
 
 
         const query = `
-            INSERT INTO reports (description, type, date, status, user_id)
-            VALUES ($1, $2, NOW(), 'Pending', $3)
+            INSERT INTO reports (description, type, date, status, user_id, item_id)
+            VALUES ($1, $2, NOW(), 'Pending', $3, $4)
             RETURNING id;
         `;
-        const values = [description, errorType, userId];
+        const values = [description, errorType, userId, itemId];
         const result = await db.query(query, values);
         return result.rows[0].id;
     } catch (error) {

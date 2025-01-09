@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import axios from 'axios';
 
 
-const Report = ({ isOpen, onClose, userId }) => {
+const Report = ({ isOpen, onClose, userId, itemId }) => {
 
     console.log("userId in the report: " + userId);
     const [description, setDescription] = useState("");
@@ -13,8 +13,10 @@ const Report = ({ isOpen, onClose, userId }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/admin/submit-report`, { description, errorType, userId });
-            console.log("Report submitted:", { description, errorType, userId });
+            console.log(itemId);
+            itemId = errorType == "Offensive item"? itemId : null;
+            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/admin/submit-report`, { description, errorType, userId, itemId });
+            console.log("Report submitted:", { description, errorType, userId, itemId });
             // Clear form after submission
             setDescription("");
             setErrorType("");
@@ -51,6 +53,7 @@ const Report = ({ isOpen, onClose, userId }) => {
                             <option value="UI Bug">UI Bug</option>
                             <option value="Functional Error">Functional Error</option>
                             <option value="Performance Issue">Performance Issue</option>
+                            <option value="Offensive item">Offensive item</option>
                             <option value="Other">Other</option>
                         </select>
                     </div>

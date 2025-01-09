@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import AdminLayout from '../AdminLayout';
+import Link from 'next/link';
 
 export default function Reports() {
     const [reports, setReports] = useState([]);
@@ -12,6 +13,7 @@ export default function Reports() {
                 if (!response.ok) throw new Error(`Error: ${response.statusText}`);
                 const data = await response.json();
                 setReports(data);
+                console.log(data);
             } catch (error) {
                 console.error('Failed to fetch reports:', error);
             }
@@ -70,6 +72,7 @@ export default function Reports() {
                             <th className="py-3 px-6 text-left">Date</th>
                             <th className="py-3 px-6 text-left">User ID</th>
                             <th className="py-3 px-6 text-center">Status</th>
+                            <th className="py-3 px-6 text-center">Item</th>
                         </tr>
                     </thead>
                     <tbody className="text-gray-600 text-sm font-light">
@@ -91,6 +94,7 @@ export default function Reports() {
                                         <option value="Resolved" className="bg-green-200 text-green-700">Resolved</option>
                                     </select>
                                 </td>
+                                {report.item_id && <td className="py-3 px-6 text-left text-blue-600 underline"><Link href={{ pathname: '/admin/items', query: { id: report.item_id } }}>Go</Link></td>}
                             </tr>
                         ))}
                     </tbody>

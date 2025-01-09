@@ -34,11 +34,6 @@ export const addItem = async (itemData) => {
     return listingId;
 };
 
-export const fetchAllItems = async () => {
-    const itemResult = await db.query(`SELECT * FROM listings`);
-    return itemResult.rows;
-};
-
 export const fetchItemById = async (id) => {
     const itemResult = await db.query(`SELECT * FROM listings WHERE id = $1`, [id]);
     if (itemResult.rows.length === 0) {

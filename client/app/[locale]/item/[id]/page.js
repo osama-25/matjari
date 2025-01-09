@@ -10,6 +10,8 @@ import { FaTrashCan } from 'react-icons/fa6';
 import Popup from '../../popup';
 import Link from 'next/link';
 import ItemsDisplay from '../../home/ItemsDisplay';
+import ReportButton from '../../global_components/report-button';
+import ReportPage from '../../global_components/report-button';
 
 
 const ProductPage = ({ params }) => {
@@ -281,6 +283,8 @@ const ProductPage = ({ params }) => {
         <>
             <div className="flex flex-col md:grid md:grid-cols-4 justify-items-center sm:p-8 sm:gap-4 sm:bg-gray-100">
                 <div className="col-span-3 row-span-2 flex flex-col md:flex-row w-full bg-white p-10 rounded-lg gap-y-4 gap-x-16">
+                    {/* Report Button */}
+                    <ReportPage userId={user_id} itemId={itemID} />
                     {/* Product Image */}
                     <div className="w-full relative flex-col items-center self-center" onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
                         <div className="w-full sm:h-80 flex justify-center">
