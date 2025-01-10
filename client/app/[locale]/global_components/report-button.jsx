@@ -1,13 +1,20 @@
 "use client"
 
 import React, { useState } from "react";
+import { useRouter } from 'next/navigation';
 import ReportModal from "./report"; // Updated import path
 import { FaCircleExclamation } from "react-icons/fa6";
 
 const ReportButton = ({ userId, itemId }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const openModal = () => setIsModalOpen(!isModalOpen);
+    const router = useRouter();
+    const openModal = () => {
+        if (!userId) {
+            router.push('/login');
+            return;
+        }
+        setIsModalOpen(!isModalOpen);
+    };
     const closeModal = () => setIsModalOpen(false);
 
     return (

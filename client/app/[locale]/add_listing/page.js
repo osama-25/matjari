@@ -187,21 +187,7 @@ const Listing = () => {
             // Navigate to the new item page
             router.push(`/item/${data.itemId}`);
 
-            // // Clear the form and photo data
-            // setPhotoDataArray([]);
-            // setPhotos([1, 2, 3]); // Reset to initial state
-            // setCustomDetails([]);
-            // setFormData({
-            //     category: "",
-            //     subCategory: "",
-            //     title: "",
-            //     description: "",
-            //     condition: "",
-            //     delivery: "",
-            //     price: "",
-            //     location: "",
-            //     userID: formData.userID // Preserve the user ID
-            // });
+            
 
         } catch (error) {
             //console.error('Error during submission:', error);

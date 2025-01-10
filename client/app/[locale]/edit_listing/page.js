@@ -386,6 +386,7 @@ const EditListing = () => {
                                 id="price"
                                 placeholder={t('priceph')}
                                 min={0}
+                                step={0.01}
                                 value={formData.price}
                                 onChange={handleInputChange}
                                 className="w-full mt-2 h-12 border-2 border-gray-300 rounded-lg px-3 focus:outline-none"

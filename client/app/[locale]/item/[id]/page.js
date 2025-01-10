@@ -150,8 +150,6 @@ const ProductPage = ({ params }) => {
         title,
         price,
         description,
-        category,
-        sub_category,
         condition,
         delivery,
         location,
@@ -159,7 +157,8 @@ const ProductPage = ({ params }) => {
         phone_number,
         email,
         photos = [],
-        customDetails = {}
+        customDetails = {},
+        created_at
     } = item;
 
     const prevImage = () => {
@@ -367,6 +366,7 @@ const ProductPage = ({ params }) => {
                         <li><strong>Location:</strong> {location}</li>
                         <li><strong>Delivery:</strong> {delivery == "Yes" ? "Yes" : "No"}</li>
                         <li><strong>Condition:</strong> {condition}</li>
+                        <li><strong>Listed on:</strong> {created_at}</li>
                         {customDetails.map((detail, index) => (
                             <li key={index}>
                                 <strong>{detail.title}:</strong> {detail.description}
