@@ -201,7 +201,7 @@ const EditListing = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        setLoading(true);
         try {
             removeEmptyDetails();
             formCheck();
@@ -261,6 +261,8 @@ const EditListing = () => {
         } catch (error) {
             console.error('Error during submission:', error);
             alert(`Failed to update listing: ${error.message}`);
+        }finally {
+            setLoading(false);
         }
     };
 

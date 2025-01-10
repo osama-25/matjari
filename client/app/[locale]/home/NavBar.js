@@ -8,6 +8,7 @@ import { FaBars, FaCamera, FaX, FaXmark } from "react-icons/fa6";
 import { IoCamera, IoCameraOutline } from "react-icons/io5";
 import { getInfo } from "../global_components/dataInfo";
 import debounce from 'lodash/debounce';
+import Loading from "../global_components/loading";
 
 const flags = [
   "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Flag_of_the_United_Kingdom_%281-2%29.svg/1200px-Flag_of_the_United_Kingdom_%281-2%29.svg.png",
@@ -23,7 +24,7 @@ const NavBar = () => {
   const router = useRouter();
   const [userId, setUserId] = useState(null);
   const [newMessages, setNewMessages] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const debouncedFetchSuggestions = useCallback(
@@ -153,6 +154,7 @@ const NavBar = () => {
 
           const result = await response.json();
           if (result.imgURL) {
+            setIsLoading(true);
             localStorage.removeItem('searchImageUrl');
             localStorage.setItem('searchImageUrl', result.imgURL);
             console.log('Search image URL:', result.imgURL);
@@ -168,6 +170,10 @@ const NavBar = () => {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  if (isLoading) {
+    return <Loading />;
   };
 
   const handleSearchSubmit = (e) => {
