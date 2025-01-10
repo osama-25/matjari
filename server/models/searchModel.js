@@ -10,6 +10,7 @@ export const getSearchResults = async (term, pageSize, offset) => {
                 LIMIT 1) as image
         FROM listings l 
         WHERE l.title ILIKE $1 
+        ORDER BY l.created_at DESC
         LIMIT $2 OFFSET $3`,
         [`%${term}%`, pageSize, offset]
     );
