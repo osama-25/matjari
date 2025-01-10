@@ -136,6 +136,7 @@ const NavBar = () => {
         const fileType = file.type;
         //convert base64 to imageURL
         try {
+          setIsLoading(true);
           const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/azure/upload`, {
             method: "POST",
             headers: {
@@ -154,7 +155,7 @@ const NavBar = () => {
 
           const result = await response.json();
           if (result.imgURL) {
-            setIsLoading(true);
+            
             localStorage.removeItem('searchImageUrl');
             localStorage.setItem('searchImageUrl', result.imgURL);
             console.log('Search image URL:', result.imgURL);
@@ -165,8 +166,6 @@ const NavBar = () => {
         } catch (error) {
           console.error("Error uploading photo:", error);
         }
-
-
       };
       reader.readAsDataURL(file);
     }
