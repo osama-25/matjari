@@ -136,7 +136,7 @@ const ProductPage = ({ params }) => {
             }
             router.push('/home');
         } catch (error) {
-            setError(error);
+            setError(error.message || 'Failed to delete listing');
         }
     }
 
