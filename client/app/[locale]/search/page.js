@@ -102,6 +102,7 @@ const SearchPage = () => {
             if (data.items && data.items.length > 0) {
                 setItems(data.items);
                 setTotalPages(data.totalPages);
+                console.log(data.totalItems);
             } else {
                 setItems([]);
             }

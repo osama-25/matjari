@@ -23,7 +23,9 @@ export const getTotalItemsCount = async (term) => {
     return parseInt(result.rows[0].total);
 };
 
-export const buildFilterQuery = (searchTerm, minPrice, maxPrice, location, delivery, condition) => {
+export const fetchFilteredItems = async (searchTerm, filters, page, pageSize) => {
+    const { minPrice, maxPrice, location, delivery, condition, order } = filters;
+
     let query = `SELECT COUNT(*) AS total FROM listings WHERE title ILIKE $1`;
     const queryParams = [`%${searchTerm}%`];
 
@@ -48,15 +50,12 @@ export const buildFilterQuery = (searchTerm, minPrice, maxPrice, location, deliv
         query += ` AND condition = $${queryParams.length}`;
     }
 
-    return { query, queryParams };
-};
+    const countResult = await db.query(query, queryParams);
+    const totalItems = countResult.rows[0].total;
+    const totalPages = Math.ceil(totalItems / pageSize);
 
-export const fetchFilteredItems = async (searchTerm, filters, page, pageSize) => {
-    const { minPrice, maxPrice, location, delivery, condition, order } = filters;
-    const { query, queryParams } = buildFilterQuery(searchTerm, minPrice, maxPrice, location, delivery, condition);
-    
     const offset = (page - 1) * pageSize;
-    
+
     let filterQuery = `
     SELECT l.*, 
            (SELECT photo_url 
@@ -65,7 +64,7 @@ export const fetchFilteredItems = async (searchTerm, filters, page, pageSize) =>
             LIMIT 1) as image
     FROM listings l 
     WHERE l.title ILIKE $1`;
-    
+
     filterQuery += query.replace('SELECT COUNT(*) AS total FROM listings WHERE title ILIKE $1', '');
 
     if (order === 'lowtohigh') {
@@ -75,14 +74,13 @@ export const fetchFilteredItems = async (searchTerm, filters, page, pageSize) =>
     }
 
     filterQuery += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
-    
+
     const result = await db.query(filterQuery, [...queryParams, pageSize, offset]);
-    const totalItems = await getTotalItemsCount(searchTerm);
-    
+
     return {
         items: result.rows,
         totalItems,
-        totalPages: Math.ceil(totalItems / pageSize)
+        totalPages
     };
 };
 
