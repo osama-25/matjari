@@ -1,6 +1,6 @@
 // controllers/messageController.js
 
-import { saveMessage, getMessagesByRoom, createRoom, findRoom, getUserRooms, markSeen, isUserAllow } from '../models/messagesModel.js';
+import { saveMessage, getMessagesByRoom, createRoom, findRoom, getUserRooms, markSeen, isUserAllow, updateRoom } from '../models/messagesModel.js';
 
 export const createMessage = async (req, res) => {
     const { content, room, sentByUser, files } = req.body;
@@ -21,6 +21,8 @@ export const createMessage = async (req, res) => {
             // Handle no files
             response = await saveMessage({ content, room, sentByUser });
         }
+        
+        const updateResponse = await updateRoom({ room, content });
 
         res.status(201).json({ id: response.rows[0].id, message: 'Message saved successfully' });
     } catch (error) {

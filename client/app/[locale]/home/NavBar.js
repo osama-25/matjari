@@ -213,7 +213,7 @@ const NavBar = () => {
                   <div className="w-full relative z-auto">
                     <div className="flex items-center border-2 border-gray-600 focus:border-black relative z-auto rounded-full bg-white">
                       {/* Camera Icon */}
-                      <label htmlFor="search-image" className="flex items-center px-3 py-2.5 rounded-full hover:bg-gray-100 cursor-pointer">
+                      <label htmlFor="search-image" title="search by image" className="flex items-center px-3 py-2.5 rounded-full hover:bg-gray-100 cursor-pointer">
                         <input
                           data-testid="imgInput"
                           type="file"

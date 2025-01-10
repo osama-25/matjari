@@ -11,6 +11,15 @@ export const saveMessage = async ({ content, room, sentByUser, blobData = null, 
     return await db.query(query, values);
 };
 
+export const updateRoom = async ({ room, content }) => {
+    const query = `
+        UPDATE rooms
+        SET timestamp = NOW(), last_message = $2
+        WHERE id = $1
+    `;
+    return db.query(query, [room, content]);
+};
+
 export const getMessagesByRoom = async (room) => {
     const query = `
         SELECT * FROM messages
@@ -59,11 +68,12 @@ export const getUserRooms = async (userId) => {
 
 
     try {
-        const query = `SELECT r.user1_id , r.user2_id, r.id, r.room_id, u.user_name, u.photo
+        const query = `SELECT r.user1_id , r.user2_id, r.id, r.room_id, u.user_name, u.photo, r.last_message, r.timestamp
             FROM rooms r , users u
             WHERE (r.user1_id = u.id or r.user2_id = u.id) 
             and  (r.user1_id = $1 or r.user2_id = $1) 
             and (u.id != $1)
+            ORDER BY r.timestamp DESC
 `;
         const result = await db.query(query, [userId]);
         return result.rows;
