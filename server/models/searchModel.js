@@ -22,14 +22,67 @@ export const getTotalItemsCount = async (term) => {
     return parseInt(result.rows[0].total);
 };
 
-// Filter search results based on various criteria
-export const fetchFilteredItems = async (query, queryParams, pageSize, offset) => {
-    const filterQuery = query + ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
-    queryParams.push(pageSize, offset);
-    console.log(filterQuery);
+export const buildFilterQuery = (searchTerm, minPrice, maxPrice, location, delivery, condition) => {
+    let query = `SELECT COUNT(*) AS total FROM listings WHERE title ILIKE $1`;
+    const queryParams = [`%${searchTerm}%`];
 
-    const result = await db.query(filterQuery, queryParams);
-    return result.rows;
+    if (minPrice) {
+        queryParams.push(minPrice);
+        query += ` AND price >= $${queryParams.length}`;
+    }
+    if (maxPrice) {
+        queryParams.push(maxPrice);
+        query += ` AND price <= $${queryParams.length}`;
+    }
+    if (location) {
+        queryParams.push(location);
+        query += ` AND location = $${queryParams.length}`;
+    }
+    if (delivery) {
+        queryParams.push(delivery);
+        query += ` AND delivery = $${queryParams.length}`;
+    }
+    if (condition) {
+        queryParams.push(condition);
+        query += ` AND condition = $${queryParams.length}`;
+    }
+
+    return { query, queryParams };
+};
+
+export const fetchFilteredItems = async (searchTerm, filters, page, pageSize) => {
+    const { minPrice, maxPrice, location, delivery, condition, order } = filters;
+    const { query, queryParams } = buildFilterQuery(searchTerm, minPrice, maxPrice, location, delivery, condition);
+    
+    const offset = (page - 1) * pageSize;
+    
+    let filterQuery = `
+    SELECT l.*, 
+           (SELECT photo_url 
+            FROM listing_photos lp 
+            WHERE lp.listing_id = l.id  
+            LIMIT 1) as image
+    FROM listings l 
+    WHERE l.title ILIKE $1`;
+    
+    filterQuery += query.replace('SELECT COUNT(*) AS total FROM listings WHERE title ILIKE $1', '');
+
+    if (order === 'lowtohigh') {
+        filterQuery += ` ORDER BY price ASC`;
+    } else if (order === 'hightolow') {
+        filterQuery += ` ORDER BY price DESC`;
+    }
+
+    filterQuery += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
+    
+    const result = await db.query(filterQuery, [...queryParams, pageSize, offset]);
+    const totalItems = await getTotalItemsCount(searchTerm);
+    
+    return {
+        items: result.rows,
+        totalItems,
+        totalPages: Math.ceil(totalItems / pageSize)
+    };
 };
 
 // Get item suggestions based on search term

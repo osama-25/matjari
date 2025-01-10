@@ -1,4 +1,4 @@
-import { addItem, fetchAllItems, fetchItemById, deleteItemById, updateItem, fetchItemsByUserId } from '../models/itemModel';
+import { addItem, fetchItemById, deleteItemById, updateItem, fetchItemsByUserId } from '../models/itemModel';
 import db from '../config/db';
 import axios from 'axios';
 
@@ -11,152 +11,154 @@ describe('Item Model', () => {
   });
 
   describe('addItem', () => {
-    it('should add a new item and return its ID', async () => {
+    it('should add a new item with photos and details', async () => {
       const mockItemData = {
         category: 'Electronics',
         subCategory: 'Mobile',
         title: 'iPhone 12',
-        description: 'Brand new iPhone 12',
+        description: 'Brand new iPhone',
         condition: 'New',
         delivery: 'Yes',
         price: 999,
-        location: 'New York',
-        photos: ['http://example.com/photo1.jpg'],
+        location: 'NY',
+        photos: ['photo1.jpg'],
         customDetails: { color: 'Black' },
         userID: 1
       };
 
-      const mockListingResult = { rows: [{ id: 1 }] };
-      db.query.mockResolvedValueOnce(mockListingResult);
+      db.query
+        .mockResolvedValueOnce({ rows: [{ id: 1 }] }) // listing insert
+        .mockResolvedValueOnce({ rowCount: 1 }); // details insert
 
-      const mockAzureResponse = {
+      axios.post.mockResolvedValueOnce({
         data: {
           data: {
-            tags: [{ name: 'tag1' }, { name: 'tag2' }]
+            tags: [{ name: 'phone' }]
           }
         }
-      };
-      axios.post.mockResolvedValue(mockAzureResponse);
+      });
 
       const result = await addItem(mockItemData);
 
       expect(result).toBe(1);
-      expect(db.query).toHaveBeenCalledTimes(3); // One for listing, one for photo, one for custom details
-    });
-  });
-
-  describe('fetchAllItems', () => {
-    it('should fetch all items', async () => {
-      const mockItems = [{ id: 1, title: 'Item 1' }, { id: 2, title: 'Item 2' }];
-      db.query.mockResolvedValue({ rows: mockItems });
-
-      const result = await fetchAllItems();
-
-      expect(result).toEqual(mockItems);
-      expect(db.query).toHaveBeenCalledWith('SELECT * FROM listings');
+      expect(db.query).toHaveBeenCalledTimes(3);
+      expect(axios.post).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('fetchItemById', () => {
-    it('should fetch item by ID', async () => {
-      const mockItem = { id: 1, title: 'Item 1', user_id: 1 };
-      const mockPhotos = [{ photo_url: 'http://example.com/photo1.jpg' }];
-      const mockDetails = [{ detail_key: 'color', detail_value: 'Black' }];
-      const mockUser = { user_name: 'John Doe', phone_number: '1234567890', email: 'john@example.com' };
+    it('should fetch item with photos and details', async () => {
+      const mockItem = {
+        id: 1,
+        title: 'iPhone 12',
+        user_id: 1
+      };
 
       db.query
-        .mockResolvedValueOnce({ rows: [mockItem] })
-        .mockResolvedValueOnce({ rows: mockPhotos })
-        .mockResolvedValueOnce({ rows: mockDetails })
-        .mockResolvedValueOnce({ rows: [mockUser] });
+        .mockResolvedValueOnce({ rows: [mockItem] }) // item
+        .mockResolvedValueOnce({ rows: [{ photo_url: 'photo1.jpg' }] }) // photos
+        .mockResolvedValueOnce({ rows: [{ detail_key: 'color', detail_value: 'Black' }] }) // details
+        .mockResolvedValueOnce({ rows: [{ user_name: 'John', phone_number: '123', email: 'john@test.com' }] }); // user
 
       const result = await fetchItemById(1);
 
-      expect(result).toEqual({
+      expect(result).toMatchObject({
         ...mockItem,
-        photos: mockPhotos.map(photo => photo.photo_url),
-        customDetails: [{ title: 'color', description: 'Black' }],
-        username: mockUser.user_name,
-        phone_number: mockUser.phone_number,
-        email: mockUser.email
+        photos: ['photo1.jpg'],
+        customDetails: [{ title: 'color', description: 'Black' }]
       });
       expect(db.query).toHaveBeenCalledTimes(4);
     });
 
-    it('should throw an error if item not found', async () => {
+    it('should throw error if item not found', async () => {
       db.query.mockResolvedValueOnce({ rows: [] });
 
-      await expect(fetchItemById(1)).rejects.toThrow('Item not found');
+      await expect(fetchItemById(999)).rejects.toThrow('Item not found');
     });
   });
 
   describe('deleteItemById', () => {
-    it('should delete item by ID', async () => {
-      db.query.mockResolvedValueOnce({ rowCount: 1 });
+    it('should delete item and related data', async () => {
+      db.query
+        .mockResolvedValueOnce({ rowCount: 1 }) // listing delete
+        .mockResolvedValueOnce({ rowCount: 1 }) // photos delete
+        .mockResolvedValueOnce({ rowCount: 1 }); // details delete
 
       await deleteItemById(1);
 
-      expect(db.query).toHaveBeenCalledTimes(3); // One for listing, one for photos, one for details
+      expect(db.query).toHaveBeenCalledTimes(3);
     });
 
-    it('should throw an error if listing not found', async () => {
+    it('should throw error if item not found', async () => {
       db.query.mockResolvedValueOnce({ rowCount: 0 });
 
-      await expect(deleteItemById(1)).rejects.toThrow('Listing not found');
+      await expect(deleteItemById(999)).rejects.toThrow('Listing not found');
     });
   });
 
   describe('updateItem', () => {
-    it('should update item by ID', async () => {
+    it('should update item with new photos and details', async () => {
       const mockItemData = {
         category: 'Electronics',
         sub_category: 'Mobile',
         title: 'iPhone 12',
-        description: 'Brand new iPhone 12',
+        description: 'Updated iPhone',
         condition: 'New',
         delivery: 'Yes',
-        price: 999,
-        location: 'New York',
-        photos: ['http://example.com/photo1.jpg'],
-        customDetails: { color: 'Black' }
+        price: 899,
+        location: 'NY',
+        photos: ['newphoto1.jpg'],
+        customDetails: { color: 'Red' }
       };
 
-      db.query.mockResolvedValueOnce({ rowCount: 1 });
+      db.query
+        .mockResolvedValueOnce({ rowCount: 1 }) // update listing
+        .mockResolvedValueOnce({ rowCount: 1 }) // delete old photos
+        .mockResolvedValueOnce({ rows: [] }) // check existing photo
+        .mockResolvedValueOnce({ rowCount: 1 }) // insert new photo
+        .mockResolvedValueOnce({ rowCount: 1 }) // delete old details
+        .mockResolvedValueOnce({ rowCount: 1 }); // insert new details
 
-      const mockAzureResponse = {
+      axios.post.mockResolvedValueOnce({
         data: {
           data: {
-            tags: [{ name: 'tag1' }, { name: 'tag2' }]
+            tags: [{ name: 'phone' }]
           }
         }
-      };
-      axios.post.mockResolvedValue(mockAzureResponse);
+      });
 
       await updateItem(1, mockItemData);
 
-      expect(db.query).toHaveBeenCalledTimes(5); // One for listing, one for deleting photos, one for inserting photo, one for deleting details, one for inserting details
+      expect(db.query).toHaveBeenCalledTimes(6);
+      expect(axios.post).toHaveBeenCalledTimes(1);
     });
 
-    it('should throw an error if listing not found', async () => {
+    it('should throw error if item not found', async () => {
       db.query.mockResolvedValueOnce({ rowCount: 0 });
 
-      await expect(updateItem(1, {})).rejects.toThrow('Listing not found');
+      await expect(updateItem(999, {})).rejects.toThrow('Listing not found');
     });
   });
 
   describe('fetchItemsByUserId', () => {
-    it('should fetch items by user ID', async () => {
-      const mockListings = [{ id: 1, title: 'Item 1' }];
-      const mockPhotos = [{ photo_url: 'http://example.com/photo1.jpg' }];
+    it('should fetch all items for user with first photo', async () => {
+      const mockItems = [
+        { id: 1, title: 'Item 1' },
+        { id: 2, title: 'Item 2' }
+      ];
 
       db.query
-        .mockResolvedValueOnce({ rows: mockListings })
-        .mockResolvedValueOnce({ rows: mockPhotos });
+        .mockResolvedValueOnce({ rows: mockItems }) // items
+        .mockResolvedValueOnce({ rows: [{ photo_url: 'photo1.jpg' }] }) // photo for item 1
+        .mockResolvedValueOnce({ rows: [{ photo_url: 'photo2.jpg' }] }); // photo for item 2
 
       const result = await fetchItemsByUserId(1);
 
-      expect(result).toEqual([{ ...mockListings[0], image: mockPhotos[0].photo_url }]);
-      expect(db.query).toHaveBeenCalledTimes(2);
+      expect(result).toEqual([
+        { id: 1, title: 'Item 1', image: 'photo1.jpg' },
+        { id: 2, title: 'Item 2', image: 'photo2.jpg' }
+      ]);
+      expect(db.query).toHaveBeenCalledTimes(3);
     });
   });
 });

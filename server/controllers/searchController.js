@@ -47,66 +47,19 @@ export const filterItems = async (req, res) => {
     const { page, pageSize } = req.params;
     const { searchTerm, minPrice, maxPrice, location, delivery, condition, order } = req.body;
 
-    let query = `SELECT COUNT(*) AS total FROM listings WHERE title ILIKE $1`;
-    const queryParams = [`%${searchTerm}%`];
-
-    // Add filter conditions to the query
-    if (minPrice) {
-        queryParams.push(minPrice);
-        query += ` AND price >= $${queryParams.length}`;
-    }
-    if (maxPrice) {
-        queryParams.push(maxPrice);
-        query += ` AND price <= $${queryParams.length}`;
-    }
-    if (location) {
-        queryParams.push(location);
-        query += ` AND location = $${queryParams.length}`;
-    }
-    if (delivery) {
-        queryParams.push(delivery);
-        query += ` AND delivery = $${queryParams.length}`;
-    }
-    if (condition) {
-        queryParams.push(condition);
-        query += ` AND condition = $${queryParams.length}`;
-    }
-
     try {
         const parsedPage = parseInt(page) || 1;
         const parsedPageSize = parseInt(pageSize) || 5;
 
-        const totalItems = await getTotalItemsCount(searchTerm);
-        const totalPages = Math.ceil(totalItems / parsedPageSize);
-
-        const offset = (parsedPage - 1) * parsedPageSize;
-
-        let filterQuery = `
-        SELECT l.*, 
-               (SELECT photo_url 
-                FROM listing_photos lp 
-                WHERE lp.listing_id = l.id  
-                LIMIT 1) as image
-        FROM listings l 
-        WHERE l.title ILIKE $1`;
-        
-        filterQuery += query.replace('SELECT COUNT(*) AS total FROM listings WHERE title ILIKE $1', '');
-
-        if (order === 'lowtohigh') {
-            filterQuery += ` ORDER BY price ASC`;
-        } else if (order === 'hightolow') {
-            filterQuery += ` ORDER BY price DESC`;
-        }
-
-        // Get filtered items based on the query and pagination
-        const items = await fetchFilteredItems(filterQuery, queryParams, parsedPageSize, offset);
+        const filters = { minPrice, maxPrice, location, delivery, condition, order };
+        const result = await fetchFilteredItems(searchTerm, filters, parsedPage, parsedPageSize);
 
         res.status(200).json({
-            items: items,
+            items: result.items,
             page: parsedPage,
             pageSize: parsedPageSize,
-            totalItems,
-            totalPages,
+            totalItems: result.totalItems,
+            totalPages: result.totalPages,
         });
     } catch (error) {
         console.error("Error fetching items:", error);

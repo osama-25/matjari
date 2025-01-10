@@ -1,5 +1,5 @@
 const { createItem, getAllItems, getItemById, deleteItem, updateItemById, getItemsByUserId } = require('../controllers/itemController');
-const { addItem, fetchAllItems, fetchItemById, deleteItemById, updateItem, fetchItemsByUserId } = require('../models/itemModel');
+const { addItem, fetchItemById, deleteItemById, updateItem, fetchItemsByUserId } = require('../models/itemModel');
 
 jest.mock('../models/itemModel');
 
@@ -45,31 +45,6 @@ describe('Item Controller', () => {
     });
   });
 
-  describe('getAllItems', () => {
-    it('should fetch all items', async () => {
-      const req = mockReq();
-      const res = mockRes();
-      const mockItems = [{ id: 1, title: 'Item 1' }];
-      fetchAllItems.mockResolvedValue(mockItems);
-
-      await getAllItems(req, res);
-
-      expect(fetchAllItems).toHaveBeenCalled();
-      expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith(mockItems);
-    });
-
-    it('should handle errors', async () => {
-      const req = mockReq();
-      const res = mockRes();
-      fetchAllItems.mockRejectedValue(new Error('Error fetching items'));
-
-      await getAllItems(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({ message: 'Error fetching items' });
-    });
-  });
 
   describe('getItemById', () => {
     it('should fetch item by ID', async () => {

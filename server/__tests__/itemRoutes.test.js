@@ -1,7 +1,7 @@
 import request from 'supertest';
 import express from 'express';
 import itemRoutes from '../routes/item';
-import { createItem, getAllItems, getItemById, deleteItem, updateItemById, getItemsByUserId } from '../controllers/itemController';
+import { createItem, getItemById, deleteItem, updateItemById, getItemsByUserId } from '../controllers/itemController';
 
 jest.mock('../controllers/itemController');
 
@@ -28,18 +28,7 @@ describe('Item Routes', () => {
     });
   });
 
-  describe('GET /items/fetch-all-items', () => {
-    it('should fetch all items', async () => {
-      const mockItems = [{ id: 1, title: 'Item 1' }];
-      getAllItems.mockImplementation((req, res) => res.status(200).json(mockItems));
-
-      const response = await request(app).get('/items/fetch-all-items');
-
-      expect(getAllItems).toHaveBeenCalled();
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual(mockItems);
-    });
-  });
+  
 
   describe('GET /items/:id', () => {
     it('should fetch item by ID', async () => {

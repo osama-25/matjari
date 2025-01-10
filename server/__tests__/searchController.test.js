@@ -43,31 +43,68 @@ describe('Search Controller', () => {
   });
 
   describe('filterItems', () => {
-    it('should filter search items with pagination', async () => {
-      const req = { params: { page: '1', pageSize: '10' }, body: { searchTerm: 'test', minPrice: 10, maxPrice: 100, location: 'NY', delivery: 'yes', condition: 'new', order: 'lowtohigh' } };
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-      const mockItems = [{ id: 1, title: 'Item 1' }];
-      getTotalItemsCount.mockResolvedValue(5);
-      fetchFilteredItems.mockResolvedValue(mockItems);
+    it('should return filtered items', async () => {
+      const mockResult = {
+        items: [{ id: 1, title: 'Test Item' }],
+        totalItems: 5,
+        totalPages: 1
+      };
+
+      fetchFilteredItems.mockResolvedValue(mockResult);
+
+      const req = {
+        params: { page: '1', pageSize: '5' },
+        body: {
+          searchTerm: 'test',
+          minPrice: 10,
+          maxPrice: 100,
+          location: 'NY',
+          delivery: 'Yes',
+          condition: 'New',
+          order: 'lowtohigh'
+        }
+      };
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn()
+      };
 
       await filterItems(req, res);
 
-      expect(getTotalItemsCount).toHaveBeenCalledWith('test');
-      expect(fetchFilteredItems).toHaveBeenCalledWith(expect.any(String), expect.any(Array), 10, 0);
+      expect(fetchFilteredItems).toHaveBeenCalledWith(
+        'test',
+        {
+          minPrice: 10,
+          maxPrice: 100,
+          location: 'NY',
+          delivery: 'Yes',
+          condition: 'New',
+          order: 'lowtohigh'
+        },
+        1,
+        5
+      );
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
-        items: mockItems,
+        items: mockResult.items,
         page: 1,
-        pageSize: 10,
-        totalItems: 5,
-        totalPages: 1,
+        pageSize: 5,
+        totalItems: mockResult.totalItems,
+        totalPages: mockResult.totalPages
       });
     });
 
     it('should handle errors', async () => {
-      const req = { params: { page: '1', pageSize: '10' }, body: { searchTerm: 'test', minPrice: 10, maxPrice: 100, location: 'NY', delivery: 'yes', condition: 'new', order: 'lowtohigh' } };
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-      getTotalItemsCount.mockRejectedValue(new Error('Database error'));
+      fetchFilteredItems.mockRejectedValue(new Error('Database error'));
+
+      const req = {
+        params: { page: '1', pageSize: '5' },
+        body: { searchTerm: 'test' }
+      };
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn()
+      };
 
       await filterItems(req, res);
 
