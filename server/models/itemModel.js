@@ -8,8 +8,8 @@ export const addItem = async (itemData) => {
     const { category, subCategory, title, description, condition, delivery, price, location, photos, customDetails, userID } = itemData;
 
     const listingResult = await db.query(
-        `INSERT INTO listings (category, sub_category, title, description, condition, delivery, price, location, user_id) 
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+        `INSERT INTO listings (category, sub_category, title, description, condition, delivery, price, location, user_id, created_at) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, CURRENT_TIMESTAMP) RETURNING id`,
         [category, subCategory, title, description, condition, delivery, price, location, userID]
     );
 
@@ -35,7 +35,11 @@ export const addItem = async (itemData) => {
 };
 
 export const fetchItemById = async (id) => {
-    const itemResult = await db.query(`SELECT * FROM listings WHERE id = $1`, [id]);
+    const itemResult = await db.query(
+        `SELECT *, to_char(created_at, 'DD-MM-YYYY') as created_at 
+         FROM listings WHERE id = $1`, 
+        [id]
+    );
     if (itemResult.rows.length === 0) {
         throw new Error('Item not found');
     }
