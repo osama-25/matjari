@@ -326,8 +326,8 @@ const ProductPage = ({ params }) => {
                         <p className="tetx-xl lg:text-2xl font-semibold mt-4">{price} JD</p>
                         {/* Buttons */}
                         <div className="flex flex-col gap-y-4 sm:flex-row mt-6 justify-between h-full items-end">
-                            {email !== userEmail && <button onClick={handleButtonClick} className={`h-12 w-full lg:w-24 flex flex-row items-center justify-center gap-2 bg-gray-800 text-white shadow-md text-lg rounded-full sm:rounded-md hover:bg-gray-700`}>
-                                <FaComment size={24} />
+                            {email !== userEmail && <button onClick={handleButtonClick} className={`h-12 w-full lg:w-24 flex flex-row items-center justify-center gap-2 bg-gray-800 text-white shadow-md text-lg rounded-full sm:rounded-lg hover:bg-gray-700`}>
+                                <FaComment size={20} />
                                 <span className="block text-sm sm:text-lg font-semibold">{t('chat')}</span>
                             </button>}
                             {email !== userEmail && <button data-testid="favBtn" onClick={HandleFavouriteClick} className={`h-12 w-full sm:w-12 flex flex-row items-center justify-center gap-2 bg-white text-red-500 hover:bg-gray-100 rounded-full shadow sm:shadow-md`}>
@@ -404,8 +404,8 @@ const ProductPage = ({ params }) => {
                 )}
             </div>
             {(moreItems && moreItems.length) > 0 &&
-                <div className='flex flex-col p-8'>
-                    <h1 className='text-3xl font-semibold'>{t('more')}</h1>
+                <div className='flex flex-col sm:p-4'>
+                    <h1 className='text-3xl font-semibold p-4'>{t('more')}</h1>
                     <ItemsDisplay items={moreItems} />
                 </div>
             }

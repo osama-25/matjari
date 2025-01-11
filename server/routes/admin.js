@@ -1,12 +1,11 @@
 import express from 'express';
 import { fetchUsers, fetchReports, banUser, unbanUser, submitReport, updateReport } from '../controllers/adminController.js';
-// import { createAdmin } from '../models/adminModel.js';
 import { isAdmin } from '../middleware/middleware.js'; // Import the middleware
 import { login } from '../controllers/authController.js';
 
 const router = express.Router();
 
-router.post('/login', isAdmin); // Apply the middleware to all admin routes
+router.post('/login', isAdmin); 
 
 router.get('/get-users', fetchUsers);
 
