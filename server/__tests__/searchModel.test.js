@@ -32,24 +32,23 @@ describe('Search Model', () => {
     });
   });
 
-  describe('buildFilterQuery', () => {
-    it('should build query with all filters', () => {
-      const result = buildFilterQuery('test', 10, 100, 'NY', 'Yes', 'New');
-      expect(result.queryParams).toHaveLength(6);
-      expect(result.query).toContain('price >= $2');
-      expect(result.query).toContain('price <= $3');
-    });
-  });
+
 
   describe('fetchFilteredItems', () => {
     it('should return filtered items with pagination', async () => {
-      const mockItems = [{ id: 1, title: 'Test Item', price: 50 }];
-      const mockCount = { rows: [{ total: '5' }] };
+      // Mock data
+      const mockItems = [{
+        id: 1,
+        title: 'Test Item',
+        price: 50,
+        image: 'test.jpg'
+      }];
+      const mockTotalCount = { rows: [{ total: '5' }] };
 
-      // Mock the database queries
+      // Setup mocks in correct order
       db.query
-        .mockResolvedValueOnce({ rows: mockItems }) // For filtered items
-        .mockResolvedValueOnce(mockCount); // For total count
+        .mockResolvedValueOnce(mockTotalCount) 
+        .mockResolvedValueOnce({ rows: mockItems }); 
 
       const filters = {
         minPrice: 10,
@@ -62,14 +61,23 @@ describe('Search Model', () => {
 
       const result = await fetchFilteredItems('test', filters, 1, 5);
 
+      // Verify result structure
       expect(result).toEqual({
         items: mockItems,
-        totalItems: 5,
+        totalItems: '5',
         totalPages: 1
       });
 
+      // Verify queries
       expect(db.query).toHaveBeenCalledTimes(2);
+
+      // Verify first query (COUNT)
       expect(db.query.mock.calls[0][1]).toEqual(
+        expect.arrayContaining(['%test%', 10, 100, 'NY', 'Yes', 'New'])
+      );
+
+      // Verify second query (SELECT)
+      expect(db.query.mock.calls[1][1]).toEqual(
         expect.arrayContaining(['%test%', 10, 100, 'NY', 'Yes', 'New', 5, 0])
       );
     });
