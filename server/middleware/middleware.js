@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { verifyAdminPassword } from '../models/adminModel.js';
 
-export async function verifyToken(req, res, next) {
+export default async function verifyToken(req, res, next) {
 
     const authHeader = req.header('Authorization');
     const token = authHeader && authHeader.split(' ')[1]; // becase the authHeader is 'Bearer token' so we cut the [0] index
@@ -33,7 +33,7 @@ export const generateToken = (user) => {
 export const isAdmin = async (req, res, next) => {
     console.log("HIT");
 
-    const { username, password } = req.body;
+    const { username, password } = req.body; 
 
     const secretKey = process.env.JWT_SECRET;
 
@@ -43,7 +43,7 @@ export const isAdmin = async (req, res, next) => {
         const isAdmin = await verifyAdminPassword(username, password);
         if (isAdmin) {
             const token = jwt.sign({ isAdmin: true }, secretKey, { expiresIn: '2h' });
-
+            
             console.log("ADMIN");
 
             res.status(200).json({ message: 'Access granted. Admins only.', success: true, token });

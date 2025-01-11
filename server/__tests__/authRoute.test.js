@@ -2,10 +2,15 @@ import request from 'supertest';
 import express from 'express';
 import authRoutes from '../routes/auth';
 import { googleLogin, login, register, requestPasswordReset, resetPassword } from '../controllers/authController';
-import {verifyToken} from '../middleware/middleware';
+import * as middleware from '../middleware/middleware';
 
 jest.mock('../controllers/authController');
-jest.mock('../middleware/middleware');
+jest.mock('../middleware/middleware', () => ({
+  __esModule: true,
+  default: jest.fn(),
+  verifyToken: jest.fn(),
+  generateToken: jest.fn()
+}));
 
 const app = express();
 app.use(express.json());
@@ -85,15 +90,29 @@ describe('Auth Routes', () => {
 
   describe('GET /auth/home', () => {
     it('should return 200 for authenticated user', async () => {
-      verifyToken.mockImplementation((req, res, next) => {
+      middleware.default.mockImplementation((req, res, next) => {
         req.user = { id: 1, email: 'test@example.com' };
         next();
       });
 
-      const response = await request(app).get('/auth/home');
+      const response = await request(app)
+        .get('/auth/home')
+        .set('Authorization', 'Bearer validToken');
 
-      expect(verifyToken).toHaveBeenCalled();
+      expect(middleware.default).toHaveBeenCalled();
       expect(response.status).toBe(200);
+    });
+
+    it('should return 401 for unauthenticated user', async () => {
+      middleware.default.mockImplementation((req, res, next) => {
+        res.status(401).json({ error: 'Access denied' });
+      });
+
+      const response = await request(app)
+        .get('/auth/home');
+
+      expect(middleware.default).toHaveBeenCalled();
+      expect(response.status).toBe(401);
     });
   });
 
