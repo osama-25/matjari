@@ -134,8 +134,8 @@ const SearchPage = () => {
             };
 
             if (searchType === 'image') {
-                endpoint = `${process.env.NEXT_PUBLIC_API_URL}/imageDesc/search-by-image?page=${currentPage}&pageSize=${itemsPerPage}`;
                 if (!imgSrc) { console.log("there's no URL"); return; }
+                endpoint = `${process.env.NEXT_PUBLIC_API_URL}/imageDesc/search-by-image?page=${currentPage}&pageSize=${itemsPerPage}`;
                 options.method = 'POST';
                 options.body = JSON.stringify({ image: imgSrc });
             } else {

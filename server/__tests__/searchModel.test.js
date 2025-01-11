@@ -1,4 +1,4 @@
-import { getSearchResults, getTotalItemsCount, fetchFilteredItems, fetchItemSuggestions, buildFilterQuery } from '../models/searchModel';
+import { getSearchResults, getTotalItemsCount, fetchFilteredItems, fetchItemSuggestions } from '../models/searchModel';
 import db from '../config/db';
 
 jest.mock('../config/db');

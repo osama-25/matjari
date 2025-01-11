@@ -27,8 +27,8 @@ describe('Item Model', () => {
       };
 
       db.query
-        .mockResolvedValueOnce({ rows: [{ id: 1 }] }) // listing insert
-        .mockResolvedValueOnce({ rowCount: 1 }); // details insert
+        .mockResolvedValueOnce({ rows: [{ id: 1 }] })
+        .mockResolvedValueOnce({ rowCount: 1 }); 
 
       axios.post.mockResolvedValueOnce({
         data: {
