@@ -121,22 +121,3 @@ export const googleLogin = async (req, res, next) => {
     })(req, res, next);
 };
 
-export const googleLogin1 = async (req, res, next) => {
-    passport.authenticate('google', { scope: ['profile', 'email'] }, (err, user, info) => {
-        if (err) {
-            return res.status(500).json({ success: false, message: "Authentication error" });
-        }
-
-        if (!user) {
-            return res.status(401).json({ success: false, message: info.message || "Google authentication failed" });
-        }
-
-
-        // const token = generateToken({ id: req.user.id, email: req.user.email });
-        // res.redirect(`http://localhost:3000/home/?token=${token}`);
-        // Generate a token for the logged-in user
-        const token = generateToken({ id: user.id, email: user.email });
-
-        res.status(200).json({ success: true, token, message: "Google login successful!", user });
-    })(req, res, next);
-};

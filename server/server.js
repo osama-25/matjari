@@ -11,7 +11,7 @@ import itemRoutes from "./routes/item.js";
 import { initializeSocket } from './controllers/socketController.js';
 import chatRoutes from './routes/chat.js'
 import env from 'dotenv';
-import verifyToken from './middleware/middleware.js';
+import { verifyToken } from './middleware/middleware.js';
 import azure from './routes/azure.js';
 import images from './routes/images.js';
 import categoriesRoutes from './routes/categories.js';
@@ -82,12 +82,12 @@ app.use('/subcategories', subcategoriesRoutes);
 app.use('/user', userRoutes);
 
 // app.use('/socket', socketRoutes);
-app.use('/chat', chatRoutes);
+app.use('/chat' , verifyToken, chatRoutes);
 app.use('/azure', azure);
 app.use('/img', images);
 
 //localhost8080:
-app.use('/admin', adminRoutes);
+app.use('/admin', verifyToken ,adminRoutes);
 
 app.use('/imageDesc', imageDescriptionRoutes);
 app.use('/search', searchRoutes);

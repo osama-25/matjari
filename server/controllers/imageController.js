@@ -1,7 +1,7 @@
 // controllers/imageController.js
 import { BlobServiceClient } from '@azure/storage-blob';
 import { Readable } from 'stream';
-import { storeImageMetadata } from '../models/imageModel.js';
+import { getImageById, getAllImages, storeImageMetadata } from '../models/imageModel.js';
 
 const accountName = process.env.ACCOUNT_NAME;
 const sasToken = process.env.SAS_TOKEN;
@@ -25,6 +25,38 @@ const uploadImageStream = async (blobName, dataStream) => {
     return blobClient.url;
 };
 
+export const fetchImageById = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const image = await getImageById(id);
+
+        if (!image) {
+            return res.status(404).json({ error: 'Image not found' });
+        }
+
+        res.json({
+            filename: image.filename,
+            fileType: image.file_type,
+            url: image.img_url,
+            uploadDate: image.upload_date
+        });
+
+    } catch (error) {
+        console.error("Error retrieving image:", error);
+        res.status(500).json({ error: 'Error retrieving image' });
+    }
+};
+
+export const fetchAllImages = async (req, res) => {
+    try {
+        const images = await getAllImages();
+        res.status(200).send(images);
+    } catch (error) {
+        res.status(500).json({ error: "Error retrieving images" });
+    }
+};
+
 export const uploadImage = async (req, res) => {
     try {
         const { filename, fileType, imageBase64, storeInDataBase } = req.body;
@@ -42,7 +74,7 @@ export const uploadImage = async (req, res) => {
 
         // Store metadata in the database (if required)
         if (storeInDataBase) {
-            await storeImageMetadata(filename, fileType, imgURL, storeInDataBase);
+            await storeImageMetadata(filename, fileType, imgURL);
         }
 
         res.status(201).json({ message: "Image Uploaded", imgURL });

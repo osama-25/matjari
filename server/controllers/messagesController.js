@@ -31,19 +31,6 @@ export const createMessage = async (req, res) => {
     }
 };
 
-// export const fetchMessagesByRoom = async (req, res) => {
-//     const room = req.params.room;
-
-
-
-//     try {
-//         const result = await getMessagesByRoom(room);
-//         res.json(result.rows);
-//     } catch (error) {
-//         console.error('Error retrieving messages:', error);
-//         res.status(500).json({ error: 'Failed to retrieve messages' });
-//     }
-// };
 export const fetchMessagesByRoom = async (req, res) => {
     const room = req.params.room;
     const userId = req.params.userId;

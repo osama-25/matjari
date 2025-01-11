@@ -41,7 +41,6 @@ export const sendResetEmail = async (email, token) => {
         </div>
                `
     };
-    // console.log("FAFDSF");
 
 
     await transporter.sendMail(mailOptions);

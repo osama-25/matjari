@@ -2,7 +2,7 @@ import request from 'supertest';
 import express from 'express';
 import authRoutes from '../routes/auth';
 import { googleLogin, login, register, requestPasswordReset, resetPassword } from '../controllers/authController';
-import verifyToken from '../middleware/middleware';
+import {verifyToken} from '../middleware/middleware';
 
 jest.mock('../controllers/authController');
 jest.mock('../middleware/middleware');
