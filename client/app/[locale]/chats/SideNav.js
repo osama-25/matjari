@@ -44,7 +44,7 @@ const Button = ({ text, link, onClick, hasNewMessages, photo, lastMessage, times
                         className="w-12 h-12 rounded-full object-cover"
                     />
                 )}
-                <div className="flex-1">
+                <div className="flex-1 overflow-hidden">
                     <div className="flex justify-between items-center">
                         <span className="text-lg font-medium">{text}</span>
                     </div>
