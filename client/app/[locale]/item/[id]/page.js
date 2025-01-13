@@ -113,10 +113,10 @@ const ProductPage = ({ params }) => {
                 if (!response.ok) {
                     throw new Error('Failed to fetch favourited state');
                 }
-
+                console.log("fav res: "+response);
                 const data = await response.json();
-                console.log(data);
-                setHeart(data.favourited);
+                console.log("fav: "+data);
+                setHeart(data.favorited);
             } catch (error) {
                 setError(error.message);
             }

@@ -46,6 +46,7 @@ export const checkIfFavorited = async (req, res) => {
     const { listingId, userId } = req.params;
     try {
         const favorited = await isListingFavorited(userId, listingId);
+        console.log("checked for favs "+favorited);
         res.status(200).json({ favorited });
     } catch (error) {
         res.status(500).json({ message: 'Error retrieving favorites' });
